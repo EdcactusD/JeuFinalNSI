@@ -13,7 +13,10 @@ class Jeu:
     def __init__(self):
         pygame.init()
         
-        self.bg_width, self.bg_height = 1000,1000
+
+        info = pygame.display.Info()  # Récupérer les infos de l'écran
+        self.bg_width = info.current_w  # Largeur de l'écran
+        self.bg_height = info.current_h  # Hauteur de l'écran
         self.screen = pygame.display.set_mode((self.bg_width, self.bg_height))
     
         pygame.display.set_caption("Jeu final NSI")
@@ -25,7 +28,7 @@ class Jeu:
     def run(self):
         while self.running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE): 
                     self.running = False
                 self.etat.handle_events(event)  # ICI : PAS COMPRIS : Délègue la gestion des événements à etat
 
@@ -34,7 +37,7 @@ class Jeu:
             pygame.display.flip()  # Rafraîchissement de l’écran
 
         pygame.quit()
-    
+            
     def changer_etat(self, nouvel_etat):
         """Change l'état du jeu."""
         self.etat= nouvel_etat
@@ -56,27 +59,27 @@ class Etats: #SUPERCLASSE : la classe qui gère tous les etats du jeu
         pass
 
 class Etat0(Etats):
-    def __init__(self,jeu):
+    def __init__(self, jeu, show_menu=False, show_map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
        super().__init__(jeu)
-       self.show_menu = False
-       self.show_map = False
-       self.show_inventaire = False
+       self.show_menu = show_menu
+       self.show_map = show_map
+       self.show_inventaire = show_inventaire
 
        self.assets_dir = os.path.join(os.path.dirname(__file__), "assets")
        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "etat0.jpg"))
-       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_height, self.jeu.bg_width))
+       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
-       self.menu = pygame.image.load(os.path.join(self.assets_dir, "AL1 POPN.png"))
+       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu.jpg"))
        self.menu_width, self.menu_height = 100, 500
-       self.menu_x = self.jeu.bg_height - self.menu_width  
-       self.menu_y = self.jeu.bg_width - self.menu_height
-       self.menu = pygame.transform.scale(self.menu, (self.menu_x, self.menu_y))
+       self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
        
-       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.jpg"))
+       
        self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
-       self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_height, self.jeu.bg_width))
+       self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
-       self.zone_carte = pygame.Rect(8, 8, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif
+       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.jpg"))
+       self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
+       self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif
        
     def handle_events(self, event):
           #Touches pressées
@@ -112,8 +115,10 @@ class Etat0(Etats):
         if self.show_map:
             screen.blit(self.map, (0, 0))
         if self.show_menu and not self.show_map:
+            self.menu_x = self.jeu.bg_width - self.menu_width  
+            self.menu_y = self.jeu.bg_height - self.menu_height
             screen.blit(self.menu, (self.menu_x, self.menu_y))
-        if self.show_inventaire:
+        if self.show_inventaire and not self.show_map:
             screen.blit(self.inventaire, (0, 0))
 
 class Enigme(Etats):
@@ -121,7 +126,7 @@ class Enigme(Etats):
         super().__init__(jeu)
         self.assets_dir = os.path.join(os.path.dirname(__file__), "assets") #BANCAL : de remettre ici mais bon c'est un détail à changer
         self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "enigme.png"))
-        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_height, self.jeu.bg_width))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:

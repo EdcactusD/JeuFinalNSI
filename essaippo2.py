@@ -77,7 +77,7 @@ class Etat0(Etats):
        self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
        self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
-       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.jpg"))
+       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte2.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif
        
@@ -125,7 +125,7 @@ class Enigme(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.assets_dir = os.path.join(os.path.dirname(__file__), "assets") #BANCAL : de remettre ici mais bon c'est un détail à changer
-        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "enigme.png"))
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "enigme2.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):

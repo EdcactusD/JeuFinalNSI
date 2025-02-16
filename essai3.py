@@ -63,7 +63,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
        self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
-       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte2.png"))
+       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif
        
@@ -125,3 +125,4 @@ jeu = Jeu()
 jeu.run()
 
 #A FAIRE : gerer un meilleur affichage de la map etc. 
+#ATTENTION : les touches permettent de revenir sur le lieu d'avant (peut-etre problemes plus-tard)

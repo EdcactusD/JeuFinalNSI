@@ -55,7 +55,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
        self.bg_image.fill((0, 0, 0))
        
-       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu.jpg"))
+       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu3.png"))
        self.menu_width, self.menu_height = 100, 500
        self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
        
@@ -102,8 +102,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         if self.show_map:
             screen.blit(self.map, (0, 0))
         if self.show_menu and not self.show_map:
-            self.menu_x = self.jeu.bg_width - self.menu_width  
-            self.menu_y = self.jeu.bg_height - self.menu_height
+            self.menu_x = self.jeu.bg_width - self.menu_width - 5 #pour déclaler du bord 
+            self.menu_y = self.jeu.bg_height - self.menu_height - 5
             screen.blit(self.menu, (self.menu_x, self.menu_y))
         if self.show_inventaire and not self.show_map:
             screen.blit(self.inventaire, (0, 0))

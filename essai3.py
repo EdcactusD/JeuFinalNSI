@@ -18,7 +18,7 @@ class Jeu:
         self.bg_width = info.current_w  # Largeur de l'écran
         self.bg_height = info.current_h  # Hauteur de l'écran
         self.screen = pygame.display.set_mode((self.bg_width, self.bg_height))
-    
+        
         pygame.display.set_caption("Jeu final NSI")
         
 
@@ -55,9 +55,16 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
        self.bg_image.fill((0, 0, 0))
        
-       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu3.png"))
+       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu.png"))
        self.menu_width, self.menu_height = 100, 500
        self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
+       self.menu_x = self.jeu.bg_width - self.menu_width - 5 #pour déclaler du bord 
+       self.menu_y = self.jeu.bg_height - self.menu_height - 5
+       self.zone_map_ic = pygame.Rect(self.menu_x, self.menu_y+19, self.menu_width, 100)
+       self.zone_inventaire_ic = pygame.Rect(self.menu_x, self.menu_y+134, self.menu_width, 100)
+       self.zone_reglages_ic = pygame.Rect(self.menu_x, self.menu_y+245, self.menu_width, 100)
+       
+
        
        
        self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
@@ -90,6 +97,14 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
               self.jeu.changer_etat(Enigme(self.jeu))  
               print(event.pos)  # Affiche la position du clic pour debug
               print("Zone cliquée dans la carte !")
+            if self.show_menu and self.zone_map_ic.collidepoint(event.pos):
+                self.show_map = not self.show_map
+                if self.show_map:
+                    self.show_menu = False
+            if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
+                pass
+            if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
+                pass
     
  
     def update(self):
@@ -102,11 +117,16 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         if self.show_map:
             screen.blit(self.map, (0, 0))
         if self.show_menu and not self.show_map:
-            self.menu_x = self.jeu.bg_width - self.menu_width - 5 #pour déclaler du bord 
-            self.menu_y = self.jeu.bg_height - self.menu_height - 5
             screen.blit(self.menu, (self.menu_x, self.menu_y))
+            #Tests pour voir les rect. 
+            #pygame.draw.rect(screen, (255, 0, 0), self.zone_map_ic, 2)  # Contour rouge pour tester
+            #pygame.draw.rect(screen, (0, 255, 0), self.zone_inventaire_ic, 2)
+            #pygame.draw.rect(screen, (0, 0, 255), self.zone_reglages_ic, 2)
+
+
         if self.show_inventaire and not self.show_map:
-            screen.blit(self.inventaire, (0, 0))
+            screen.blit(self.inventaire, (0, 0))          
+        
 
 class Etat0(Etats): 
     def __init__(self,jeu):

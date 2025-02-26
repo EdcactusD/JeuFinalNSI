@@ -32,7 +32,7 @@ class Jeu:
                     self.running = False
                 self.etat.handle_events(event)  # ICI : PAS COMPRIS : Délègue la gestion des événements à etat
 
-            self.etat.update() #CEST QUOI CA?
+            #self.etat.update() #permet d'avoir des updates différents pour chaque état
             self.etat.draw(self.screen)
             pygame.display.flip()  # Rafraîchissement de l’écran
 
@@ -64,15 +64,14 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.zone_inventaire_ic = pygame.Rect(self.menu_x, self.menu_y+134, self.menu_width, 100)
        self.zone_reglages_ic = pygame.Rect(self.menu_x, self.menu_y+245, self.menu_width, 100)
        
-
-       
-       
+              
        self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
        self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
        self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
-       self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif
+       self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif (ON GERTE CA DE LA)
+       #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
     def handle_events(self, event):
           #Touches pressées
@@ -107,9 +106,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                 pass
     
  
-    def update(self):
-        pass  # JSPPPPP Ajoute ici la mise à jour des éléments si nécessaire
-        #faut mettre le changement d'une scène à l'autre non?
+    """def update(self):
+        pass  # permet de gerer independament les upadates de chaque mini-jeu"""
 
     def draw(self, screen):
         screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images
@@ -143,6 +141,10 @@ class Enigme(Etats):
 
 jeu = Jeu()
 jeu.run()
+
+
+#A MARQUER DANS LES REGLAGES : pour revenir en arrière une fois l'inventaire, la carte, les réglages ouverts il est possible de réappuyer sur la touche correspondante
+
 
 #A FAIRE : gerer un meilleur affichage de la map etc. 
 #ATTENTION : les touches permettent de revenir sur le lieu d'avant (peut-etre problemes plus-tard)

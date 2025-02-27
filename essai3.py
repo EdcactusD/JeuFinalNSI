@@ -6,7 +6,9 @@ import os
 EXPLICATIONS SUR CERTAINS POINTS ET METHODES PRATIQUE DANS LE CODE:
 1. event.pos représente les coordonnées (x, y) de l'endroit où la souris a cliqué, 
 obtenues dans un événement MOUSEBUTTONDOWN ou MOUSEBUTTONUP : 
-collidepoint retourne un booléen suivant si la souris est dans la zone (True) ou non (False)   
+collidepoint retourne un booléen suivant si la souris est dans la zone (True) ou non (False)  
+
+2. .items()  permet d'obtenir la clé et la valeur dans un dico
 """
 
 class Jeu:
@@ -23,7 +25,7 @@ class Jeu:
         
 
         self.running = True
-        self.etat = Etat0(self)  # Définition de la scène actuelle
+        self.etat = Menu_debut(self)  # Définition de la scène actuelle
 
     def run(self):
         while self.running:
@@ -110,7 +112,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         pass  # permet de gerer independament les upadates de chaque mini-jeu"""
 
     def draw(self, screen):
-        screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images
+        #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)
         screen.blit(self.bg_image, (0, 0))
         if self.show_map:
             screen.blit(self.map, (0, 0))
@@ -124,7 +126,41 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
         if self.show_inventaire and not self.show_map:
             screen.blit(self.inventaire, (0, 0))          
-        
+
+class Menu_debut:
+  """gère l'écran qui s'affiche pour lancer le jeu"""
+  def __init__(self, jeu):
+      self.jeu = jeu
+      
+      self.bg_image = pygame.image.load(os.path.join("assets", "menudebut.png"))
+      self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))  
+      self.width_bouton, self.height_bouton, self.espace = 400, 110, 150
+      self.boutons = {"Jouer" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2, self.width_bouton, self.height_bouton), #permet de lancer le jeu avec la dernière sauvegarde
+                      "Lancer une nouvelle partie" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2+self.espace, self.width_bouton, self.height_bouton),
+                      "Quitter" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2+self.espace*2, self.width_bouton, self.height_bouton)
+          }
+      self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), 30)
+      
+  def handle_events(self, event):
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        for bouton, position in self.boutons.items():
+            if position.collidepoint(event.pos) :
+                if bouton == "Jouer" :
+                    self.jeu.changer_etat(Etat0(self.jeu))
+                elif bouton=="Lancer une nouvelle partie" :
+                    print("lancement d'une nouvelle partie")
+                elif bouton=="Quitter":
+                    self.jeu.running=False
+            
+      
+  def draw(self, screen):
+    #screen.fill((0, 0, 0)) #pas necessaire si tout l'écran est rempli
+    screen.blit(self.bg_image, (0, 0))
+    for bouton in self.boutons: 
+      pygame.draw.rect(screen, "#834c2c", self.boutons[bouton], border_radius=20)
+      
+      screen.blit(self.font.render(bouton, True, "#d9aa62"), self.font.render(bouton, True, "#d9aa62").get_rect(center=self.boutons[bouton].center)) #le .get_rect permet de créer un rect pour le texte, le center= permet de poser le centre au milieu du rect (et non en haut à gauche)
+          
 
 class Etat0(Etats): 
     def __init__(self,jeu):

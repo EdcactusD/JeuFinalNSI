@@ -53,11 +53,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.show_map = show_map
        self.show_inventaire = show_inventaire
 
-       self.assets_dir = os.path.join(os.path.dirname(__file__), "assets")
        self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
        self.bg_image.fill((0, 0, 0))
        
-       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu.png"))
+       self.menu = pygame.image.load(os.path.join("assets", "menu.png"))
        self.menu_width, self.menu_height = 100, 500
        self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
        self.menu_x = self.jeu.bg_width - self.menu_width - 5 #pour déclaler du bord 
@@ -67,10 +66,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.zone_reglages_ic = pygame.Rect(self.menu_x, self.menu_y+245, self.menu_width, 100)
        
               
-       self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
+       self.inventaire = pygame.image.load(os.path.join("assets", "Test.jpg"))
        self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
-       self.map = pygame.image.load(os.path.join(self.assets_dir, "carte.png"))
+       self.map = pygame.image.load(os.path.join("assets","fonds","carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif (ON GERTE CA DE LA)
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
@@ -132,7 +131,7 @@ class Menu_debut:
   def __init__(self, jeu):
       self.jeu = jeu
       
-      self.bg_image = pygame.image.load(os.path.join("assets", "menudebut.png"))
+      self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "menudebut.png"))
       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))  
       self.width_bouton, self.height_bouton, self.espace = 400, 110, 150
       self.boutons = {"Jouer" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2, self.width_bouton, self.height_bouton), #permet de lancer le jeu avec la dernière sauvegarde
@@ -172,14 +171,14 @@ class Menu_debut:
 class Etat0(Etats): 
     def __init__(self,jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "etat0.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "etat0.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
 
 class Enigme(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "enigme2.png"))
+        self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "enigme2.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
 jeu = Jeu()

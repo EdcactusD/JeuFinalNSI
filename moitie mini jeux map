@@ -1,0 +1,324 @@
+import pygame
+import os
+
+
+"""
+EXPLICATIONS SUR CERTAINS POINTS ET METHODES PRATIQUE DANS LE CODE:
+1. event.pos représente les coordonnées (x, y) de l'endroit où la souris a cliqué, 
+obtenues dans un événement MOUSEBUTTONDOWN ou MOUSEBUTTONUP : 
+collidepoint retourne un booléen suivant si la souris est dans la zone (True) ou non (False)  
+
+2. .items()  permet d'obtenir la clé et la valeur dans un dico
+"""
+
+class Jeu:
+    def __init__(self):
+        pygame.init()
+        
+
+        info = pygame.display.Info()  # Récupérer les infos de l'écran
+        self.bg_width = info.current_w  # Largeur de l'écran
+        self.bg_height = info.current_h  # Hauteur de l'écran
+        self.screen = pygame.display.set_mode((self.bg_width, self.bg_height))
+        
+        pygame.display.set_caption("Jeu final NSI")
+        
+
+        self.running = True
+        self.etat = Menu_debut(self)  # Définition de la scène actuelle
+
+    def run(self):
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE): 
+                    self.running = False
+                self.etat.handle_events(event)  # ICI : PAS COMPRIS : Délègue la gestion des événements à etat
+
+            #self.etat.update() #permet d'avoir des updates différents pour chaque état
+            self.etat.draw(self.screen)
+            pygame.display.flip()  # Rafraîchissement de l’écran
+
+        pygame.quit()
+            
+    def changer_etat(self, nouvel_etat):
+        """Change l'état du jeu."""
+        self.etat= nouvel_etat
+        
+
+class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
+    def __init__(self, jeu, show_menu=False, show_Map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
+       self.jeu = jeu
+       
+       self.show_menu = show_menu
+       self.show_Map = show_Map
+       self.show_inventaire = show_inventaire
+       self.show_mont_azur = show_mont_azur = False 
+
+       self.assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+       self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
+       self.bg_image.fill((0, 0, 0))
+       
+       self.menu = pygame.image.load(os.path.join(self.assets_dir, "menu.png"))
+       self.menu_width, self.menu_height = 100, 500
+       self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
+       self.menu_x = self.jeu.bg_width - self.menu_width - 5 #pour déclaler du bord 
+       self.menu_y = self.jeu.bg_height - self.menu_height - 5
+       self.zone_Map_ic = pygame.Rect(self.menu_x, self.menu_y+19, self.menu_width, 100)
+       self.zone_inventaire_ic = pygame.Rect(self.menu_x, self.menu_y+134, self.menu_width, 100)
+       self.zone_reglages_ic = pygame.Rect(self.menu_x, self.menu_y+245, self.menu_width, 100)
+       
+              
+       self.inventaire = pygame.image.load(os.path.join(self.assets_dir, "Test.jpg"))
+       self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
+
+       #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES
+       
+    def handle_events(self, event):
+          #Touches pressées
+          if event.type == pygame.KEYDOWN:
+              if event.key == pygame.K_w:
+                 self.show_menu = not self.show_menu
+              if event.key == pygame.K_c and self.show_menu:
+                   if self.show_inventaire:  
+                       self.show_inventaire = False
+                   elif self.show_menu:  
+                       self.show_inventaire = True
+                       
+          #CLics souris             
+          if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
+           print(event.pos)
+           print("Zone cliquée dans la carte !")
+           if self.show_menu and self.zone_Map_ic.collidepoint(event.pos):
+                self.show_Map = not self.show_Map
+                if self.show_Map:
+                    self.show_menu = False
+           if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
+                pass
+           if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
+                pass
+ 
+    """def update(self):
+        pass  # permet de gerer independament les upadates de chaque mini-jeu"""
+
+    def draw(self, screen):
+        screen.blit(self.bg_image, (0, 0))
+        if self.show_Map:
+            screen.blit(self.Map, (0, 0))
+        if isinstance(self, Etat0) and self.show_menu:                #Isinstance vérifie si self est dans etat0 , ici ceci vérifie si l'état du jeu est etat0 et renvoie True dans ce cas#
+            screen.blit(self.menu, (self.menu_x, self.menu_y))
+            #Tests pour voir les rect. 
+            #pygame.draw.rect(screen, (255, 0, 0), self.zone_Map_ic, 2)  # Contour rouge pour tester
+            #pygame.draw.rect(screen, (0, 255, 0), self.zone_inventaire_ic, 2)
+            #pygame.draw.rect(screen, (0, 0, 255), self.zone_reglages_ic, 2)
+
+
+        if self.show_inventaire and not self.show_Map:
+            screen.blit(self.inventaire, (0, 0))          
+
+class Menu_debut:
+  """gère l'écran qui s'affiche pour lancer le jeu"""
+  def __init__(self, jeu):
+      self.jeu = jeu
+      
+      self.bg_image = pygame.image.load(os.path.join("assets", "menudebut.png"))
+      self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))  
+      self.width_bouton, self.height_bouton, self.espace = 400, 110, 150
+      self.boutons = {"Jouer" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2, self.width_bouton, self.height_bouton), #permet de lancer le jeu avec la dernière sauvegarde
+                      "Lancer une nouvelle partie" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2+self.espace, self.width_bouton, self.height_bouton),
+                      "Quitter" : pygame.Rect(self.jeu.bg_width/2-self.width_bouton/2, self.jeu.bg_height/2-self.height_bouton/2+self.espace*2, self.width_bouton, self.height_bouton)
+          }
+      self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), 30)
+      
+  def handle_events(self, event):
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        for bouton, position in self.boutons.items():
+            if position.collidepoint(event.pos) :
+                if bouton == "Jouer" :
+                    self.jeu.changer_etat(Etat0(self.jeu))
+                elif bouton=="Lancer une nouvelle partie" :
+                    print("lancement d'une nouvelle partie")
+                elif bouton=="Quitter":
+                    self.jeu.running=False
+            
+      
+  def draw(self, screen):
+    screen.blit(self.bg_image, (0, 0))
+    for bouton in self.boutons: 
+      pygame.draw.rect(screen, "#834c2c", self.boutons[bouton], border_radius=20)
+      
+      screen.blit(self.font.render(bouton, True, "#d9aa62"), self.font.render(bouton, True, "#d9aa62").get_rect(center=self.boutons[bouton].center)) #le .get_rect permet de créer un rect pour le texte, le center= permet de poser le centre au milieu du rect (et non en haut à gauche)
+          
+class Map(Etats):
+    def __init__(self,jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "carte.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.zone_mont_azur = pygame.Rect(700,50,450,300)
+        self.zone_enigme = pygame.Rect(700,350,400,150)
+        self.zone_Tir_arc = pygame.Rect(350,420,300,180)
+        self.zone_Vitesse = pygame.Rect(900,700,300,50)
+        self.zone_chateau = pygame.Rect(400,100,250,250)
+        self.zone_Memoire_combi = pygame.Rect(1100,500,400,150)
+        self.zone_Portes = pygame.Rect(450,650,400,250)
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Etat0(self.jeu))
+        if event.type == pygame.MOUSEBUTTONDOWN:  
+         if event.button == 1:
+            if self.zone_mont_azur.collidepoint(event.pos):  
+                self.jeu.changer_etat(Mont_azur(self.jeu))
+            if self.zone_enigme.collidepoint(event.pos):
+              self.jeu.changer_etat(Enigme(self.jeu))
+            if self.zone_Tir_arc.collidepoint(event.pos):
+              self.jeu.changer_etat(Tir_arc(self.jeu))
+            if self.zone_Vitesse.collidepoint(event.pos):
+              self.jeu.changer_etat(Vitesse(self.jeu))
+            if self.zone_chateau.collidepoint(event.pos):
+              self.jeu.changer_etat(Chateau(self.jeu))
+            if self.zone_Memoire_combi.collidepoint(event.pos):
+              self.jeu.changer_etat(Mémoire_combi(self.jeu))
+            if self.zone_Portes.collidepoint(event.pos):
+              self.jeu.changer_etat(Portes(self.jeu))
+            
+                
+class Mont_azur(Etats): 
+    def __init__(self,jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "plan_mont_azur.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.zone_Donkey_kong_mario = pygame.Rect(850,650,600,400)
+
+    def handle_events(self, event):
+        super().handle_events(event)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
+            if self.zone_Donkey_kong_mario.collidepoint(event.pos):
+                self.jeu.changer_etat(Donkey_kong_mario(self.jeu))
+
+class Chateau(Etats):
+    def __init__(self,jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "plan_chateau.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.zone_Pendu = pygame.Rect(675,725,400,300)
+        self.zone_Pendule = pygame.Rect(1000,400,500,325)
+
+    def handle_events(self, event):
+        super().handle_events(event)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.zone_Pendu.collidepoint(event.pos):
+                self.jeu.changer_etat(Pendu(self.jeu))
+            if self.zone_Pendule.collidepoint(event.pos):
+                self.jeu.changer_etat(Pendule(self.jeu))
+           
+    
+
+class Donkey_kong_mario(Etats): 
+    def __init__(self,jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Donkey_kong_mario.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Etat0(Etats): 
+    def __init__(self,jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "etat0.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.show_menu = True
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+
+class Enigme(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "enigme2.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+
+class Mémoire_combi(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Mémoire_combi.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Pendu(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Pendu.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Pendule(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Pendule.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Portes(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Portes.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Tir_arc(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Tir_arc.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+class Vitesse(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join(self.assets_dir, "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            self.jeu.changer_etat(Map(self.jeu))  # Change l'état vers la carte
+
+jeu = Jeu()
+jeu.run()

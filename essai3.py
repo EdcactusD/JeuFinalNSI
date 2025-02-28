@@ -152,16 +152,23 @@ class Menu_debut:
                 elif bouton=="Quitter":
                     self.jeu.running=False
             
+               
       
   def draw(self, screen):
     #screen.fill((0, 0, 0)) #pas necessaire si tout l'écran est rempli
     screen.blit(self.bg_image, (0, 0))
     for bouton in self.boutons: 
+      if self.boutons[bouton].collidepoint(pygame.mouse.get_pos()): #on aggrandit les boutons quand la souris passe dessus
+        print(self.boutons[bouton][0])
+        if self.boutons[bouton][2]==self.width_bouton : #on vérifie que le bouton n'est pas déjà aggrandi
+           self.boutons[bouton]=self.boutons[bouton].inflate(40,11) #.inflate revoie un nouveau rect avec une taille modifiée
+      elif self.boutons[bouton][2]!=self.width_bouton:
+           self.boutons[bouton]=self.boutons[bouton].inflate(-40,-11)
       pygame.draw.rect(screen, "#834c2c", self.boutons[bouton], border_radius=20)
-      
       screen.blit(self.font.render(bouton, True, "#d9aa62"), self.font.render(bouton, True, "#d9aa62").get_rect(center=self.boutons[bouton].center)) #le .get_rect permet de créer un rect pour le texte, le center= permet de poser le centre au milieu du rect (et non en haut à gauche)
-          
-
+       
+      
+     
 class Etat0(Etats): 
     def __init__(self,jeu):
         super().__init__(jeu)
@@ -182,5 +189,4 @@ jeu.run()
 #A MARQUER DANS LES REGLAGES : pour revenir en arrière une fois l'inventaire, la carte, les réglages ouverts il est possible de réappuyer sur la touche correspondante
 
 
-#A FAIRE : gerer un meilleur affichage de la map etc. 
 #ATTENTION : les touches permettent de revenir sur le lieu d'avant (peut-etre problemes plus-tard)

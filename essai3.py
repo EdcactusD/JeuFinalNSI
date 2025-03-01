@@ -1,7 +1,7 @@
 import pygame
 import os
 
-
+ 
 """
 EXPLICATIONS SUR CERTAINS POINTS ET METHODES PRATIQUE DANS LE CODE:
 1. event.pos représente les coordonnées (x, y) de l'endroit où la souris a cliqué, 
@@ -15,6 +15,10 @@ class Jeu:
     def __init__(self):
         pygame.init()
         
+        pygame.mixer.init()  #initialise le module audio
+        pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
+        pygame.mixer.music.play(-1)  #joue en boucle (-1 : boucle infinie)
+        pygame.mixer.music.set_volume(0.5)  # Ajuste le volume (0.0 à 1.0)
 
         info = pygame.display.Info()  # Récupérer les infos de l'écran
         self.bg_width = info.current_w  # Largeur de l'écran

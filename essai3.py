@@ -79,50 +79,37 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           if event.type == pygame.KEYDOWN:
               if event.key == pygame.K_w:
                  self.show_menu = not self.show_menu
-                 if self.show_map:
-                     self.show_menu = False
-              if event.key == pygame.K_x:
-                 self.show_map = not self.show_map     
-              if event.key == pygame.K_c and self.show_menu:
-                   if self.show_inventaire:  
-                       self.show_inventaire = False
-                   elif self.show_menu:  
-                       self.show_inventaire = True
+              if event.key == pygame.K_x: 
+                self.jeu.changer_etat(Map(self.jeu))
+              if event.key == pygame.K_c and self.show_menu:  
+                       self.jeu.changer_etat(Inventaire(self.jeu))
                        
           #CLics souris             
           if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
           # Vérifiez si la zone est cliquée uniquement lorsque la carte est ouverte
-            if self.show_map and self.zone_carte.collidepoint(event.pos):  
-              # Si on clique sur une zone de la carte, on change d'état
-              self.jeu.changer_etat(Map(self.jeu))  
             if self.show_menu and self.zone_map_ic.collidepoint(event.pos):
-                self.show_map = not self.show_map
-                if self.show_map:
-                    self.show_menu = False
+                self.jeu.changer_etat(Map(self.jeu))
             if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
-                pass
+                self.jeu.changer_etat(Inventaire(self.jeu))
             if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
-                pass
+                self.jeu.changer_etat(Reglages(self.jeu))
     
  
     """def update(self):
-        pass  # permet de gerer independament les upadates de chaque mini-jeu"""
+        pass  # permet de gerer independament les updates de chaque mini-jeu"""
 
     def draw(self, screen):
         #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)
         screen.blit(self.bg_image, (0, 0))
-        if self.show_map:
-            screen.blit(self.map, (0, 0))
-        if self.show_menu and not self.show_map:
+
+        if self.show_menu:
             screen.blit(self.menu, (self.menu_x, self.menu_y))
             #Tests pour voir les rect. 
             #pygame.draw.rect(screen, (255, 0, 0), self.zone_map_ic, 2)  # Contour rouge pour tester
             #pygame.draw.rect(screen, (0, 255, 0), self.zone_inventaire_ic, 2)
             #pygame.draw.rect(screen, (0, 0, 255), self.zone_reglages_ic, 2)
 
-
-        if self.show_inventaire and not self.show_map:
-            screen.blit(self.inventaire, (0, 0))          
+         
 
 class Menu_debut:
   """gère l'écran qui s'affiche pour lancer le jeu"""
@@ -163,42 +150,47 @@ class Menu_debut:
       pygame.draw.rect(screen, "#834c2c", self.boutons[bouton], border_radius=20)
       screen.blit(self.font.render(bouton, True, "#d9aa62"), self.font.render(bouton, True, "#d9aa62").get_rect(center=self.boutons[bouton].center)) #le .get_rect permet de créer un rect pour le texte, le center= permet de poser le centre au milieu du rect (et non en haut à gauche)
        
+class Reglages(Etats):
+  pass
+
+class Inventaire(Etats):
+ pass
+
       
 class Map(Etats):
     def __init__(self,jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "carte.png"))
-        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.zones_carte = { "Mont_azur" : [pygame.Rect(720,50,420,300), Mont_azur(self.jeu)],
-        "zone_enigme" : [pygame.Rect(700,360,400,135), Enigme(self.jeu)],
-        "zone_Tir_arc" : [pygame.Rect(350,420,300,180),Tir_arc(self.jeu)],
-        "zone_Vitesse" : [pygame.Rect(930,685,270,85),Vitesse(self.jeu)],
-        "zone_chateau" : [pygame.Rect(425,100,300,275),Chateau(self.jeu)],
-        "zone_Memoire_combi" : [pygame.Rect(1100,500,400,150),Memoire_combi(self.jeu)],
-        "zone_Portes" : [pygame.Rect(565,660,300,270),Portes(self.jeu)]
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height)) #pas sûre que ce soit utile (à voir dans la super)
+        self.zones_carte = { "Mont_azur" : [pygame.Rect(720,50,420,300), Mont_azur],
+        "zone_enigme" : [pygame.Rect(700,360,400,135), Enigme],
+        "zone_Tir_arc" : [pygame.Rect(350,420,300,180),Tir_arc],
+        "zone_Vitesse" : [pygame.Rect(930,685,270,85),Vitesse],
+        "zone_chateau" : [pygame.Rect(425,100,300,275),Chateau],
+        "zone_Memoire_combi" : [pygame.Rect(1100,500,400,150),Memoire_combi],
+        "zone_Portes" : [pygame.Rect(565,660,300,270),Portes]
             }
         
     def handle_events(self, event):
         super().handle_events(event)  # Garde le comportement général des événements
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-            self.jeu.changer_etat(Map(self.jeu)) #de base ça changeait pour Etat0 mais pour l'héritage c'est mieux comme ça (et aussi pas trop logique de pouvoir revenir à Etat0)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
                 if self.zones_carte[zone][0].collidepoint(event.pos): 
-                    self.jeu.changer_etat(self.zones_carte[zone][1])
+                    self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
     
     """def draw(self, screen) :
         super().draw(screen)
         for zone in  self.zones_carte:
             pygame.draw.rect(screen, (255, 0, 0), self.zones_carte[zone][0], 10)
-            pygame.display.update()""" #pour tester les zones d'affichage
+        pygame.display.flip() #pour tester les zones"""
+            
                 
 class Mont_azur(Etats): 
     def __init__(self,jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "plan_mont_azur.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.zones_mont_azur = {"zone_Donkey_kong_mario" : [pygame.Rect(850,650,600,400), Donkey_kong_mario(self.jeu)]
+        self.zones_mont_azur = {"zone_Donkey_kong_mario" : [pygame.Rect(850,650,600,400), Donkey_kong_mario]
                                 }
         
     def handle_events(self, event):
@@ -208,15 +200,15 @@ class Mont_azur(Etats):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
             for zone in self.zones_mont_azur:
                 if self.zones_mont_azur[zone][0].collidepoint(event.pos): 
-                    self.jeu.changer_etat(self.zones_mont_azur[zone][1])
+                    self.jeu.changer_etat(self.zones_mont_azur[zone][1](self.jeu))
 
 class Chateau(Etats):
     def __init__(self,jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "plan_chateau.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.zones_chateau = {"zone_Pendu" : [pygame.Rect(675,725,400,300), Pendu(self.jeu)],
-                              "zone_Pendule" : [pygame.Rect(1000,400,500,325), Pendule(self.jeu)]
+        self.zones_chateau = {"zone_Pendu" : [pygame.Rect(675,725,400,300), Pendu],
+                              "zone_Pendule" : [pygame.Rect(1000,400,500,325), Pendule]
                               }
 
     def handle_events(self, event):
@@ -224,7 +216,7 @@ class Chateau(Etats):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
            for zone in self.zones_chateau:
                if self.zones_chateau[zone][0].collidepoint(event.pos): 
-                   self.jeu.changer_etat(self.zones_chateau[zone][1])
+                   self.jeu.changer_etat(self.zones_chateau[zone][1](self.jeu))
            
     
 
@@ -324,8 +316,6 @@ class Vitesse(Etats):
 jeu = Jeu()
 jeu.run()
 
-
-#LA ZONE POUR LE CHATEAU EST BOF!
 
 #A MARQUER DANS LES REGLAGES : pour revenir en arrière une fois l'inventaire, la carte, les réglages ouverts il est possible de réappuyer sur la touche correspondante
 

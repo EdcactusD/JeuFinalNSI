@@ -69,7 +69,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        
        self.menu = pygame.image.load(os.path.join("assets", "menu.png"))
        self.menu_width, self.menu_height = int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/2.16) #en 1920x1080 : 100 et 500
-       print( self.menu_width, self.menu_height)
        self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
        self.menu_x = self.jeu.bg_width - self.menu_width - int(self.jeu.bg_width/384) #pour déclaler du bord (marge de 5 en 1920)
        self.menu_y = self.jeu.bg_height - self.menu_height - int(self.jeu.bg_height/216)
@@ -175,13 +174,19 @@ class Map(Etats):
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "carte.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height)) #pas sûre que ce soit utile (à voir dans la super)
         self.zones_carte = { "Mont_azur" : [pygame.Rect(int(self.jeu.bg_width/2.75),int(self.jeu.bg_height/21.6),int(self.jeu.bg_width/4.71),int(self.jeu.bg_height/3.6)), Mont_azur],
-        "zone_enigme" : [pygame.Rect(int(self.jeu.bg_width/2.83),int(self.jeu.bg_height/3),int(self.jeu.bg_width/4.95),int(self.jeu.bg_height/8)), Enigme],
+        "zone_enigme" : [pygame.Rect(int(self.jeu.bg_width/2.75),int(self.jeu.bg_height/3),int(self.jeu.bg_width/4.85),int(self.jeu.bg_height/8)), Enigme],
         "zone_Tir_arc" : [pygame.Rect(int(self.jeu.bg_width/5.657),int(self.jeu.bg_height/2.57),int(self.jeu.bg_width/6.6),int(self.jeu.bg_height/6)),Tir_arc],
         "zone_Vitesse" : [pygame.Rect(int(self.jeu.bg_width/2.06),int(self.jeu.bg_height/1.576),int(self.jeu.bg_width/7.11),int(self.jeu.bg_height/12.7058)),Vitesse],
         "zone_chateau" : [pygame.Rect(int(self.jeu.bg_width/4.658),int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/6.6),int(self.jeu.bg_height/3.927)),Chateau],
-        "zone_Memoire_combi" : [pygame.Rect(int(self.jeu.bg_width/1.8),int(self.jeu.bg_height/2.16),int(self.jeu.bg_width/4.95),int(self.jeu.bg_height/7.2)),Memoire_combi],
-        "zone_Portes" : [pygame.Rect(int(self.jeu.bg_width/3.504),int(self.jeu.bg_height/1.636),int(self.jeu.bg_width/6.6),int(self.jeu.bg_height/4)),Portes]
-            }
+        "zone_Memoire_combi" : [pygame.Rect(int(self.jeu.bg_width/1.75),int(self.jeu.bg_height/2.1),int(self.jeu.bg_width/4.95),int(self.jeu.bg_height/6.8)),Memoire_combi],
+        "zone_Portes" : [pygame.Rect(int(self.jeu.bg_width/3.504),int(self.jeu.bg_height/1.636),int(self.jeu.bg_width/6.6),int(self.jeu.bg_height/4)),Portes],
+        "zone_Bon_minerai" : [pygame.Rect(int(self.jeu.bg_width/1.669),int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/7.2)),Bon_minerai],
+        "zone_Eau" : [pygame.Rect(int(self.jeu.bg_width/2.17),int(self.jeu.bg_height/1.35),int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/5.4)),Eau],
+        "Krabi" : [pygame.Rect(int(self.jeu.bg_width/2.6),int(self.jeu.bg_height/1.9),int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/10.75)),Krabi],
+        "zone_Zephyr" : [pygame.Rect(int(self.jeu.bg_width/1.5),int(self.jeu.bg_height/1.27),int(self.jeu.bg_width/6.3),int(self.jeu.bg_height/9.81)),Zephyr],
+        "zone_Mars" : [pygame.Rect(int(self.jeu.bg_width/1.536),int(self.jeu.bg_height/3.6),int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/6.2)),Mars],
+        "zone_Chaudron" : [pygame.Rect(int(self.jeu.bg_width/1.6),int(self.jeu.bg_height/1.54),int(self.jeu.bg_width/8),int(self.jeu.bg_height/9.5)),Chaudron], }
+        
         
     def handle_events(self, event):
         super().handle_events(event)  # Garde le comportement général des événements
@@ -202,8 +207,8 @@ class Mont_azur(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "plan_mont_azur.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.zones_mont_azur = {"zone_Donkey_kong_mario" : [pygame.Rect(int(self.jeu.bg_width/2.2588),int(self.jeu.bg_height/1.661),int(self.jeu.bg_width/3.2),int(self.jeu.bg_height/2.7)), Donkey_kong_mario]
-                                }
+        self.zones_mont_azur = {"zone_Donkey_kong_mario" : [pygame.Rect(int(self.jeu.bg_width/2.2588),int(self.jeu.bg_height/1.661),int(self.jeu.bg_width/3.2),int(self.jeu.bg_height/2.7)), Donkey_kong_mario],
+                                "zone_Trad" : [pygame.Rect(int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/3.2),int(self.jeu.bg_height/1.96)),Trad]}
         
     def handle_events(self, event):
         super().handle_events(event) # Garde le comportement général des événements (utile car après on va ajouter des choses dedans)
@@ -323,7 +328,68 @@ class Vitesse(Etats):
     def handle_events(self, event):
         super().handle_events(event)  
         
+class Bon_minerai(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Trad(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Eau(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Krabi(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Zephyr(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Mars(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+
+class Chaudron(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)
 
 jeu = Jeu()
 jeu.run()

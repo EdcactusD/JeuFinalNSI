@@ -33,6 +33,7 @@ class Jeu:
         self.screen = pygame.display.set_mode((self.bg_width, self.bg_height))
         
         pygame.display.set_caption("Jeu final NSI")
+        self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.bg_height/36))
         
 
         self.running = True
@@ -60,6 +61,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def __init__(self, jeu, show_menu=False, show_map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
        self.jeu = jeu
        
+       self.font=self.jeu.font
        self.show_menu = show_menu
        self.show_map = show_map
        self.show_inventaire = show_inventaire
@@ -82,8 +84,26 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
        self.map = pygame.image.load(os.path.join("assets","fonds","carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
-       self.zone_carte = pygame.Rect(0, 0, self.jeu.bg_width, self.jeu.bg_height)  #j'ai mis des trucs au pif (ON GERTE CA DE LA)
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
+       
+       self.niveaux_jeux = {"Mont_azur" : 0,
+                            "Chateau" : 0,
+                            "Donkey_kong_mario" : 0,
+                            "Enigme" : 0,
+                            "Memoire_combi" : 0,
+                            "Pendu" : 0,
+                            "Pendule" : 0,
+                            "Portes" : 0,
+                            "Tir_arc" : 0,
+                            "Vitesse" : 0,
+                            "Bon_minerai" : 0,
+                            "Trad" : 0,
+                            "Eau" : 0,
+                            "Krabi" : 0,
+                            "Zephyr" : 0,
+                            "Mars" : 0,
+                            "Chaudron" : 0,                    
+           }
        
     def handle_events(self, event):
           #Touches pressées
@@ -119,6 +139,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
             #pygame.draw.rect(screen, (255, 0, 0), self.zone_map_ic, 2)  # Contour rouge pour tester
             #pygame.draw.rect(screen, (0, 255, 0), self.zone_inventaire_ic, 2)
             #pygame.draw.rect(screen, (0, 0, 255), self.zone_reglages_ic, 2)
+            
+    """def update_niveau(self, mini_jeu, nouv_niveau):
+        '''pour modifier le dico'''
+        if int(mini_jeu) in self.niveaux_jeux :
+            self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """
 
          
 
@@ -134,7 +159,7 @@ class Menu_debut:
                       "Lancer une nouvelle partie" : pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace, self.width_bouton, self.height_bouton),
                       "Quitter" : pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace*2, self.width_bouton, self.height_bouton)
           }
-      self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/36))
+      self.font=self.jeu.font
       
   def handle_events(self, event):
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -264,9 +289,31 @@ class Enigme(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "enigme2.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.niveau = self.niveaux_jeux["Enigme"]
+        self.enigmes = { "0": ["Je peux être posée\nsans jamais être touchée","question"], #ou voix #dico des énigmes (énigme, réponse)
+                         "1": ["Je ne suis pas vivant mais je grandi,\nJe meurs sous l’eau\nJe n’ai pas de poumons mais j’ai besoin d’air","feu"],
+                         "2": ["Je suis plus puissant que Dieu, plus mauvais que le Diable.\nLes pauvres m’ont, les riches ont besoin de moi.","rien"],
+                         "3": ["Je suis mort et je peux hanter \nou bien je peux être ouvert ou fermé sans être touché\net vif ou lent sans jamais bouger","esprit"],
+                         "4": ["Je peux être audible, visible ou odorante, mais jamais les trois à la fois \nJe peux être basse ou haute sans jamais tomber.\nJ’estime sans parler.\nJe suis florale ou boisée.","note"]            
+}
+        self.texte = self.font.render("", True, (255, 255, 255))
 
     def handle_events(self, event):
-        super().handle_events(event)  
+        super().handle_events(event)
+                
+        
+    
+    def draw(self, screen):
+        super().draw(screen)
+        lignes= self.enigmes[str(self.niveau)][0].split("\n") #font.render ne supporte pas \n pour le retour à la ligne, il faut le coder manuellement     
+        espace = 0 #pour gérer l'espacement entre les lignes
+        for ligne in lignes:
+          self.texte=self.font.render(ligne, True, (123,85,57))
+          screen.blit(self.texte, (int(self.jeu.bg_width/2.5), int(self.jeu.bg_height/2.5+espace)))
+          espace+=self.jeu.bg_height/23
+        
+    
+
         
 
 

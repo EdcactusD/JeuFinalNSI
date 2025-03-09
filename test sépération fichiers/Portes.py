@@ -1,8 +1,8 @@
 import pygame
 import os
-from Map import Map
+from main import Etats
 
-class Portes(Map):
+class Portes(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Portes.jpg"))

@@ -1,8 +1,10 @@
 import os
 import pygame
-from Mini_jeux import Donkey_kong_mario,Trad,Map
+from Donkey_kong_mario import Donkey_kong_mario
+from main import Etats
+from Trad import Trad
 
-class Mont_azur(Map): 
+class Mont_azur(Etats): 
     def __init__(self,jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "plan_mont_azur.png"))

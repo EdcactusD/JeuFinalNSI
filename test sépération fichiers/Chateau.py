@@ -1,6 +1,8 @@
 import os
 import pygame
-from Mini_jeux import Pendu , Pendule , Etats
+from Pendu import Pendu
+from Pendule import Pendule
+from main import Etats
 
 class Chateau(Etats):
     def __init__(self,jeu):

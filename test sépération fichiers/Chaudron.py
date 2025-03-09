@@ -1,8 +1,8 @@
 import pygame
 import os
-from Classes.Mini_jeux.Map import Map
+from main import Etats
 
-class Chaudron(Map):
+class Chaudron(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))

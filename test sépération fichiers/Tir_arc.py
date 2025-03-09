@@ -1,8 +1,8 @@
 import pygame
 import os
-from Map import Map
+from main import Etats
 
-class Tir_arc(Map):
+class Tir_arc(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Tir_arc.jpg"))

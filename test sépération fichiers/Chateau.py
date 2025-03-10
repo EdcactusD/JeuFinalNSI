@@ -1,7 +1,5 @@
 import os
 import pygame
-from Pendu import Pendu
-from Pendule import Pendule
 from main import Etats
 
 class Chateau(Etats):
@@ -19,3 +17,21 @@ class Chateau(Etats):
            for zone in self.zones_chateau:
                if self.zones_chateau[zone][0].collidepoint(event.pos): 
                    self.jeu.changer_etat(self.zones_chateau[zone][1](self.jeu))
+                   
+class Pendule(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  
+        
+class Pendu(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendu.jpg"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+    def handle_events(self, event):
+        super().handle_events(event)  

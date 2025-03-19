@@ -15,9 +15,6 @@ collidepoint retourne un booléen suivant si la souris est dans la zone (True) o
 2. .items()  permet d'obtenir la clé et la valeur dans un dico
 """
 
-class TEST:
-    pass
-
 class Jeu:
     def __init__(self):
         pygame.init()

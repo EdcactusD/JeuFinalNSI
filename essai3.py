@@ -465,7 +465,7 @@ class Vitesse(Etats):
 class Bon_minerai(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Bon_minerai.jpeg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
@@ -474,7 +474,7 @@ class Bon_minerai(Etats):
 class Trad(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Trad.jpeg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
@@ -483,7 +483,7 @@ class Trad(Etats):
 class Eau(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Eau.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
@@ -492,7 +492,7 @@ class Eau(Etats):
 class Krabi(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Krabi.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
@@ -501,7 +501,7 @@ class Krabi(Etats):
 class Zephyr(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Zephyr.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):
@@ -510,7 +510,7 @@ class Zephyr(Etats):
 class Mars(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Mars.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
     def handle_events(self, event):

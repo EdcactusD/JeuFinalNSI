@@ -287,7 +287,6 @@ class Etat0(Etats):
     def handle_events(self, event):
         super().handle_events(event)
         
-"Je peux être audible, visible ou odorante,\nmais jamais les trois à la fois \nJe peux être basse \nou haute sans jamais tomber.\nJ’estime sans parler.\nJe suis florale ou boisée.","note"
 
 class Enigme(Etats):
     def __init__(self, jeu):

@@ -161,11 +161,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 class Map(Etats):
     def __init__(self,jeu):
         super().__init__(jeu)
-        import Mont_azur
+        from Mont_azur import Mont_azur 
         from Enigme import Enigme
         from Tir_arc import Tir_arc
         from Vitesse import Vitesse
-        import Chateau
+        from Chateau import Pendu, Pendule,Chateau 
         from Memoire_combi import Memoire_combi
         from Portes import Portes
         from Bon_minerai import Bon_minerai
@@ -174,6 +174,7 @@ class Map(Etats):
         from Zephyr import Zephyr
         from Mars import Mars
         from Chaudron import Chaudron
+        
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "carte.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height)) #pas sûre que ce soit utile (à voir dans la super)
         self.zones_carte = { "Mont_azur" : [pygame.Rect(int(self.jeu.bg_width/2.75),int(self.jeu.bg_height/21.6),int(self.jeu.bg_width/4.71),int(self.jeu.bg_height/3.6)), Mont_azur],

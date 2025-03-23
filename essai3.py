@@ -86,23 +86,24 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
-       self.niveaux_jeux = {"Mont_azur" : 0,
-                            "Chateau" : 0,
-                            "Donkey_kong_mario" : 0,
-                            "Enigme" : 0,
-                            "Memoire_combi" : 0,
-                            "Pendu" : 0,
-                            "Pendule" : 0,
-                            "Portes" : 0,
-                            "Tir_arc" : 0,
-                            "Vitesse" : 0,
-                            "Bon_minerai" : 0,
-                            "Trad" : 0,
-                            "Eau" : 0,
-                            "Krabi" : 0,
-                            "Zephyr" : 0,
-                            "Mars" : 0,
-                            "Chaudron" : 0,                    
+       #dico qui stocke les niveaux de jeu (0), les règles(1), les aides (2)
+       self.niveaux_jeux = {"Mont_azur" : [0, ""],
+                            "Chateau" : [0, ""],
+                            "Donkey_kong_mario" :[0, "",],
+                            "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais",],
+                            "Memoire_combi" : [0, "",],
+                            "Pendu" : [0, "",],
+                            "Pendule" : [0, "",],
+                            "Portes" : [0, "",],
+                            "Tir_arc" :[0, "",],
+                            "Vitesse" : [0, "",],
+                            "Bon_minerai" :[0, "",],
+                            "Trad" : [0, "",],
+                            "Eau" : [0, "",],
+                            "Krabi" :[0, "",],
+                            "Zephyr" : [0, "",],
+                            "Mars" : [0, "",],
+                            "Chaudron" : [0, "",]                    
            }
     def handle_events_keys(self,event):
         #Touches pressées
@@ -292,15 +293,21 @@ class Enigme(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "enigme2.png"))
-        self.regles_ic = pygame.image.load(os.path.join("assets","aide.jpg"))
+        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
         self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
         self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
         self.show_regles=False
-        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_width/19.2) ,int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
         
+        
+        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
+        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
+        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+        self.show_aide=False
+        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
         
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.niveau = str(self.niveaux_jeux["Enigme"])
+        self.niveau = str(self.niveaux_jeux["Enigme"][0])
         self.enigmes = { "0": ["On me pose sans me toucher.","question"], #dico des énigmes (énigme, réponse)
                          "1": ["Je ne suis pas vivant mais je grandi,\nJe meurs sous l’eau\nJe n’ai pas de poumons mais j’ai besoin d’air","feu"],
                          "2": ["Je peux être audible, visible ou odorante,\nmais jamais les trois à la fois \nJe peux être basse \nou haute sans jamais tomber.\nJ’évalue sans parler.\nJe suis florale ou boisée.","note"],
@@ -316,6 +323,7 @@ class Enigme(Etats):
         self.attendre = False #permet de faire attendre le joueur s'il a proposé trop de mauvaises réponses
         self.attente= 60000*5 #en milisecondes 
         self.debut_attente= -self.attente #par défaut, comme ça le if est vrai si le joueur n'a pas eu faux
+        
 
     def handle_events(self, event):
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
@@ -368,6 +376,10 @@ class Enigme(Etats):
             self.show_regles=True
         else:
             self.show_regles=False
+        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
+            self.show_aide=True
+        else:
+            self.show_aide=False
         
         
     
@@ -375,13 +387,18 @@ class Enigme(Etats):
         super().draw(screen)
         
         screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
+        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
         
-        lignes= self.enigmes[self.niveau][0].split("\n") #font.render ne supporte pas \n pour le retour à la ligne, il faut le coder manuellement     
-        espace = 0 #pour gérer l'espacement entre les lignes
-        for ligne in lignes:
-          self.texte=self.font.render(ligne, True, (123,85,57))
-          screen.blit(self.texte, (int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/2.7+espace)))
-          espace+=self.jeu.bg_height/23
+        def sauter_ligne(recuperer_texte, pos_x, pos_y, espace_ratio, font):
+            """permet de sauter des lignes avec les font.render"""
+            lignes= recuperer_texte.split("\n") #font.render ne supporte pas \n pour le retour à la ligne, il faut le coder manuellement     
+            espace = 0 #pour gérer l'espacement entre les lignes
+            for ligne in lignes:
+              self.texte=font.render(ligne, True, (123,85,57))
+              screen.blit(self.texte, (pos_x, pos_y+espace))
+              espace+=self.jeu.bg_height/espace_ratio
+        
+        sauter_ligne(self.enigmes[self.niveau][0], int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/2.7),23,self.font)
         
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
         if self.redaction:
@@ -394,13 +411,16 @@ class Enigme(Etats):
 
           # Format propre mm:ss (avec zéro devant si nécessaire)
           self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
-          screen.blit(self.font.render(self.temps_affiche, True, "white"),(0, 0))
+          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
           
         if self.show_regles:
+          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Enigme"][1])/1.2)))
           pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
+          sauter_ligne(self.niveaux_jeux["Enigme"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit)
+          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
           #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
-            
-
+        if self.show_aide:
+            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
 
 
 class Memoire_combi(Etats):

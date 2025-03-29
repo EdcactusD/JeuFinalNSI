@@ -561,6 +561,7 @@ class Vitesse(Etats):
         self.timer = False
         self.timer = 1000*5
         self.debut_timer = self.timer
+        self.niveau = str(self.niveaux_jeux["Vitesse"][0])
 
     def handle_events(self, event):
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
@@ -576,11 +577,10 @@ class Vitesse(Etats):
             
         #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos) and self.attendre==False:
-            self.redaction=True
-            self.timer = True
+            self.redaction = True
+            self.debut_timer = True
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
             self.redaction=False
-            self.timer = False
             
         if self.redaction==True and event.type == pygame.KEYDOWN:
             if self.reponse_uti == "":  # Premier caractère tapé
@@ -593,10 +593,11 @@ class Vitesse(Etats):
                     self.reponse_uti+=self.ancienne_rep[i]
 
             elif event.key == pygame.K_RETURN:
-                if self.reponse_uti.upper()==self.mots[self.niveau][0].upper() and self.niveau!="3" :
+                if self.reponse_uti.upper()==self.mots[self.niveau][0].upper():
                     self.niveau=str(int(self.niveau)+1)
                     self.reponse_uti=""
                     self.mauvaise_rep=0
+                    self.debut_timer = pygame.time.get_ticks()
                 if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
                         self.jeu.changer_etat(Map(self.jeu))
                         print("mini-jeu perdu!")
@@ -622,7 +623,7 @@ class Vitesse(Etats):
         super().draw(screen)
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
         pygame.draw.rect(screen, "#4d3020", self.zone_affichage, border_radius=int(self.jeu.bg_height/54))
-        screen.blit(self.font.render(str(self.mots[self.niveau]), True, "#6f553c"),(self.zone_affichage.x*1.02, self.zone_affichage.y*1.02)) #Le True est pour adoucir le bord des textes
+        screen.blit(self.font.render(self.mots[self.niveau][0], True, "#6f553c"), (self.zone_affichage.x * 1.02, self.zone_affichage.y * 1.02))
         if self.redaction:
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
           temps_restant = max(0, 5 - (pygame.time.get_ticks() - self.debut_timer) // 1000)

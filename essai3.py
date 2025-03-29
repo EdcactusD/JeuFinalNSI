@@ -22,7 +22,7 @@ class Jeu:
         pygame.mixer.init()  #initialise le module audio
         pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
         pygame.mixer.music.play(-1)  #joue en boucle (-1 : boucle infinie)
-        pygame.mixer.music.set_volume(0.5)  # Ajuste le volume (0.0 à 1.0)
+        self.volume= pygame.mixer.music.set_volume(0.5)  # Ajuste le volume (0.0 à 1.0)
         
 
         info = pygame.display.Info()  # Récupérer les infos de l'écran
@@ -112,7 +112,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                self.show_menu = not self.show_menu
             if event.key == pygame.K_x: 
               self.jeu.changer_etat(Map(self.jeu))
-            if event.key == pygame.K_c and self.show_menu:  
+            if event.key == pygame.K_c:  
                      self.jeu.changer_etat(Inventaire(self.jeu))
                      
     def handle_events_souris(self,event):
@@ -129,8 +129,16 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def handle_events(self, event):
         self.handle_events_keys(event)
         self.handle_events_souris(event)            
-          
-    
+     
+    def sauter_ligne(self, recuperer_texte, pos_x, pos_y, espace_ratio, font,couleur, screen):
+        """permet de sauter des lignes avec les font.render"""
+        lignes= recuperer_texte.split("\n") #font.render ne supporte pas \n pour le retour à la ligne, il faut le coder manuellement     
+        espace = 0 #pour gérer l'espacement entre les lignes
+        for ligne in lignes:
+          self.texte=font.render(ligne, True, couleur)
+          screen.blit(self.texte, (pos_x, pos_y+espace))
+          espace+=self.jeu.bg_height/espace_ratio
+
  
     """def update(self):
         pass  # permet de gerer independament les updates de chaque mini-jeu"""
@@ -138,7 +146,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def draw(self, screen):
         #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)
         screen.blit(self.bg_image, (0, 0))
-
+        
         if self.show_menu:
             screen.blit(self.menu, (self.menu_x, self.menu_y))
             #Tests pour voir les rect. 
@@ -160,16 +168,18 @@ class Menu_debut:
       
       self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "menudebut.png"))
       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))  
+      #voir si c'est utile
       self.width_bouton, self.height_bouton, self.espace = int(self.jeu.bg_width/4.8), int(self.jeu.bg_height/9.8181), int(self.jeu.bg_height/7.2)
-      self.boutons = {"Jouer" : pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2), self.width_bouton, self.height_bouton), #permet de lancer le jeu avec la dernière sauvegarde
-                      "Lancer une nouvelle partie" : pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace, self.width_bouton, self.height_bouton),
-                      "Quitter" : pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace*2, self.width_bouton, self.height_bouton)
+      self.boutons = {"Jouer" : [pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2), self.width_bouton, self.height_bouton),"#834c2c","#d9aa62","Jouer"],
+                      "Lancer une nouvelle partie" : [pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace, self.width_bouton, self.height_bouton),"#834c2c","#d9aa62","Lancer une nouvelle partie"],
+                      "Quitter" : [pygame.Rect(int(self.jeu.bg_width/2)-int(self.width_bouton/2), int(self.jeu.bg_height/2)-int(self.height_bouton/2)+self.espace*2, self.width_bouton, self.height_bouton),"#834c2c","#d9aa62","Quitter"]
           }
+      self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
       self.font=self.jeu.font
       
   def handle_events(self, event):
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        for bouton, position in self.boutons.items():
+        for bouton, (position, couleur, couleur_texte,nom) in self.boutons.items():
             if position.collidepoint(event.pos) :
                 if bouton == "Jouer" :
                     self.jeu.changer_etat(Etat0(self.jeu))
@@ -178,22 +188,88 @@ class Menu_debut:
                 elif bouton=="Quitter":
                     self.jeu.running=False
             
-               
-      
+  def aggrandir_bouton(self,screen, boutons, bouton_ref):
+     for bouton in boutons:
+       if boutons[bouton][0].collidepoint(pygame.mouse.get_pos()): #on aggrandit les boutons quand la souris passe dessus
+         if boutons[bouton][0].width == bouton_ref[bouton][0]: #on vérifie que le bouton n'est pas déjà aggrandi
+            boutons[bouton][0]=boutons[bouton][0].inflate(int(bouton_ref[bouton][0]*0.1),int(bouton_ref[bouton][1]*0.1)) #.inflate revoie un nouveau rect avec une taille modifiée
+       elif boutons[bouton][0].width != bouton_ref[bouton][0]:
+            boutons[bouton][0]=boutons[bouton][0].inflate(int(-bouton_ref[bouton][0]*0.1),int(-bouton_ref[bouton][1]*0.1))
+       pygame.draw.rect(screen, boutons[bouton][1], boutons[bouton][0], border_radius=int(jeu.bg_height/54))
+       rect_texte=self.font.render(boutons[bouton][3], True, boutons[bouton][2]).get_rect()
+       rect_texte.x, rect_texte.y  = boutons[bouton][0].x + (boutons[bouton][0].w- rect_texte.w)//2  ,boutons[bouton][0].y+(boutons[bouton][0].h- rect_texte.h)//2  #on ajoute la moitié des marges (donc comme si une marge que d'un coté)
+       #pygame.draw.rect(screen, (255, 0, 0), rect_texte, 10)
+       screen.blit(self.font.render(boutons[bouton][3], True, boutons[bouton][2]), rect_texte) #le .get_rect permet de créer un rect pour le texte
+       
   def draw(self, screen):
     #screen.fill((0, 0, 0)) #pas necessaire si tout l'écran est rempli
     screen.blit(self.bg_image, (0, 0))
-    for bouton in self.boutons: 
-      if self.boutons[bouton].collidepoint(pygame.mouse.get_pos()): #on aggrandit les boutons quand la souris passe dessus
-        if self.boutons[bouton][2]==self.width_bouton : #on vérifie que le bouton n'est pas déjà aggrandi
-           self.boutons[bouton]=self.boutons[bouton].inflate(int(self.jeu.bg_width/49.5),int(self.jeu.bg_height/98.18)) #.inflate revoie un nouveau rect avec une taille modifiée
-      elif self.boutons[bouton][2]!=self.width_bouton:
-           self.boutons[bouton]=self.boutons[bouton].inflate(int(-self.jeu.bg_width/49.5),int(-self.jeu.bg_height/98.18))
-      pygame.draw.rect(screen, "#834c2c", self.boutons[bouton], border_radius=int(self.jeu.bg_height/54))
-      screen.blit(self.font.render(bouton, True, "#d9aa62"), self.font.render(bouton, True, "#d9aa62").get_rect(center=self.boutons[bouton].center)) #le .get_rect permet de créer un rect pour le texte, le center= permet de poser le centre au milieu du rect (et non en haut à gauche)
-       
+    self.aggrandir_bouton(screen,self.boutons,self.boutons_ref)
+    
 class Reglages(Etats):
-  pass
+   def __init__(self,jeu):
+       super().__init__(jeu)
+       self.menu_debut= menu_debut
+       super().__init__(jeu)
+       self.bg_image = pygame.image.load(os.path.join("assets","fonds", "reglagesessai.png"))
+       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+       self.font=self.jeu.font 
+       self.boutons = {"ON" : [pygame.Rect(int(self.jeu.bg_width*1025/self.jeu.bg_width), int(self.jeu.bg_height*318/self.jeu.bg_height), int(self.jeu.bg_width/13), int(self.jeu.bg_height/15)), (176,143,101), (143,116,81),"ON"], 
+                       "réin_SAUVEGARDE" : [pygame.Rect(int(self.jeu.bg_width*688/self.jeu.bg_width), int(self.jeu.bg_height*670/self.jeu.bg_height), int(self.jeu.bg_width/4), int(self.jeu.bg_height/14)), (176,143,101), (143,116,81),"Réinitialiser la sauvegarde"],
+                       }
+       self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
+       self.barre = pygame.Rect(int(self.jeu.bg_width*693/self.jeu.bg_width), int(self.jeu.bg_height*318/self.jeu.bg_height), int(self.jeu.bg_width/6), self.boutons["ON"][0].h)
+       self.curseur = pygame.Rect(self.barre.x + self.barre.w/2-self.barre.w/8 , self.barre.y, self.barre.w/4, self.barre.h)
+       self.c_mouv= False
+       self.volume = self.jeu.volume
+       self.dico_commande={"menu" : ["w", int(self.jeu.bg_width*610/self.jeu.bg_width),int(self.jeu.bg_height*527/self.jeu.bg_height)],
+                           "carte" : ["x",int(self.jeu.bg_width*828/self.jeu.bg_width),int(self.jeu.bg_height*527/self.jeu.bg_height)],
+                           "inventaire" : ["c",int(self.jeu.bg_width*1068/self.jeu.bg_width),int(self.jeu.bg_height*527/self.jeu.bg_height)] }
+       self.resu_histoire= "suite à un accident vous êtes bloqué dans le monde d'Etheris,\npour en sortit il vous faut réaliser une potion et donc récuperer par les mini-jeux\nles ingrédients recquis. Arrivez à la fin de chaque niveau des mini-jeux\npour récuperer l'ingrédient et marquer le défi comme fait , vous ne pourrez plus y revenir "
+       self.font_resu = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/50))
+       self.font_grand = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/17))
+       
+   def handle_events(self, event):
+     super().handle_events(event)
+     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+         if self.curseur.collidepoint(event.pos):
+             self.c_mouv = True
+         for bouton, (position, couleur, couleur_texte,nom) in list(self.boutons.items()): #on cree une copie du dictionnaire qui est donc figée
+             if position.collidepoint(event.pos) :
+                 if bouton=="ON" and self.boutons["ON"][3] == "ON" :
+                     self.boutons["ON"][1], self.boutons["ON"][2],self.boutons["ON"][3]=(143,116,81), (176,143,101),"OFF"  #on change la couleur des boutons
+                     pygame.mixer.music.pause()
+                 elif bouton=="ON" and self.boutons["ON"][3] == "OFF" :
+                     self.boutons["ON"][1], self.boutons["ON"][2], self.boutons["ON"][3]=(176,143,101), (143,116,81), "ON"
+                     pygame.mixer.music.unpause()
+                 elif bouton=="réin_SAUVEGARDE" :
+                     print("reinitialisation")
+     elif event.type == pygame.MOUSEMOTION and self.c_mouv : 
+         self.curseur.x = event.pos[0]  # Suit la souris
+         self.curseur.clamp_ip(self.barre)  # .clamp_ip contraint un Rect pour qu'il reste entièrement à l’intérieur d’un autre Rect
+         self.volume = (self.curseur.x - self.barre.x) / (self.barre.w - self.curseur.w)
+         pygame.mixer.music.set_volume(self.volume)
+     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
+         self.c_mouv = False           
+       
+   def draw(self, screen):
+     screen.blit(self.bg_image, (0, 0))
+     super().draw(screen) 
+     self.menu_debut.aggrandir_bouton(screen, self.boutons,self.boutons_ref)
+     pygame.draw.rect(screen,(176,143,101), (self.barre.x, self.barre.y, self.barre.w, self.barre.h), border_radius=int(self.barre.w/15)) #pour rect self.barre
+     pygame.draw.rect(screen,(143,116,81), (self.curseur.x, self.curseur.y, self.curseur.w, self.curseur.h), border_radius=int(self.barre.w/15)) # pour curseur
+     screen.blit(self.font_grand.render("Son : ", True, (6,3,3)), (int(self.jeu.bg_width*559/self.jeu.bg_width), int(self.jeu.bg_height*240/self.jeu.bg_height)))
+     screen.blit(self.font_grand.render("Commandes : ", True, (6,3,3)), (int(self.jeu.bg_width*559/self.jeu.bg_width), int(self.jeu.bg_height*424/self.jeu.bg_height)))
+     for elem in self.dico_commande:
+         screen.blit(self.font.render(f"{elem} : {self.dico_commande[elem][0]}", True, (6,3,3)), (self.dico_commande[elem][1], self.dico_commande[elem][2]))
+     screen.blit(self.font_grand.render("Sauvegarde : ", True, (6,3,3)), (int(self.jeu.bg_width*559/self.jeu.bg_width), int(self.jeu.bg_height*590/self.jeu.bg_height)))
+     screen.blit(self.font_grand.render("Résumé : ", True, (6,3,3)), (int(self.jeu.bg_width*559/self.jeu.bg_width), int(self.jeu.bg_height*765/self.jeu.bg_height)))
+     self.sauter_ligne(self.resu_histoire, int(self.jeu.bg_width*521/self.jeu.bg_width), int(self.jeu.bg_height*840/self.jeu.bg_height), 50 , self.font_resu,(6,3,3), screen)
+     
+
+
+#DONNEES A ENREGISTRER : position du curseur, etat du bouton on/off
+
 
 class Inventaire(Etats):
  pass
@@ -389,16 +465,8 @@ class Enigme(Etats):
         screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
         screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
         
-        def sauter_ligne(recuperer_texte, pos_x, pos_y, espace_ratio, font):
-            """permet de sauter des lignes avec les font.render"""
-            lignes= recuperer_texte.split("\n") #font.render ne supporte pas \n pour le retour à la ligne, il faut le coder manuellement     
-            espace = 0 #pour gérer l'espacement entre les lignes
-            for ligne in lignes:
-              self.texte=font.render(ligne, True, (123,85,57))
-              screen.blit(self.texte, (pos_x, pos_y+espace))
-              espace+=self.jeu.bg_height/espace_ratio
-        
-        sauter_ligne(self.enigmes[self.niveau][0], int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/2.7),23,self.font)
+        #récupéré dans la super classe
+        self.sauter_ligne(self.enigmes[self.niveau][0], int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/2.7),23,self.font,(123,85,57), screen)
         
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
         if self.redaction:
@@ -416,7 +484,7 @@ class Enigme(Etats):
         if self.show_regles:
           self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Enigme"][1])/1.2)))
           pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-          sauter_ligne(self.niveaux_jeux["Enigme"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit)
+          self.sauter_ligne(self.niveaux_jeux["Enigme"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
           #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
           #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
         if self.show_aide:
@@ -545,6 +613,7 @@ class Chaudron(Etats):
         super().handle_events(event)
 
 jeu = Jeu()
+menu_debut = Menu_debut(jeu)
 jeu.run()
 
 

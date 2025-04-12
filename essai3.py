@@ -1,6 +1,8 @@
 import pygame
 import os
 import time
+import random
+import math
 
  
 """
@@ -94,7 +96,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais",],
                             "Memoire_combi" : [0, "",],
                             "Pendu" : [0, "",],
-                            "Pendule" : [0, "",],
+                            "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles",],
                             "Portes" : [0, "",],
                             "Tir_arc" :[0, "",],
                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes",],
@@ -516,9 +518,71 @@ class Pendule(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
+        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
+        self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+        self.show_regles=False
+        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
+        
+        
+        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
+        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
+        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+        self.show_aide=False
+        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
+        self.zone_bouton = pygame.Rect(int(self.jeu.bg_width/2.1), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/11),int(self.jeu.bg_height/16))
+
+        self.white = (255, 255, 255)
+        self.black = (0, 0, 0)
+        self.gris = (112, 128, 144)
+        self.brown = (139, 69, 19)
+        self.center = (self.menu_width // 0.1, self.menu_height // 1)
+        self.radius = 200
+        self.angle = 0
+        self.target_angle = random.randint(0, 359)
 
     def handle_events(self, event):
-        super().handle_events(event)  
+        super().handle_events(event)
+
+        if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
+            self.show_regles=True
+        else:
+            self.show_regles=False
+        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
+            self.show_aide=True
+        else:
+            self.show_aide=False
+
+    def draw(self, screen):
+        super().draw(screen)
+        pygame.draw.rect(screen, self.brown, self.zone_bouton, border_radius=int(self.jeu.bg_height / 5))
+        screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
+        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y))
+        screen.blit(self.font.render("   Stop", True, self.white),(self.zone_bouton.x*1.02, self.zone_bouton.y*1.02)) #Le True est pour adoucir le bord des textes
+    
+        pygame.draw.circle(screen, self.brown, self.center, self.radius)
+        pygame.draw.circle(screen, self.black, self.center, self.radius, 5)
+        for i in range(12):
+         x = self.center[0] + math.cos(math.radians(i * 30 - 90)) * (self.radius - 20)
+         y = self.center[1] + math.sin(math.radians(i * 30 - 90)) * (self.radius - 20)
+         pygame.draw.circle(screen, self.black, (int(x), int(y)), 5)
+
+        aiguille_length = self.radius - 20
+        end_x = self.center[0] + math.cos(math.radians(self.angle - 90)) * aiguille_length
+        end_y = self.center[1] + math.sin(math.radians(self.angle - 90)) * aiguille_length
+        pygame.draw.line(screen, self.gris, self.center, (end_x, end_y), width = 5)
+
+        if self.show_regles:
+          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Pendule"][1])/1.2)))
+          pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
+          self.sauter_ligne(self.niveaux_jeux["Pendule"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
+          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
+          #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
+        if self.show_aide:
+            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+
+
+       
         
 
 class Portes(Etats):

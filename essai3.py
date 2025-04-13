@@ -535,18 +535,6 @@ class Pendule(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
-        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_regles=False
-        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-        
-        
-        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
-        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_aide=False
-        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
         self.zone_bouton = pygame.Rect(int(self.jeu.bg_width/2.1), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/11),int(self.jeu.bg_height/16))
 
         self.white = (255, 255, 255)
@@ -561,20 +549,9 @@ class Pendule(Etats):
     def handle_events(self, event):
         super().handle_events(event)
 
-        if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
-            self.show_regles=True
-        else:
-            self.show_regles=False
-        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
-            self.show_aide=True
-        else:
-            self.show_aide=False
-
     def draw(self, screen):
         super().draw(screen)
         pygame.draw.rect(screen, self.brown, self.zone_bouton, border_radius=int(self.jeu.bg_height / 5))
-        screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
-        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y))
         screen.blit(self.font.render("   Stop", True, self.white),(self.zone_bouton.x*1.02, self.zone_bouton.y*1.02)) #Le True est pour adoucir le bord des textes
     
         pygame.draw.circle(screen, self.brown, self.center, self.radius)
@@ -589,18 +566,9 @@ class Pendule(Etats):
         end_y = self.center[1] + math.sin(math.radians(self.angle - 90)) * aiguille_length
         pygame.draw.line(screen, self.gris, self.center, (end_x, end_y), width = 5)
 
-        if self.show_regles:
-          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Pendule"][1])/1.2)))
-          pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-          self.sauter_ligne(self.niveaux_jeux["Pendule"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
-          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
-          #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
-        if self.show_aide:
-            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+        self.montrer_regles_aide(screen,self.last_event,"Pendule")
 
 
-       
-        
 
 class Portes(Etats):
     def __init__(self, jeu):
@@ -742,18 +710,6 @@ class Tir_arc(Etats):
 class Vitesse(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
-        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_regles=False
-        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-
-        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
-        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-        self.show_aide=False
-
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
@@ -796,15 +752,6 @@ class Vitesse(Etats):
             self.debut_timer = True
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
             self.redaction=False
-
-        if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
-            self.show_regles=True
-        else:
-            self.show_regles=False
-        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
-            self.show_aide=True
-        else:
-            self.show_aide=False
             
         if self.redaction==True and event.type == pygame.KEYDOWN:
             if self.reponse_uti == "":  # Premier caractère tapé
@@ -865,33 +812,13 @@ class Vitesse(Etats):
           self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
           screen.blit(self.font.render(self.temps_affiche, True, "white"),(0, 0))
         
-        if self.show_regles:
-          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Vitesse"][1])/1.2)))
-          pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-          self.sauter_ligne(self.niveaux_jeux["Vitesse"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
-          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
-          #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
-        if self.show_aide:
-            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+        self.montrer_regles_aide(screen,self.last_event,"Vitesse")
 
 class Bon_minerai(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Bon_minerai.jpeg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-
-        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
-        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_regles=False
-        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-        
-        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
-        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_aide=False
-        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-        
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.niveau = str(self.niveaux_jeux["Bon_minerai"][0])
         self.Bon_minerai = { "0": ["éthérium",pygame.image.load(os.path.join("assets","Bon_minerai", "éthérium.png"))],
@@ -950,15 +877,6 @@ class Bon_minerai(Etats):
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
                 print("trop long!")
-                       
-        if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
-            self.show_regles=True
-        else:
-            self.show_regles=False
-        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
-            self.show_aide=True
-        else:
-            self.show_aide=False
 
     def draw(self,screen):
         super().draw(screen)
@@ -982,14 +900,7 @@ class Bon_minerai(Etats):
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
-        if self.show_regles:
-          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Bon_minerai"][1])/0.4)))
-          pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-          self.sauter_ligne(self.niveaux_jeux["Bon_minerai"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
-          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
-          #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
-        if self.show_aide:
-            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+        self.montrer_regles_aide(screen,self.last_event,"Pendule")
 
 class Trad(Etats):
     def __init__(self, jeu):

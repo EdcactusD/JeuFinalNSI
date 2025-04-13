@@ -65,7 +65,7 @@ class Jeu:
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def __init__(self, jeu, show_menu=False, show_map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
        self.jeu = jeu
-       
+       self.last_event = None #va nous etre utile dans le draw des mini-jeux pour afficher regles et aide
        self.font=self.jeu.font
        self.show_menu = show_menu
        self.show_map = show_map
@@ -100,7 +100,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                             "Pendu" : [0, "",],
                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles",],
                             "Portes" : [0, "",],
-                            "Tir_arc" :[0, "Cliquez sur l'écran pour tirer une flèche\nle niveau est passé si elle atteint la cible\nà la fin de la trajectoire",],
+                            "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire",],
                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes",],
                             "Bon_minerai" :[0, "Associez le bon\n nom au bon minerai",],
                             "Trad" : [0, "",],
@@ -110,6 +110,43 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                             "Mars" : [0, "",],
                             "Chaudron" : [0, "",]                    
            }
+       
+       #pour les icones de regles et aide dans les mini-jeux
+       self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
+       self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
+       self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+       self.show_regles=False
+       self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
+       
+       self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
+       self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
+       self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+       self.show_aide=False
+       self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
+       
+    def montrer_regles_aide(self, screen,event, nom_mini_jeu):
+        if event != None :
+            if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
+                self.show_regles=True
+            else:
+                self.show_regles=False
+            if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
+                self.show_aide=True
+            else:
+                self.show_aide=False
+                
+            screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
+            screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
+            
+            if self.show_regles:
+              self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux[nom_mini_jeu][1])/1.2)))
+              pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
+              self.sauter_ligne(self.niveaux_jeux[nom_mini_jeu][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
+            if self.show_aide:
+                pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+        
+        
+        
     def handle_events_keys(self,event):
         #Touches pressées
         if event.type == pygame.KEYDOWN:
@@ -121,6 +158,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                      self.jeu.changer_etat(Inventaire(self.jeu))
                      
     def handle_events_souris(self,event):
+        self.last_event = event #pour récuperer event dans le draw pour l'appel d'une fonction
         #CLics souris             
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
         # Vérifiez si la zone est cliquée uniquement lorsque la carte est ouverte
@@ -143,6 +181,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           self.texte=font.render(ligne, True, couleur)
           screen.blit(self.texte, (pos_x, pos_y+espace))
           espace+=self.jeu.bg_height/espace_ratio
+          
+    
 
  
     """def update(self):
@@ -376,19 +416,8 @@ class Etat0(Etats):
 class Enigme(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
+        
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "enigme2.png"))
-        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
-        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_regles=False
-        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-        
-        
-        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
-        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
-        self.show_aide=False
-        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
         
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.niveau = str(self.niveaux_jeux["Enigme"][0])
@@ -410,6 +439,7 @@ class Enigme(Etats):
         
 
     def handle_events(self, event):
+        
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
            self.attendre=False
         else : 
@@ -455,23 +485,10 @@ class Enigme(Etats):
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
                 print("trop long!")
-                       
-        if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
-            self.show_regles=True
-        else:
-            self.show_regles=False
-        if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
-            self.show_aide=True
-        else:
-            self.show_aide=False
-        
         
     
     def draw(self, screen):
         super().draw(screen)
-        
-        screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
-        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
         
         #récupéré dans la super classe
         self.sauter_ligne(self.enigmes[self.niveau][0], int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/2.7),23,self.font,(123,85,57), screen)
@@ -489,14 +506,9 @@ class Enigme(Etats):
           self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
           screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
           
-        if self.show_regles:
-          self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux["Enigme"][1])/1.2)))
-          pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-          self.sauter_ligne(self.niveaux_jeux["Enigme"][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
-          #screen.blit(self.font_petit.render(self.niveaux_jeux["Enigme"][1], True, "#6f553c"),(self.rect_regles.x, self.rect_regles.y))
-          #screen.blit(self.rect_regles, (int(self.jeu.bg_height/19.2), self.jeu.bg_height - int(self.jeu.bg_height/10.8) - int(self.jeu.bg_height/10.8)))
-        if self.show_aide:
-            pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
+
+        self.montrer_regles_aide(screen, self.last_event, "Enigme")
+        
 
 
 class Memoire_combi(Etats):
@@ -663,8 +675,7 @@ class Tir_arc(Etats):
         super().handle_events(event)
         #le get_rect crée un rect pour le menu, le topleft le positionne au bon endroit (à partir du haut gauche comme dans le reste du programme) sinon il va en (0,0)
     
-        if (event.type == pygame.MOUSEMOTION and self.menu.get_rect(topleft=(self.menu_x, self.menu_y)).collidepoint(event.pos) and self.show_menu) or not isinstance(self.jeu.etat, Tir_arc): #on vérifie que self.jeu.etat est un objet de type Tir_arc (autrement dit si on n'est plus dans la phase de mini-jeu du tir à l'arc, on réaffiche la souris)
-            #or (event.type == pygame.MOUSEMOTION and self.regles.collidepoint(event.pos)) or (event.type == pygame.MOUSEMOTION and self.aide.collidepoint(event.pos))
+        if (event.type == pygame.MOUSEMOTION and self.menu.get_rect(topleft=(self.menu_x, self.menu_y)).collidepoint(event.pos) and self.show_menu) or (event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos)) or (event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos)) or not isinstance(self.jeu.etat, Tir_arc): #on vérifie que self.jeu.etat est un objet de type Tir_arc (autrement dit si on n'est plus dans la phase de mini-jeu du tir à l'arc, on réaffiche la souris)
             self.en_tir= False
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
             pygame.mouse.set_visible(True)
@@ -723,7 +734,8 @@ class Tir_arc(Etats):
             screen.blit(self.fleche_img, (self.tir_x-self.fleche_img_wh//2, self.tir_y-self.fleche_img_wh//2)) #on blit l'image à partir de son centre (si on enleve rien c'est au coin supérieur gauche)
 
         #pygame.draw.circle(screen, (0,255,0), self.rond_cible["centre"], self.rond_cible["rayon"]) #pour dessiner la zone de touche (tests)
-
+        
+        self.montrer_regles_aide(screen, self.last_event, "Tir_arc")
 
         
 

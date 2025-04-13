@@ -38,6 +38,7 @@ class Jeu:
         
         pygame.display.set_caption("Jeu final NSI")
         self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.bg_height/36))
+        pygame.mouse.set_visible(True)
         
 
         self.running = True
@@ -637,18 +638,31 @@ class Tir_arc(Etats):
         self.longueur = 210
         
 
-    
-    def handle_events(self, event):
+    def cible_attributs(self, niveau):
+        """les attributs de la cible bougent en fonction des niveaux, cette fonction va renvoyer les bons attributs pour chaque niveau"""
         self.cible_taille = self.dico_niveaux[self.niveau]["cible_taille"]
         self.cible_pos = (self.jeu.bg_width//2-self.cible_taille//2,self.jeu.bg_height//2-self.cible_taille//2)
         self.cible_img = pygame.transform.scale(self.cible_img, (self.cible_taille, self.cible_taille )) #l'image de base est un carré
-        self.rond_cible = { "centre" : (self.cible_pos[0] + self.cible_taille//2 , self.cible_pos[1] + self.cible_taille//2), #car sur l'image le centre de la cible est le centre de l'image
-                            "rayon" : self.cible_taille//6 , 
-            }
-        
+
+        if niveau=="2" or niveau=="3" or niveau=="4": 
+            self.rond_cible = { "centre" : (self.cible_pos_bouge + self.cible_taille//2 , self.cible_pos[1] + self.cible_taille//2), #car sur l'image le centre de la cible est le centre de l'image
+                                "rayon" : self.cible_taille//6 , 
+                }
+        else:
+
+          self.rond_cible = { "centre" : (self.cible_pos[0] + self.cible_taille//2 , self.cible_pos[1] + self.cible_taille//2), #car sur l'image le centre de la cible est le centre de l'image
+                              "rayon" : self.cible_taille//6 , 
+              }
+        return self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible
+
+    def handle_events(self, event):
+        self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible=self.cible_attributs(self.niveau)
         super().handle_events(event)
         #le get_rect crée un rect pour le menu, le topleft le positionne au bon endroit (à partir du haut gauche comme dans le reste du programme) sinon il va en (0,0)
-        if (event.type == pygame.MOUSEMOTION and self.menu.get_rect(topleft=(self.menu_x, self.menu_y)).collidepoint(event.pos) and self.show_menu):
+        
+        
+        
+        if (event.type == pygame.MOUSEMOTION and self.menu.get_rect(topleft=(self.menu_x, self.menu_y)).collidepoint(event.pos) and self.show_menu) or not isinstance(self.jeu.etat, Tir_arc): #on vérifie que self.jeu.etat est un objet de type Tir_arc (autrement dit si on n'est plus dans la phase de mini-jeu du tir à l'arc, on réaffiche la souris)
             #or (event.type == pygame.MOUSEMOTION and self.regles.collidepoint(event.pos)) or (event.type == pygame.MOUSEMOTION and self.aide.collidepoint(event.pos))
             self.en_tir= False
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -656,7 +670,7 @@ class Tir_arc(Etats):
         else :
             self.en_tir = True
             pygame.mouse.set_visible(False) #car on va afficher une image pour remplacer le curseur (viseur) 
-            
+        
         self.x_souris, self.y_souris = pygame.mouse.get_pos() #on le met dans handle_events pour qu'il change bien à chaque fois
         
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.en_tir and not self.en_vol: #on verfie si on peut lancer une fleche
@@ -677,26 +691,21 @@ class Tir_arc(Etats):
               if not self.niveau_increment and self.niveau!="4":
                   self.niveau=str(int(self.niveau)+1)
                   self.niveau_increment=True
-                  print("niveau en cours: ", self.niveau)
               if not self.niveau_increment and self.niveau=="4": #le mini-jeu est fini
                  self.jeu.changer_etat(Map(self.jeu))
     
     def draw(self, screen):
-        self.cible_taille = self.dico_niveaux[self.niveau]["cible_taille"]
-        self.cible_pos = (self.jeu.bg_width//2-self.cible_taille//2,self.jeu.bg_height//2-self.cible_taille//2)
-        self.cible_img = pygame.transform.scale(self.cible_img, (self.cible_taille, self.cible_taille )) #l'image de base est un carré
-        self.rond_cible = { "centre" : (self.cible_pos[0] + self.cible_taille//2 , self.cible_pos[1] + self.cible_taille//2), #car sur l'image le centre de la cible est le centre de l'image
-                            "rayon" : self.cible_taille//6 , 
-            }
-        
+        self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible=self.cible_attributs(self.niveau)
         super().draw(screen)
-        if self.niveau=="2" or self.niveau=="3" or self.niveau=="4":  
+        if self.niveau=="2" or self.niveau=="3" or self.niveau=="4": 
+
             if abs(self.cible_pos[0]-self.cible_pos_bouge) >= self.distance_cible_max: #on recupere la valeur absolue (donc la longueur qui spéare les deux éléments)
                 self.direction*=-1
             self.cible_pos_bouge+=self.dico_niveaux[self.niveau]["vitesse_cible"]*self.direction
             screen.blit(self.cible_img, (self.cible_pos_bouge, self.cible_pos[1]))
         else:
           screen.blit(self.cible_img, self.cible_pos)
+          
         if self.en_tir:
             souris_pos = pygame.mouse.get_pos()
             screen.blit(self.curseur_img, (souris_pos[0] - self.curseur_img.get_width() // 2, #on blit pour que le centre de l'image soit blit où il y a le curseur (si on ne divise pas par 2 ce sera le coin gauche au niveau du curseur)
@@ -706,15 +715,15 @@ class Tir_arc(Etats):
             
             self.tir_x = self.tir_x_base - self.vitesse* self.temps_passe_en_vol*10
             self.tir_y =self.tir_y_base - self.a*(((self.tir_x_base-self.tir_x)-self.alpha)**2)-self.beta #on a calculé l'image dans le repere d'origine (tir_x_base;tir_y_base) donc on ajoute tir_y_base pour que la position soit bonne + on change le signe du trinôme pour que les branches soient vers le haut
-            
-
 
             # Vérifier si la distance entre le point de départ et le point actuel dépasse un certain seuil
             if self.tir_x_base - self.tir_x >= self.longueur:
                 self.en_vol = False  # Arrêter le mouvement lorsque la distance est atteinte
             
             screen.blit(self.fleche_img, (self.tir_x-self.fleche_img_wh//2, self.tir_y-self.fleche_img_wh//2)) #on blit l'image à partir de son centre (si on enleve rien c'est au coin supérieur gauche)
-            
+
+        #pygame.draw.circle(screen, (0,255,0), self.rond_cible["centre"], self.rond_cible["rayon"]) #pour dessiner la zone de touche (tests)
+
 
         
 

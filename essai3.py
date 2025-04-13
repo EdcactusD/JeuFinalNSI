@@ -280,9 +280,10 @@ class Inventaire(Etats):
  pass
 
       
-class Map(Etats):
+class Map():
     def __init__(self,jeu):
-        super().__init__(jeu)
+        self.jeu = jeu
+
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "carte.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height)) #pas sûre que ce soit utile (à voir dans la super)
         self.zones_carte = { "Mont_azur" : [pygame.Rect(int(self.jeu.bg_width/2.75),int(self.jeu.bg_height/21.6),int(self.jeu.bg_width/4.71),int(self.jeu.bg_height/3.6)), Mont_azur],
@@ -301,11 +302,13 @@ class Map(Etats):
         
         
     def handle_events(self, event):
-        super().handle_events(event)  # Garde le comportement général des événements
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
                 if self.zones_carte[zone][0].collidepoint(event.pos): 
                     self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
+                    
+    def draw(self, screen):
+      screen.blit(self.bg_image, (0, 0))
     
     """def draw(self, screen) :
         super().draw(screen)
@@ -659,9 +662,7 @@ class Tir_arc(Etats):
         self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible=self.cible_attributs(self.niveau)
         super().handle_events(event)
         #le get_rect crée un rect pour le menu, le topleft le positionne au bon endroit (à partir du haut gauche comme dans le reste du programme) sinon il va en (0,0)
-        
-        
-        
+    
         if (event.type == pygame.MOUSEMOTION and self.menu.get_rect(topleft=(self.menu_x, self.menu_y)).collidepoint(event.pos) and self.show_menu) or not isinstance(self.jeu.etat, Tir_arc): #on vérifie que self.jeu.etat est un objet de type Tir_arc (autrement dit si on n'est plus dans la phase de mini-jeu du tir à l'arc, on réaffiche la souris)
             #or (event.type == pygame.MOUSEMOTION and self.regles.collidepoint(event.pos)) or (event.type == pygame.MOUSEMOTION and self.aide.collidepoint(event.pos))
             self.en_tir= False
@@ -698,7 +699,6 @@ class Tir_arc(Etats):
         self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible=self.cible_attributs(self.niveau)
         super().draw(screen)
         if self.niveau=="2" or self.niveau=="3" or self.niveau=="4": 
-
             if abs(self.cible_pos[0]-self.cible_pos_bouge) >= self.distance_cible_max: #on recupere la valeur absolue (donc la longueur qui spéare les deux éléments)
                 self.direction*=-1
             self.cible_pos_bouge+=self.dico_niveaux[self.niveau]["vitesse_cible"]*self.direction

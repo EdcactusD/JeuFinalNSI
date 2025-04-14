@@ -536,6 +536,7 @@ class Pendule(Etats):
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.zone_bouton = pygame.Rect(int(self.jeu.bg_width/2.1), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/11),int(self.jeu.bg_height/16))
+        self.zone_angle = pygame.Rect(int(self.jeu.bg_width/3), int(self.jeu.bg_height/5),int(self.jeu.bg_width/2.8),int(self.jeu.bg_height/16))
 
         self.white = (255, 255, 255)
         self.black = (0, 0, 0)
@@ -544,15 +545,39 @@ class Pendule(Etats):
         self.center = (self.menu_width // 0.1, self.menu_height // 1)
         self.radius = 200
         self.angle = 0
-        self.target_angle = random.randint(0, 359)
+        self.target_angle = random.choice([i * 30 for i in range(12)])
+        self.objectif = [self.target_angle,self.target_angle+30]
+        self.visee = "Arretez l'horloge entre " + str(self.objectif[0] // 30) +  "heures et " + str(self.objectif[1] // 30) + "heures"
+        self.action = True
+        print(self.target_angle)
 
     def handle_events(self, event):
         super().handle_events(event)
 
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_bouton.collidepoint(event.pos):
+            self.action = False
+            angle = self.angle
+            print(angle)
+            print(self.objectif)
+
+            if self.objectif[0] <= self.angle <= self.objectif[1]:
+             print("mini-jeu réussi!")
+             self.jeu.changer_etat(Map(self.jeu))
+            else:
+             print("mini-jeu perdu!")
+             self.jeu.changer_etat(Map(self.jeu))
+
+    
     def draw(self, screen):
         super().draw(screen)
-        pygame.draw.rect(screen, self.brown, self.zone_bouton, border_radius=int(self.jeu.bg_height / 5))
+        if self.action == True:
+          self.angle = (self.angle + 10) % 360
+
+        pygame.draw.rect(screen,self.brown,self.zone_bouton,border_radius=int(self.jeu.bg_height / 5))
         screen.blit(self.font.render("   Stop", True, self.white),(self.zone_bouton.x*1.02, self.zone_bouton.y*1.02)) #Le True est pour adoucir le bord des textes
+
+        pygame.draw.rect(screen,self.brown,self.zone_angle,border_radius=int(self.jeu.bg_height / 5))
+        screen.blit(self.font.render(self.visee , True, self.white),(self.zone_angle.x*1.02, self.zone_angle.y*1.02))
     
         pygame.draw.circle(screen, self.brown, self.center, self.radius)
         pygame.draw.circle(screen, self.black, self.center, self.radius, 5)
@@ -794,8 +819,6 @@ class Vitesse(Etats):
         super().draw(screen)
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
         pygame.draw.rect(screen, "#4d3020", self.zone_affichage, border_radius=int(self.jeu.bg_height/54))
-        screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
-        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y))
         screen.blit(self.font.render(self.mots[self.niveau][0], True, "#6f553c"), (self.zone_affichage.x * 1.02, self.zone_affichage.y * 1.02))
 
         if self.redaction:

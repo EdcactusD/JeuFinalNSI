@@ -27,7 +27,7 @@ click_count = 0  # Numéro du clic
 # Boucle principale
 running = True
 while running:
-    bg_image = pygame.image.load(os.path.join("assets", "fonds", "reglagesessai.png"))
+    bg_image = pygame.image.load(os.path.join("assets", "fonds", "Trad.jpeg"))
     screen.blit(bg_image, (0, 0))
 
     # Afficher les anciens clics

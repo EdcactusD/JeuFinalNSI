@@ -92,35 +92,35 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
        #dico qui stocke les niveaux de jeu (0), les règles(1), les aides (2)
-       self.niveaux_jeux = {"Mont_azur" : [0, " ", " "],
-                            "Chateau" : [0, " ", " "],
-                            "Donkey_kong_mario" :[0, " ", " "],
-                            "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " "],
-                            "Memoire_combi" : [0, " ", " "],
-                            "Pendu" : [0, " ", " "],
-                            "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " "],
-                            "Portes" : [0, " ", " "],
-                            "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", " "],
-                            "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " "],
-                            "Bon_minerai" :[0, "Associez le bon\n nom au bon minerai", " "],
-                            "Trad" : [0, "Entrez lettres\nà lettres\nvos propositions\nde traduction puis\nvalidez si la lettre est\nmauvaise elle sera\nrouge\n>!< mettez bien les accents", "Résolvez la\ntraduction 4\njuste après la 3"],
-                            "Eau" : [0, " ", " "],
-                            "Krabi" :[0, " ", " "],
-                            "Zephyr" : [0, " ", " "],
-                            "Mars" : [0, " ", " "],
-                            "Chaudron" : [0, " ", " "]                    
+       self.niveaux_jeux = {"Mont_azur" : [0, ""],
+                            "Chateau" : [0, ""],
+                            "Donkey_kong_mario" :[0, "",],
+                            "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais",],
+                            "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste",],
+                            "Pendu" : [0, "",],
+                            "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles",],
+                            "Portes" : [0, "",],
+                            "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire",],
+                            "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes",],
+                            "Bon_minerai" :[0, "Associez le bon\n nom au bon minerai",],
+                            "Trad" : [0, "",],
+                            "Eau" : [0, "",],
+                            "Krabi" :[0, "",],
+                            "Zephyr" : [0, "",],
+                            "Mars" : [0, "",],
+                            "Chaudron" : [0, "",]                    
            }
        
        #pour les icones de regles et aide dans les mini-jeux
        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-       self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/20), int(self.jeu.bg_height/10.8))
+       self.rect_regles_ic=pygame.Rect(int(self.jeu.bg_height/120), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
        self.show_regles=False
        self.rect_regles=pygame.Rect(self.rect_regles_ic.x, self.rect_regles_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
        
        self.aide_ic = pygame.image.load(os.path.join("assets","aide.png"))
        self.aide_ic=pygame.transform.scale(self.aide_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-       self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/18), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
+       self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/19), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
        self.show_aide=False
        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
        
@@ -137,13 +137,13 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                 
             screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
             screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
-            self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux[nom_mini_jeu][1])/1.2)))
+            
             if self.show_regles:
+              self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux[nom_mini_jeu][1])/1.2)))
               pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
               self.sauter_ligne(self.niveaux_jeux[nom_mini_jeu][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
             if self.show_aide:
                 pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
-                self.sauter_ligne(self.niveaux_jeux[nom_mini_jeu][2], self.rect_aide.x+10, self.rect_aide.y,45,self.font_petit,(123,85,57), screen)
         
         
         
@@ -418,6 +418,7 @@ class Enigme(Etats):
         super().__init__(jeu)
         
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "enigme2.png"))
+        
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.niveau = str(self.niveaux_jeux["Enigme"][0])
         self.enigmes = { "0": ["On me pose sans me toucher.","question"], #dico des énigmes (énigme, réponse)
@@ -426,11 +427,10 @@ class Enigme(Etats):
                          "3": ["Je suis mort et je peux hanter \nou bien je peux être ouvert \nou fermé sans être touché\net vif ou lent sans jamais bouger","esprit"],
                          "4": ["Encore une fois, on ne peut me voir,\nmais on ne peut me toucher. \nLes pauvres m’ont,\nles riches ont besoin de moi.","rien"]            
 }
-        self.dernier_niveau="4"
+        
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
         self.reponse_uti = ""
         self.redaction=False
-        self.lenmax = 23 #permet d'éviter de sortir de la zone de texte
         
         self.mauvaise_rep=0
         self.attendre = False #permet de faire attendre le joueur s'il a proposé trop de mauvaises réponses
@@ -465,11 +465,11 @@ class Enigme(Etats):
                 for i in range(len(self.ancienne_rep)-1):
                     self.reponse_uti+=self.ancienne_rep[i]
             elif event.key == pygame.K_RETURN:
-                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau!=self.dernier_niveau :
+                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau!="4" :
                     self.niveau=str(int(self.niveau)+1)
                     self.reponse_uti=""
                     self.mauvaise_rep=0
-                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau==self.dernier_niveau :
+                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau=="4" :
                     print("mini-jeu réussit !")
                     self.jeu.changer_etat(Map(self.jeu))
                     #MARQUER le jeu comme fait (impossible d'y revenir)
@@ -481,7 +481,7 @@ class Enigme(Etats):
                         self.reponse_uti=""
                         print("vous devez attendre 5 minutes pour soumettre de nouveau une réponse")
                         
-            elif len(self.reponse_uti)<=self.lenmax:    
+            elif len(self.reponse_uti)<=23:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
                 print("trop long!")
@@ -514,11 +514,94 @@ class Enigme(Etats):
 class Memoire_combi(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Mémoire_combi.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "Mémoire_combi.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.niveau = str(self.niveaux_jeux["Memoire_combi"][0])
+        self.zone_reponse = pygame.Rect(int(self.jeu.bg_width / 2.8), int(self.jeu.bg_height / 1.4), int(self.jeu.bg_width / 3.5), int(self.jeu.bg_height / 12))
+        self.zone_affichage = pygame.Rect(int(self.jeu.bg_width / 2.8), int(self.jeu.bg_height / 2), int(self.jeu.bg_width / 3.5), int(self.jeu.bg_height / 6))
+        self.zone_noms = pygame.Rect(int(self.jeu.bg_width / 10000), int(self.jeu.bg_height / 5.1), int(self.jeu.bg_width / 10), int(self.jeu.bg_height / 1.95))
+        self.font_symboles = pygame.font.Font(os.path.join("assets", "unifont-16.0.02.otf"), int(self.jeu.bg_height / 25))
+        self.combi = {
+            "0": ["☾ᛉ⊕♄⛧"],
+            "1": ["ᚠᛏ♆ᛗ☉ᛉ"],
+            "2": ["ᚦᛚᛋᛟᛞ♆♄♃☿"]
+        }
+        self.noms = "ᚠ   ᛒ\nᚦ   ᚲ\n☾   ᚨ\n♇   ᚹ\nᛉ   ᛋ\nᛏ   ᛚ\n⛥  ᚢ\n☉   ᛟ\n⊕   ᚱ\n☿   ♃\n♄   ♅\n⛧  ᛞ\nᛗ   ♆"
+        self.symboles_liste = self.noms.split("\n")
+
+        self.reponse_uti = ""
+        self.espacement_additionnel = 50
+        self.debut_temps = pygame.time.get_ticks()  
+        self.afficher_combi = True
 
     def handle_events(self, event):
-        super().handle_events(event)  
+        super().handle_events(event)
+        
+        if event.type == pygame.MOUSEBUTTONDOWN and self.afficher_combi == False:
+            pos = pygame.mouse.get_pos()
+            for rect, symbole in self.rects_symboles:
+                if rect.collidepoint(pos):
+                    self.reponse_uti += symbole 
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.reponse_uti = self.reponse_uti[:-1]  # Supprimer le dernier caractère
+
+            if event.key == pygame.K_RETURN: 
+              if self.reponse_uti.upper() == self.combi[self.niveau][0].upper():
+                self.niveau = str(int(self.niveau) + 1) 
+                self.reponse_uti = ""  
+                self.debut_temps = pygame.time.get_ticks()
+                self.afficher_combi = True  
+              else:
+               self.jeu.changer_etat(Map(self.jeu))
+               print("Mini-jeu perdu")
+               return
+
+              if self.niveau == "3":
+               print("Mini-jeu réussi!")
+               self.jeu.changer_etat(Map(self.jeu))
+               return
+
+    def draw(self, screen):
+        super().draw(screen)
+        self.montrer_regles_aide(screen, self.last_event, "Memoire_combi")
+        pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height / 54))
+        pygame.draw.rect(screen, "#4d3020", self.zone_affichage, border_radius=int(self.jeu.bg_height / 54))
+        pygame.draw.rect(screen, "#4d3020", self.zone_noms, border_radius=int(self.jeu.bg_height / 54))
+
+        temps_ecoule = pygame.time.get_ticks() - self.debut_temps
+        if temps_ecoule >= 5000:  
+         self.afficher_combi = False
+
+        if self.afficher_combi:
+            screen.blit(self.font_symboles.render(self.combi[self.niveau][0], True, "#6f553c"),(self.zone_affichage.x * 1.02, self.zone_affichage.y * 1.02))
+        screen.blit(self.font_symboles.render(self.reponse_uti, True, "#ffffff"),(self.zone_reponse.x * 1.02, self.zone_reponse.y * 1.02))
+
+        self.rects_symboles = []  # Liste pour les symboles cliquables
+        ligne_height = self.font_symboles.get_height()
+        espacement_horizontal = self.font_symboles.size("ᛚ")[0]  # Largeur d'un symbole, ajusté à un seul caractère
+        y_offset = self.zone_noms.y  # Position verticale initiale pour la première ligne de symboles
+        symboles_lignes = self.noms.split("\n")  # Chaque ligne = un élément de la liste
+        for i, ligne in enumerate(symboles_lignes):
+            x_offset = self.zone_noms.x  # Position horizontale de départ
+            symbols = ligne.split()  # Créer une liste de symboles individuels
+            for j, symbole in enumerate(symbols):
+                symbole_surface = self.font_symboles.render(symbole, True, "#6f553c")
+                symbole_rect = symbole_surface.get_rect()  # Créer un rectangle autour de chaque symbole
+                symbole_rect.topleft = (x_offset + j * (espacement_horizontal + self.espacement_additionnel), y_offset)
+                screen.blit(symbole_surface, symbole_rect.topleft)
+                self.rects_symboles.append((symbole_rect, symbole))  # Ajouter le rectangle et le symbole à la liste
+            y_offset += ligne_height  # Mettre à jour l'offset vertical pour la ligne suivante
+
+        temps_ecoule = pygame.time.get_ticks() - self.debut_temps
+        if self.afficher_combi:
+         temps_restant = max(0, 5 - (temps_ecoule // 1000))  # Temps restant pour afficher la combinaison
+         screen.blit(self.font_symboles.render(f"Temps restant : {temps_restant}s", True, "black"), 
+                    (self.zone_affichage.x, self.zone_affichage.y - 40))
+
+
+        
         
 class Pendu(Etats):
     def __init__(self, jeu):
@@ -741,7 +824,7 @@ class Vitesse(Etats):
         self.mots = { "0": ["anticonstitutionellement"],
                          "1": ["zygomatique"],
                          "2": ["tétrathionate"] }
-        self.niveau = str(self.niveaux_jeux["Vitesse"])
+        self.niveau = str(self.niveaux_jeux["Vitesse"][0])
 
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
         self.zone_affichage = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/2),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/6))
@@ -756,8 +839,6 @@ class Vitesse(Etats):
         self.timer = False
         self.timer = 1000*5
         self.debut_timer = self.timer
-
-        self.niveau = str(self.niveaux_jeux["Vitesse"][0])
 
     def handle_events(self, event):
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
@@ -799,7 +880,7 @@ class Vitesse(Etats):
                         print("mini-jeu perdu!")
                         return
                 if self.niveau=="3" :
-                    print("mini-jeu réussit !")
+                    print("mini-jeu réussi !")
                     self.jeu.changer_etat(Map(self.jeu))
                     return
                     #MARQUER le jeu comme fait (impossible d'y revenir)
@@ -916,16 +997,13 @@ class Bon_minerai(Etats):
         for i, nom in enumerate(noms_liste):
          screen.blit(self.font.render(nom, True, "#6f553c"),
                 (self.zone_noms.x * 1.02, self.zone_noms.y * 1.02 + i * self.font.get_height())) 
-        screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
-        screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y))
-
         if self.redaction:
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         self.montrer_regles_aide(screen,self.last_event,"Pendule")
 
-class Trad(Enigme):
+class Trad(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Trad.jpeg"))
@@ -945,6 +1023,7 @@ class Trad(Enigme):
         self.tirets_defini = False #permet de savoir si on a déjà défini les tirets ou pas (pour le faire qu'une seule fois par traduction)
         self.font_tirets = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/30)) #on aggrandit
         self.lenmax= 85
+
         
     def handle_events(self, event):
         
@@ -974,8 +1053,6 @@ class Trad(Enigme):
         
         #pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
         
-        
- 
         if not self.tirets_defini:
             for elem in self.enigmes[self.niveau][0]:
               if elem==" ":
@@ -998,11 +1075,10 @@ class Trad(Enigme):
           screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
           
 #Attention à la zone de réponse
-          
-       
+
 class Eau(Etats):
     def __init__(self, jeu):
-        super().__init__(jeu)    
+        super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Eau.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 

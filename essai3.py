@@ -100,10 +100,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                              "Pendu" : [0, " ", " "],
                              "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " "],
                              "Portes" : [0, " ", " "],
-                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", " "],
+                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible"],
                              "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " "],
                              "Bon_minerai" :[0, "Associez le bon\n nom au bon minerai", " "],
-                             "Trad" : [0, "Entrez lettres\nà lettres\nvos propositions\nde traduction puis\nvalidez si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3"],
+                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3"],
                              "Eau" : [0, " ", " "],
                              "Krabi" :[0, " ", " "],
                              "Zephyr" : [0, " ", " "],
@@ -437,7 +437,7 @@ class Enigme(Etats):
         
         self.mauvaise_rep=0
         self.attendre = False #permet de faire attendre le joueur s'il a proposé trop de mauvaises réponses
-        self.attente= 60000*5 #en milisecondes 
+        self.attente= 60000*1 #en milisecondes 
         self.debut_attente= -self.attente #par défaut, comme ça le if est vrai si le joueur n'a pas eu faux
         
 
@@ -478,11 +478,11 @@ class Enigme(Etats):
                     #MARQUER le jeu comme fait (impossible d'y revenir)
                 else:
                     self.mauvaise_rep+=1
-                    if self.mauvaise_rep>=3:
+                    if self.mauvaise_rep>3:
                         self.mauvaise_rep=0
                         self.debut_attente=pygame.time.get_ticks()
                         self.reponse_uti=""
-                        print("vous devez attendre 5 minutes pour soumettre de nouveau une réponse")
+                        print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
                         
             elif len(self.reponse_uti)<=self.lenmax:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
@@ -1036,6 +1036,7 @@ class Trad(Enigme):
         self.mauvaises_lettres_id #ATTENTION : ou les reinitialiser??? 
         if self.redaction==True and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
+                self.mauvaises_lettres_id=[]
                 self.mauvaises_lettres_id
                 if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() :
                     self.tirets_defini=False
@@ -1100,7 +1101,7 @@ class Trad(Enigme):
           for i in range(int(self.niveau)):
            screen.blit(self.font_symboles_petit.render(self.enigmes[str(i)][0] + " = " + self.enigmes[str(i)][1], True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+(i+1)*self.jeu.bg_height*0.04))
         else: 
-            screen.blit(self.font_symboles_petit.render("--perdu--", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+self.jeu.bg_height*0.04))
+            screen.blit(self.font_symboles_petit.render("--disparu--", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+self.jeu.bg_height*0.04))
         
         if self.attente-(pygame.time.get_ticks()-self.debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
           self.minutes = (self.attente - (pygame.time.get_ticks() - self.debut_attente)) // 60000  # Nombre de minutes restantes
@@ -1144,9 +1145,87 @@ class Mars(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Mars.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-
+        self.niveau = str(self.niveaux_jeux["Mars"][0])
+        self.niveau_max=9
+        self.dico_questions = {"0" : ["Combien y a t’il de 0 dans un million ?",["3","6","9","10"],"6",25], #question, reponses possible, bonne reponse, chrono disponible
+                               "1" : ["Quelle est la planète la plus proche du Soleil dans le monde que vous connaissez ?",["Vénus","Terre","Mars","Mercure"],"Mercure",15],
+                               "2" : ["Quel est l’élément chimique dont le symbole est Au ?",["L'or","L'argent","L'oxygène","L'aluminium"],"L'or",10],
+                               "3" : ["Dans le monde duquel vous provenez, quelle est la planète gazeuse la plus volumineuse du système solaire ?",["Saturne","Jupiter","Uranus","Neptune"],"Jupiter",10],
+                               "4" : ["De quelle couleur est le cobalt sous sa forme pure ?",["Gris","Rouge","Bleu","Vert"],"Gris",8],
+                               "5" : ["Dans une taverne vous commandez de l’hydromel, que buvez-vous ?",["Une bière","Un vin","Alcool à base de miel","Mêle macéré"],"Alcool à base de miel",8],
+                               "6" : ["Si une pierre précieuse absorbe toutes les couleurs sauf le bleu, de quelle couleur apparaît-elle ?",["Bleue","Magenta","Rouge","Jaune"],"Bleue",7],
+                               "7" : ["Quel est le quatrième état de la matière, avec solide, liquide et gazeux ? ",["Plasma","Liquoreux","Pâteux","Hydrogénique"],"Plasma",5],
+                               "8" : ["Quelle est la température d'ébullition de l’eau ?",["94","-100","212","543"],"212",5],
+                               "9" : ["Quel est le pays du monde d’où vous venez qui possède le plus grand nombre de fuseaux horaires ?",["La Chine","La France","La Russie","Les Etats-Unis"],"La France",3],
+            }
+        self.espace= self.jeu.bg_width//17
+        self.rect_reponse_y = int(self.jeu.bg_height*387/self.jeu.bg_height)
+        self.rects_reponses = { "0" : pygame.Rect(self.espace,self.rect_reponse_y,int(self.espace*3),int(self.espace*3)), 
+                                "1" : pygame.Rect(self.espace*5,self.rect_reponse_y,int(self.espace*3),int(self.espace*3)),
+                                "2" : pygame.Rect(self.espace*9,self.rect_reponse_y,int(self.espace*3),int(self.espace*3)),
+                                "3" : pygame.Rect(self.espace*13,self.rect_reponse_y,int(self.espace*3),int(self.espace*3))
+            }
+        
+        self.couleur = "#facf79" #la couleur des carrés où sont les réponses
+        self.chrono_debut= pygame.time.get_ticks()
+        self.temps_ecoule = False
+        self.chrono_tmps_passe = 0
+        
+        
     def handle_events(self, event):
-        super().handle_events(event)
+        super().handle_events(event)     
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                  for cle in self.rects_reponses:
+                      if self.rects_reponses[cle].collidepoint(event.pos):
+                          self.couleur = "#facf79"
+                          if self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)<self.niveau_max: #si le carré cliqué est celui qui affiche la bonne réponse
+                            self.couleur=["#4c9f57", self.rects_reponses[cle]] #pour montrer que c'était la bonne réponse (on associe couleur verte au bon rect)
+                            self.niveau=str(int(self.niveau)+1)
+                          elif self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)>=self.niveau_max:
+                             print("mini-jeu réussit !")
+                             self.jeu.changer_etat(Map(self.jeu)) 
+                          else:
+                              self.couleur=["#cf473a", self.rects_reponses[cle]]
+                              self.niveau="0" #le joueur recommence
+                          self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
+                          self.temps = pygame.time.get_ticks()
+                          #self.temps_enregistre=False #on change à chaque modification de niveau
+            
+    
+    def draw(self, screen):
+        super().draw(screen)
+        self.montrer_regles_aide(screen,self.last_event,"Mars")
+        self.texte_rect=self.font.render(self.dico_questions[self.niveau][0], True, (255, 255, 255))
+        self.texte_rect = self.texte_rect.get_rect()
+        self.sauter_ligne(self.dico_questions[self.niveau][0], int(self.jeu.bg_width/2-self.texte_rect.w/2), int(self.jeu.bg_height*84/self.jeu.bg_height),23,self.font,"white", screen)
+        
+        
+        
+        
+       
+        #ici chrono : on met la condition ici car dans le handle_event(), il faudrait qu'il y ait un évenement avant que le changement soit remarqué
+        self.temps_actu=pygame.time.get_ticks()
+        if (self.chrono_tmps_passe-self.chrono_debut)//1000 > self.dico_questions[self.niveau][3] : #le temps est en mili-secondes donc conversion
+          self.temps_ecoule = True
+          self.niveau="0"
+          self.chrono_debut= pygame.time.get_ticks()
+
+          
+        self.temps_actuel=pygame.time.get_ticks() 
+        for cle in self.rects_reponses:
+              if self.rects_reponses[cle]==self.couleur[1] and self.temps_actuel-self.temps<100: #on affiche la couleur différente seulement pendant un certain temps
+                  pygame.draw.rect(screen, self.couleur[0], self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+              else:
+                  pygame.draw.rect(screen, "#facf79", self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+
+        for i in range(4): #car il y a 4 réponses possibles
+          self.taille_reponse=self.font.size(self.dico_questions[self.niveau][1][i])
+          screen.blit(self.font.render(self.dico_questions[self.niveau][1][i], True, "white"),(self.rects_reponses[str(i)].x+self.rects_reponses[str(i)].w//2-self.taille_reponse[0]//2, self.rects_reponses[str(i)].y+self.rects_reponses[str(i)].h//2-self.taille_reponse[1]//2)) #on centre au milieu des carrés
+        
+        self.chrono_tmps_passe = pygame.time.get_ticks()
+        screen.blit(self.font.render(str(self.dico_questions[self.niveau][3]-((self.chrono_tmps_passe-self.chrono_debut)//1000)), True, "#4d3020"),(int(self.jeu.bg_width/2-self.texte_rect.w/2), int(self.jeu.bg_height*127/self.jeu.bg_height)))
+        
+        
 
 class Chaudron(Etats):
     def __init__(self, jeu):

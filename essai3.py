@@ -1037,7 +1037,6 @@ class Trad(Enigme):
         if self.redaction==True and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.mauvaises_lettres_id=[]
-                self.mauvaises_lettres_id
                 if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() :
                     self.tirets_defini=False
                     self.tirets=""
@@ -1066,6 +1065,7 @@ class Trad(Enigme):
 
         self.sauter_ligne(self.enigmes[self.niveau][2], int(self.jeu.bg_width*680/self.jeu.bg_width), 0, self.jeu.bg_height/47, self.font,"#6f553c", screen)
         
+        #gestion des tirets
         self.espacement= self.jeu.bg_width/72
         self.taille_tiret = self.font_tirets.size("_") #on récupere la taille d'un tiret
         self.taille_espace = self.font_tirets.size(" ")
@@ -1077,9 +1077,6 @@ class Trad(Enigme):
                 self.tirets+="_"
               self.taille_texte+=self.espacement
               self.tirets_defini=True
-        
-        
-        
         self.tiret_milieu= int(self.jeu.bg_width/2 - self.taille_texte/2)
         self.zone_reponse = pygame.Rect(int(self.tiret_milieu), int(self.jeu.bg_height/1.5), int(self.taille_texte), int(self.taille_tiret[1]*2)) #pour coller au format de la super classe, sinon le handle event est défini sur celui de la super classe !
     
@@ -1110,8 +1107,6 @@ class Trad(Enigme):
           # Format propre mm:ss (avec zéro devant si nécessaire)
           self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
           screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2 - self.texte_rect.w/2), int(self.jeu.bg_height/2.4)))
-          
-#Attention à la zone de réponse
 
 class Eau(Etats):
     def __init__(self, jeu):
@@ -1166,10 +1161,12 @@ class Mars(Etats):
                                 "3" : pygame.Rect(self.espace*13,self.rect_reponse_y,int(self.espace*3),int(self.espace*3))
             }
         
-        self.couleur = "#facf79" #la couleur des carrés où sont les réponses
+        self.couleur = "#facf79" #jaune, la couleur des carrés où sont les réponses
         self.chrono_debut= pygame.time.get_ticks()
         self.temps_ecoule = False
         self.chrono_tmps_passe = 0
+        self.temps=0 #valeur arbitraire
+        self.deja_clignote_temps_depasse = False
         
         
     def handle_events(self, event):
@@ -1177,20 +1174,17 @@ class Mars(Etats):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                   for cle in self.rects_reponses:
                       if self.rects_reponses[cle].collidepoint(event.pos):
-                          self.couleur = "#facf79"
                           if self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)<self.niveau_max: #si le carré cliqué est celui qui affiche la bonne réponse
-                            self.couleur=["#4c9f57", self.rects_reponses[cle]] #pour montrer que c'était la bonne réponse (on associe couleur verte au bon rect)
+                            self.couleur=["#4c9f57", self.rects_reponses[cle]] #vert : pour montrer que c'était la bonne réponse (on associe couleur verte au bon rect)
                             self.niveau=str(int(self.niveau)+1)
                           elif self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)>=self.niveau_max:
                              print("mini-jeu réussit !")
                              self.jeu.changer_etat(Map(self.jeu)) 
                           else:
-                              self.couleur=["#cf473a", self.rects_reponses[cle]]
+                              self.couleur=["#cf473a", self.rects_reponses[cle]] #rouge
                               self.niveau="0" #le joueur recommence
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
-                          self.temps = pygame.time.get_ticks()
-                          #self.temps_enregistre=False #on change à chaque modification de niveau
-            
+                          self.temps = pygame.time.get_ticks()            
     
     def draw(self, screen):
         super().draw(screen)
@@ -1198,25 +1192,34 @@ class Mars(Etats):
         self.texte_rect=self.font.render(self.dico_questions[self.niveau][0], True, (255, 255, 255))
         self.texte_rect = self.texte_rect.get_rect()
         self.sauter_ligne(self.dico_questions[self.niveau][0], int(self.jeu.bg_width/2-self.texte_rect.w/2), int(self.jeu.bg_height*84/self.jeu.bg_height),23,self.font,"white", screen)
-        
-        
-        
-        
-       
-        #ici chrono : on met la condition ici car dans le handle_event(), il faudrait qu'il y ait un évenement avant que le changement soit remarqué
-        self.temps_actu=pygame.time.get_ticks()
-        if (self.chrono_tmps_passe-self.chrono_debut)//1000 > self.dico_questions[self.niveau][3] : #le temps est en mili-secondes donc conversion
-          self.temps_ecoule = True
-          self.niveau="0"
-          self.chrono_debut= pygame.time.get_ticks()
-
-          
+  
         self.temps_actuel=pygame.time.get_ticks() 
         for cle in self.rects_reponses:
               if self.rects_reponses[cle]==self.couleur[1] and self.temps_actuel-self.temps<100: #on affiche la couleur différente seulement pendant un certain temps
                   pygame.draw.rect(screen, self.couleur[0], self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
               else:
                   pygame.draw.rect(screen, "#facf79", self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+        
+        #ici chrono : on met la condition ici car dans le handle_event(), il faudrait qu'il y ait un évenement avant que le changement soit remarqué
+        self.chrono_tmps_passe = pygame.time.get_ticks()
+        self.temps_actu=pygame.time.get_ticks()
+        if self.dico_questions[self.niveau][3]-((self.chrono_tmps_passe-self.chrono_debut)//1000) <= 0 : #le temps est en mili-secondes donc conversion    
+           if not self.deja_clignote_temps_depasse:
+               self.temps = pygame.time.get_ticks()
+               self.deja_clignote_temps_depasse=True
+           self.temps_ecoule = True       
+           self.niveau="0"
+        self.temps_actuel=pygame.time.get_ticks()
+        if self.temps_actuel-self.temps<100 and self.temps_ecoule:
+            #self.temps_ecoule = True
+            for cle in self.rects_reponses:
+                pygame.draw.rect(screen, "#cf473a", self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80) #rouge
+        else:
+            self.temps_ecoule = False
+            self.deja_clignote_temps_depasse=False
+
+          
+        
 
         for i in range(4): #car il y a 4 réponses possibles
           self.taille_reponse=self.font.size(self.dico_questions[self.niveau][1][i])

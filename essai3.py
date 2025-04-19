@@ -612,8 +612,190 @@ class Pendu(Etats):
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendu.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
+        self.words_easy = ["chat", "chien", "pomme", "maison", "voiture"]
+        self.words_medium = ["ordinateur", "python", "programmation", "hangman", "jeu"]
+        self.words_hard = ["développement", "intelligence", "algorithmique", "complexité", "optimisation"]
+
+        self.difficulty_levels = {
+            "Easy": self.words_easy,
+            "Medium": self.words_medium,
+            "Hard": self.words_hard
+        }
+
+        self.difficulty = "Medium"
+        self.word = ""
+        self.guessed_letters = set()
+        self.wrong_guesses = 0
+        self.max_wrong_guesses = 6
+        self.game_over = False
+        self.win = False
+        self.input_active = False
+        self.message = ""
+        self.letter_input = ""
+        self.font_large = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/20))
+        self.font_medium = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/30))
+        self.font_small = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/40))
+
+        self.completed_difficulties = {"Easy": False, "Medium": False, "Hard": False}
+        self.reward_given = False
+
+        self.start_new_game()
+
+        self.buttons = {
+            "Easy": pygame.Rect(int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.1), int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.05)),
+            "Medium": pygame.Rect(int(self.jeu.bg_width*0.22), int(self.jeu.bg_height*0.1), int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.05)),
+            "Hard": pygame.Rect(int(self.jeu.bg_width*0.34), int(self.jeu.bg_height*0.1), int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.05)),
+            "Restart": pygame.Rect(int(self.jeu.bg_width*0.8), int(self.jeu.bg_height*0.1), int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.05))
+        }
+
+    def start_new_game(self):
+        import random
+        self.word = random.choice(self.difficulty_levels[self.difficulty]).upper()
+        self.guessed_letters = set()
+        self.wrong_guesses = 0
+        self.game_over = False
+        self.win = False
+        self.message = ""
+        self.letter_input = ""
+        self.input_active = True
+
     def handle_events(self, event):
-        super().handle_events(event)  
+        super().handle_events(event)
+        if self.game_over:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.buttons["Restart"].collidepoint(event.pos):
+                    self.start_new_game()
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for key, rect in self.buttons.items():
+                if rect.collidepoint(event.pos):
+                    if key in ["Easy", "Medium", "Hard"]:
+                        self.difficulty = key
+                        self.start_new_game()
+                    elif key == "Restart":
+                        self.start_new_game()
+                    return
+
+        if event.type == pygame.KEYDOWN and self.input_active and not self.game_over:
+            if event.key == pygame.K_BACKSPACE:
+                self.letter_input = ""
+            elif event.key == pygame.K_RETURN:
+                if len(self.letter_input) == 1 and self.letter_input.isalpha():
+                    letter = self.letter_input.upper()
+                    if letter in self.guessed_letters:
+                        self.message = f"Lettre '{letter}' déjà proposée."
+                    else:
+                        self.guessed_letters.add(letter)
+                        if letter not in self.word:
+                            self.wrong_guesses += 1
+                            if self.wrong_guesses >= self.max_wrong_guesses:
+                                self.game_over = True
+                                self.win = False
+                                self.message = f"Perdu ! Le mot était : {self.word}"
+                        else:
+                            if all(l in self.guessed_letters for l in self.word):
+                                self.game_over = True
+                                self.win = True
+                                self.message = "Bravo ! Vous avez gagné !"
+                                self.completed_difficulties[self.difficulty] = True
+                                if all(self.completed_difficulties.values()) and not self.reward_given:
+                                    self.reward_given = True
+                                    self.message = "Félicitations ! Vous avez obtenu l'objet : cheveux de rossier"
+                    self.letter_input = ""
+                else:
+                    self.message = "Entrez une seule lettre valide."
+                    self.letter_input = ""
+            else:
+                if len(self.letter_input) == 0 and event.unicode.isalpha():
+                    self.letter_input = event.unicode.upper()
+
+    def draw_hangman(self, screen):
+        base_x = int(self.jeu.bg_width * 0.7)
+        base_y = int(self.jeu.bg_height * 0.8)
+        line_color = (139, 69, 19)
+
+        pygame.draw.line(screen, line_color, (base_x - 100, base_y), (base_x + 100, base_y), 8)
+        pygame.draw.line(screen, line_color, (base_x - 50, base_y), (base_x - 50, base_y - 300), 8)
+        pygame.draw.line(screen, line_color, (base_x - 50, base_y - 300), (base_x + 50, base_y - 300), 8)
+        pygame.draw.line(screen, line_color, (base_x + 50, base_y - 300), (base_x + 50, base_y - 250), 8)
+
+        if self.wrong_guesses > 0:
+            pygame.draw.circle(screen, (0, 0, 0), (base_x + 50, base_y - 230), 20, 3)
+        if self.wrong_guesses > 1:
+            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 210), (base_x + 50, base_y - 150), 3)
+        if self.wrong_guesses > 2:
+            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 200), (base_x + 20, base_y - 170), 3)
+        if self.wrong_guesses > 3:
+            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 200), (base_x + 80, base_y - 170), 3)
+        if self.wrong_guesses > 4:
+            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 150), (base_x + 20, base_y - 110), 3)
+        if self.wrong_guesses > 5:
+            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 150), (base_x + 80, base_y - 110), 3)
+
+    def draw_word(self, screen):
+        display_word = ""
+        for letter in self.word:
+            display_word += letter + " " if letter in self.guessed_letters else "_ "
+        text_surface = self.font_large.render(display_word.strip(), True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(self.jeu.bg_width * 0.35, self.jeu.bg_height * 0.5))
+        screen.blit(text_surface, text_rect)
+
+    def draw_guessed_letters(self, screen):
+        guessed = "Lettres proposées: " + " ".join(sorted(self.guessed_letters))
+        text_surface = self.font_medium.render(guessed, True, (255, 255, 255))
+        screen.blit(text_surface, (int(self.jeu.bg_width * 0.1), int(self.jeu.bg_height * 0.7)))
+
+    def draw_input_box(self, screen):
+        input_box = pygame.Rect(int(self.jeu.bg_width * 0.1), int(self.jeu.bg_height * 0.6), int(self.jeu.bg_width * 0.1), int(self.jeu.bg_height * 0.05))
+        pygame.draw.rect(screen, (255, 255, 255), input_box, 2)
+        input_text = self.font_medium.render(self.letter_input, True, (255, 255, 255))
+        screen.blit(input_text, (input_box.x + 5, input_box.y + 5))
+        prompt_text = self.font_small.render("Tapez une lettre et appuyez sur Entrée", True, (255, 255, 255))
+        screen.blit(prompt_text, (input_box.x, input_box.y - 25))
+
+    def draw_buttons(self, screen):
+        for key, rect in self.buttons.items():
+            color = (100, 100, 100)
+            if key == self.difficulty:
+                color = (200, 200, 50)
+            pygame.draw.rect(screen, color, rect)
+            text_surface = self.font_small.render(key, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=rect.center)
+            screen.blit(text_surface, text_rect)
+
+    def draw_message(self, screen):
+        if self.message:
+            message_surface = self.font_medium.render(self.message, True, (255, 0, 0))
+            message_rect = message_surface.get_rect(center=(self.jeu.bg_width * 0.5, self.jeu.bg_height * 0.85))
+            screen.blit(message_surface, message_rect)
+
+    def draw(self, screen):
+        super().draw(screen)
+
+        overlay = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 120))
+        screen.blit(overlay, (0, 0))
+
+        titre = self.font_large.render("PENDU", True, (255, 255, 255))
+        screen.blit(titre, (self.jeu.bg_width // 2 - titre.get_width() // 2, int(self.jeu.bg_height * 0.05)))
+
+        self.draw_word(screen)
+        self.draw_guessed_letters(screen)
+        self.draw_input_box(screen)
+        self.draw_buttons(screen)
+        self.draw_hangman(screen)
+        self.draw_message(screen)
+
+        bar_width = int(self.jeu.bg_width * 0.6)
+        bar_height = int(self.jeu.bg_height * 0.02)
+        bar_x = (self.jeu.bg_width - bar_width) // 2
+        bar_y = int(self.jeu.bg_height * 0.9)
+
+        pygame.draw.rect(screen, (100, 100, 100), (bar_x, bar_y, bar_width, bar_height), border_radius=10)
+        if self.wrong_guesses > 0:
+            filled_width = bar_width * (self.wrong_guesses / self.max_wrong_guesses)
+            pygame.draw.rect(screen, (200, 60, 60), (bar_x, bar_y, filled_width, bar_height), border_radius=10)
+
         
 
 class Pendule(Etats):
@@ -687,8 +869,89 @@ class Portes(Etats):
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Portes.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
+        self.questions = [
+            {"texte": "Quelle est la capitale de la France ?", "choix": ["Lyon", "Paris", "Marseille"], "bonne": "Paris"},
+            {"texte": "Combien y a-t-il de continents ?", "choix": ["5", "6", "7"], "bonne": "7"},
+            {"texte": "Quel est l'élément chimique O ?", "choix": ["Or", "Oxygène", "Osmium"], "bonne": "Oxygène"},
+            {"texte": "Qui a peint la Joconde ?", "choix": ["Picasso", "Léonard de Vinci", "Van Gogh"], "bonne": "Léonard de Vinci"},
+            {"texte": "Combien font 8 × 7 ?", "choix": ["56", "64", "49"], "bonne": "56"},
+            {"texte": "Quel est le plus grand océan ?", "choix": ["Atlantique", "Arctique", "Pacifique"], "bonne": "Pacifique"},
+            {"texte": "Quelle planète est la plus proche du Soleil ?", "choix": ["Mercure", "Vénus", "Mars"], "bonne": "Mercure"},
+            {"texte": "Quelle langue est parlée au Brésil ?", "choix": ["Espagnol", "Portugais", "Français"], "bonne": "Portugais"}
+        ]
+
+        self.niveau = 0
+        self.score = 0
+        self.resultat = ""
+        self.porte_cliquee = None
+
+        self.creer_portes()
+
+    def creer_portes(self):
+        self.zone_portes = []
+        largeur_porte = self.jeu.bg_width // 6
+        hauteur_porte = self.jeu.bg_height // 3
+        espace = self.jeu.bg_width // 20
+        start_x = (self.jeu.bg_width - (3 * largeur_porte + 2 * espace)) // 2
+        y = self.jeu.bg_height // 2
+        choix = self.questions[self.niveau]["choix"]
+
+        for i in range(3):
+            rect = pygame.Rect(start_x + i * (largeur_porte + espace), y, largeur_porte, hauteur_porte)
+            self.zone_portes.append((rect, choix[i]))
+
     def handle_events(self, event):
-        super().handle_events(event)  
+        super().handle_events(event)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.resultat:
+            for rect, reponse in self.zone_portes:
+                if rect.collidepoint(event.pos):
+                    self.porte_cliquee = rect
+                    if reponse == self.questions[self.niveau]["bonne"]:
+                        self.resultat = "Bonne réponse !"
+                        self.score += 1
+                        pygame.time.set_timer(pygame.USEREVENT, 1000)
+                    else:
+                        self.resultat = "Mauvaise réponse."
+                        pygame.time.set_timer(pygame.USEREVENT, 1500)
+
+        elif event.type == pygame.USEREVENT:
+            pygame.time.set_timer(pygame.USEREVENT, 0)
+            self.niveau += 1
+            if self.niveau < len(self.questions):
+                self.resultat = ""
+                self.porte_cliquee = None
+                self.creer_portes()
+            else:
+                self.resultat = "Partie terminée ! Score: {}/{}".format(self.score, len(self.questions))
+                pygame.time.set_timer(pygame.USEREVENT + 1, 3000)
+
+        elif event.type == pygame.USEREVENT + 1:
+            pygame.time.set_timer(pygame.USEREVENT + 1, 0)
+            self.jeu.changer_etat(Map(self.jeu))
+
+    def draw(self, screen):
+        super().draw(screen)
+        question = self.questions[self.niveau]["texte"] if self.niveau < len(self.questions) else ""
+        self.sauter_ligne(question, self.jeu.bg_width // 4, self.jeu.bg_height // 4, 30, self.font, (255, 255, 255), screen)
+
+        for rect, texte in self.zone_portes:
+            couleur = (100, 50, 20)
+            if self.porte_cliquee == rect and self.niveau < len(self.questions):
+                couleur = (0, 200, 0) if texte == self.questions[self.niveau]["bonne"] else (200, 0, 0)
+            pygame.draw.rect(screen, couleur, rect, border_radius=15)
+            pygame.draw.rect(screen, (255, 255, 255), rect, 4, border_radius=15)
+            texte_surface = self.font.render(texte, True, (255, 255, 255))
+            texte_rect = texte_surface.get_rect(center=rect.center)
+            screen.blit(texte_surface, texte_rect)
+
+        if self.resultat:
+            res_surface = self.font.render(self.resultat, True, (255, 255, 0))
+            res_rect = res_surface.get_rect(center=(self.jeu.bg_width // 2, self.jeu.bg_height // 1.2))
+            screen.blit(res_surface, res_rect)
+
+        
+        score_surface = self.font.render(f"Score : {self.score}/{len(self.questions)}", True, (255, 255, 255))
+        screen.blit(score_surface, (self.jeu.bg_width - int(self.jeu.bg_width / 6), int(self.jeu.bg_height / 20)))
         
 
 class Tir_arc(Etats):
@@ -1120,11 +1383,118 @@ class Eau(Etats):
 class Krabi(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Krabi.jpg"))
+        self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "Krabi.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+
+        self.vocab = {
+            "orage": "O",
+            "brume": "B",
+            "lumière": "L",
+            "frisson": "F",
+            "aube": "A"
+        }
+
+        self.secret = "BLOAF"
+        self.reponse = ""
+        self.input_active = False
+        self.message = ""
+
+        self.mots_dynamiques = []
+        for mot, lettre in self.vocab.items():
+            surf = self.jeu.font.render(mot, True, (255, 255, 255))
+            x = random.randint(0, self.jeu.bg_width - surf.get_width())
+            y = random.randint(0, self.jeu.bg_height - surf.get_height() - int(self.jeu.bg_height * 0.2))
+            dx = random.uniform(-0.7, 0.7)
+            dy = random.uniform(-0.5, 0.5)
+            self.mots_dynamiques.append({
+                "mot": mot,
+                "lettre": lettre,
+                "x": x,
+                "y": y,
+                "dx": dx,
+                "dy": dy,
+                "cliqué": False,
+                "alpha": 0,
+                "brillance_sens": 1
+            })
+
+        self.zone_input = pygame.Rect(int(self.jeu.bg_width * 0.3), int(self.jeu.bg_height * 0.85), int(self.jeu.bg_width * 0.4), int(self.jeu.bg_height * 0.07))
 
     def handle_events(self, event):
         super().handle_events(event)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mx, my = event.pos
+            for item in self.mots_dynamiques:
+                if not item["cliqué"]:
+                    mot_surf = self.jeu.font.render(item["mot"], True, (255, 255, 255))
+                    rect = mot_surf.get_rect(topleft=(item["x"], item["y"]))
+                    if rect.collidepoint(mx, my):
+                        item["cliqué"] = True
+                        item["dx"] *= 0.1
+                        item["dy"] *= 0.1
+                        item["alpha"] = 0
+                        item["brillance_sens"] = 1
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.input_active = self.zone_input.collidepoint(event.pos)
+
+        if event.type == pygame.KEYDOWN and self.input_active:
+            if event.key == pygame.K_RETURN:
+                if self.reponse.upper() == self.secret:
+                    self.message = "✨ Succès ! ✨"
+                else:
+                    self.message = "Mot incorrect"
+            elif event.key == pygame.K_BACKSPACE:
+                self.reponse = self.reponse[:-1]
+            elif len(self.reponse) < len(self.secret):
+                self.reponse += event.unicode.upper()
+
+    def draw(self, screen):
+        super().draw(screen)
+
+        lettres_revelees = []
+
+        for item in self.mots_dynamiques:
+            item["x"] += item["dx"]
+            item["y"] += item["dy"]
+
+            if item["x"] <= 0 or item["x"] >= self.jeu.bg_width - 150:
+                item["dx"] *= -1
+            if item["y"] <= 0 or item["y"] >= self.jeu.bg_height - 200:
+                item["dy"] *= -1
+
+            if item["cliqué"]:
+                if item["alpha"] < 200:
+                    item["alpha"] = min(255, item["alpha"] + 10)
+                else:
+                    item["alpha"] += item["brillance_sens"] * 2
+                    if item["alpha"] > 255:
+                        item["alpha"] = 255
+                        item["brillance_sens"] = -1
+                    elif item["alpha"] < 200:
+                        item["alpha"] = 200
+                        item["brillance_sens"] = 1
+
+                surface = self.jeu.font.render(item["lettre"], True, (0, 255, 100))
+                faded = surface.copy()
+                faded.set_alpha(int(item["alpha"]))
+                screen.blit(faded, (item["x"], item["y"]))
+                lettres_revelees.append(item["lettre"])
+            else:
+                surface = self.jeu.font.render(item["mot"], True, (255, 255, 255))
+                screen.blit(surface, (item["x"], item["y"]))
+
+        lettres_surface = self.jeu.font.render(" ".join(lettres_revelees), True, (0, 255, 100))
+        screen.blit(lettres_surface, (int(self.jeu.bg_width * 0.05), int(self.jeu.bg_height * 0.8)))
+
+        pygame.draw.rect(screen, (255, 255, 255), self.zone_input, border_radius=10, width=2)
+        input_surface = self.jeu.font.render(self.reponse, True, (255, 255, 255))
+        screen.blit(input_surface, (self.zone_input.x + 10, self.zone_input.y + 10))
+
+        if self.message:
+            msg_surface = self.jeu.font.render(self.message, True, (255, 215, 0))
+            screen.blit(msg_surface, (self.zone_input.x, self.zone_input.y - 40))
+
 
 class Zephyr(Etats):
     def __init__(self, jeu):

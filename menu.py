@@ -80,7 +80,10 @@ class Inventaire(Etats):
       
 class Map():
     def __init__(self,jeu):
-        from essai3 import Mont_azur,Enigme, Tir_arc,Vitesse,Chateau, Memoire_combi, Portes, Bon_minerai, Eau, Zephyr, Krabi, Mars, Chaudron
+        from essai3 import Tir_arc,Vitesse, Memoire_combi, Portes, Bon_minerai, Eau, Zephyr, Krabi, Mars, Chaudron
+        from enigme_trad import Enigme
+        from mont_azur import Mont_azur #importe lui Trad et Donkey_Kong_mario
+        from chateau import Chateau #importe Pendu et Pendule
         self.jeu = jeu
 
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "carte.png"))

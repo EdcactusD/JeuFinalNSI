@@ -254,6 +254,9 @@ class Menu_debut:
     self.aggrandir_bouton(screen,self.boutons,self.boutons_ref)
     
 class Reglages(Etats):
+   """affiche une page de réglages où l'on peut gerer le son, la sauvegarde et les commandes, l'histoire du jeu son données. 
+   prends en argument Etats pour garder les méthodes du handle_events, sauter_ligne, aggrandir_boutons
+   renvoie les modifications apportées au son (pour ensuite les dessiner de la bonne manière)/ une nouvelle partie si la sauvegarde est réinitialisée"""
    def __init__(self,jeu):
        super().__init__(jeu)
        self.menu_debut= menu_debut
@@ -416,6 +419,9 @@ class Etat0(Etats):
         
 
 class Enigme(Etats):
+    """Mini-jeu qui affiche des énigmes, le joueur doit y répondre en les tapant dans une zone de texte
+    réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+    renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
         
@@ -955,7 +961,9 @@ class Portes(Etats):
         
 
 class Tir_arc(Etats):
-    #ATTENTION : comme les regles et aide ne sont pas dans la super classe ; les conditions ne changent pas le curseur dessus
+    """Mini-jeu qui affiche une cible sur laquelle le joueur doit tirer un flèche (c'est la fin de la trajectoire de cette dernière qui permet de passer d'un niveau à l'autre)
+     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+     renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Tir_arc.jpg"))
@@ -1271,6 +1279,9 @@ class Bon_minerai(Etats):
         self.montrer_regles_aide(screen,self.last_event,"Pendule")
 
 class Trad(Enigme):
+    """Mini-jeu qui affiche des traductions, le joueur doit les résoudre grâce à un énnoncé et un historique qui s'affichent
+     réutilise les méthodes d'Enigme() (et donc aussi d'Etats), ce qui permet de garder tout ce qui est saisie de texte
+     renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Trad.jpeg"))
@@ -1506,6 +1517,9 @@ class Zephyr(Etats):
         super().handle_events(event)
 
 class Mars(Etats):
+    """Mini-jeu qui affiche 4 propositions possible à des questions de culture générale, le joueur doit cliquer sur la bonne pour augmenter de niveau
+     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+     renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Mars.jpg"))

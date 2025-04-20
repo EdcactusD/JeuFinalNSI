@@ -1,8 +1,6 @@
 import pygame
 import os
 
-
-
 class Menu_debut:
   """gère l'écran qui s'affiche pour lancer le jeu"""
   def __init__(self, jeu):

@@ -80,19 +80,19 @@ class Inventaire(Etats):
       
 class Map():
     def __init__(self,jeu):
-        from enigme_trad import Enigme
-        from mont_azur import Mont_azur #importe lui Trad et Donkey_Kong_mario
-        from chateau import Chateau #importe Pendu et Pendule
-        from memoire_combi import Memoire_combi
-        from portes import Portes
-        from tir_arc import Tir_arc
-        from vitesse import Vitesse
-        from bon_minerais import Bon_minerai
-        from eau import Eau
-        from krabi import Krabi
-        from zephyr import Zephyr
-        from mars import Mars
-        from chaudron import Chaudron
+        from mini_jeux_code.enigme_trad import Enigme
+        from mini_jeux_code.mont_azur import Mont_azur #importe lui Trad et Donkey_Kong_mario
+        from mini_jeux_code.chateau import Chateau #importe Pendu et Pendule
+        from mini_jeux_code.memoire_combi import Memoire_combi
+        from mini_jeux_code.portes import Portes
+        from mini_jeux_code.tir_arc import Tir_arc
+        from mini_jeux_code.vitesse import Vitesse
+        from mini_jeux_code.bon_minerais import Bon_minerai
+        from mini_jeux_code.eau import Eau
+        from mini_jeux_code.krabi import Krabi
+        from mini_jeux_code.zephyr import Zephyr
+        from mini_jeux_code.mars import Mars
+        from mini_jeux_code.chaudron import Chaudron
         
         
         self.jeu = jeu

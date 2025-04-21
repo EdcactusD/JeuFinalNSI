@@ -2,7 +2,7 @@ import pygame
 import os 
 import math
 import random
-from essai3 import Etats
+from général.etats import Etats
 
 """contient la classe Chateau et les mini-jeux auxuels elle permet d'acceder le Pendu et la Pendule """
 
@@ -246,7 +246,7 @@ class Pendule(Etats):
              self.mini_jeu_fini()
             else:
              print("mini-jeu perdu!")
-             from menu import Map
+             from général.menu import Map
              self.jeu.changer_etat(Map(self.jeu))
 
     

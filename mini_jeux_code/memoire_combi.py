@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 
 class Memoire_combi(Etats):
@@ -46,7 +46,7 @@ class Memoire_combi(Etats):
                 self.debut_temps = pygame.time.get_ticks()
                 self.afficher_combi = True  
               else:
-               from menu import Map
+               from général.menu import Map
                self.jeu.changer_etat(Map(self.jeu))
                print("Mini-jeu perdu")
                return

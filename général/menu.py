@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 """compore toutes les classes utiles pour le menu : Reglages, Inventaire et Map"""
   
@@ -9,7 +9,7 @@ class Reglages(Etats):
    prends en argument Etats pour garder les méthodes du handle_events, sauter_ligne, aggrandir_boutons
    renvoie les modifications apportées au son (pour ensuite les dessiner de la bonne manière)/ une nouvelle partie si la sauvegarde est réinitialisée"""
    def __init__(self,jeu):
-       from menu_deb import Menu_debut
+       from général.menu_deb import Menu_debut
        menu_debut = Menu_debut(jeu)
        super().__init__(jeu)
        self.menu_debut= menu_debut

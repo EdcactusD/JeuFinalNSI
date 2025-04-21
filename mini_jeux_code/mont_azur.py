@@ -1,12 +1,12 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 """contient la classe Mont-azur et un des mini-jeu qu'elle permet d'acceder (le plateformer) car Trad est avec Enigme pour leur ressemblance au nievau du code (héritage)"""
 
 class Mont_azur(Etats): 
     def __init__(self,jeu):
-        from enigme_trad import Trad
+        from mini_jeux_code.enigme_trad import Trad
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "plan_mont_azur.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
@@ -16,7 +16,7 @@ class Mont_azur(Etats):
     def handle_events(self, event):
         super().handle_events(event) # Garde le comportement général des événements (utile car après on va ajouter des choses dedans)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-            from menu import Map
+            from général.menu import Map
             self.jeu.changer_etat(Map(self.jeu)) 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
             for zone in self.zones_mont_azur:

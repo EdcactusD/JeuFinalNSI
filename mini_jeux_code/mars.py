@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 class Mars(Etats):
     """Mini-jeu qui affiche 4 propositions possible à des questions de culture générale, le joueur doit cliquer sur la bonne pour augmenter de niveau

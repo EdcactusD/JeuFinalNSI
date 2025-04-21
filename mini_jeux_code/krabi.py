@@ -1,7 +1,7 @@
 import pygame
 import os 
 import random 
-from essai3 import Etats
+from général.etats import Etats
 
 class Krabi(Etats):
     def __init__(self, jeu):

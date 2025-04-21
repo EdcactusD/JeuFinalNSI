@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 class Portes(Etats):
     def __init__(self, jeu):
@@ -66,7 +66,7 @@ class Portes(Etats):
 
         elif event.type == pygame.USEREVENT + 1:
             pygame.time.set_timer(pygame.USEREVENT + 1, 0)
-            from menu import Map
+            from général.menu import Map
             self.jeu.changer_etat(Map(self.jeu))
 
     def draw(self, screen):

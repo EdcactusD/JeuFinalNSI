@@ -1,66 +1,6 @@
 import pygame
 import os
-import random
-from menu_deb import Menu_debut
 
-
-
-#Pour finir vos mini-jeux : svp utilisez la fonction  mini_jeu_fini() (ca permet de retourner à la map normalement avec les imports)
-"""
-REGLE A RESPECTER DANS LE CODE :
-    ¤) pour definir des tailles d'objets faites le par une multiplication ou une division (pour que les valeurs soient toujours bien même si l'écran a une taille étrange)
-    :::faire attention par exemple les rects n'accptent pas de float il faut alors caster
-    
-EXPLICATIONS SUR CERTAINS POINTS ET METHODES PRATIQUE DANS LE CODE:
-1. event.pos représente les coordonnées (x, y) de l'endroit où la souris a cliqué, 
-obtenues dans un événement MOUSEBUTTONDOWN ou MOUSEBUTTONUP : 
-collidepoint retourne un booléen suivant si la souris est dans la zone (True) ou non (False)  
-
-2. .items()  permet d'obtenir la clé et la valeur dans un dico
-"""
-
-class Jeu:
-    def __init__(self):
-        pygame.init()
-        
-        pygame.mixer.init()  #initialise le module audio
-        pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
-        pygame.mixer.music.play(-1)  #joue en boucle (-1 : boucle infinie)
-        self.volume= pygame.mixer.music.set_volume(0.5)  # Ajuste le volume (0.0 à 1.0)
-        
-
-        info = pygame.display.Info()  # Récupérer les infos de l'écran
-        print(f"Résolution réelle utilisée : {info.current_w}x{info.current_h}")
-   
-        self.bg_width = info.current_w  # Largeur de l'écran
-        self.bg_height = info.current_h  # Hauteur de l'écran
-        self.screen = pygame.display.set_mode((self.bg_width, self.bg_height))
-        
-        pygame.display.set_caption("Jeu final NSI")
-        self.font = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.bg_height/36))
-        pygame.mouse.set_visible(True)
-        
-
-        self.running = True
-        self.etat = Menu_debut(self)  # Définition de la scène actuelle
-
-    def run(self):
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE): 
-                    self.running = False
-                self.etat.handle_events(event)  # ICI : PAS COMPRIS : Délègue la gestion des événements à etat
-
-            #self.etat.update() #permet d'avoir des updates différents pour chaque état
-            self.etat.draw(self.screen)
-            pygame.display.flip()  # Rafraîchissement de l’écran
-
-        pygame.quit()
-            
-    def changer_etat(self, nouvel_etat):
-        """Change l'état du jeu."""
-        self.etat= nouvel_etat
-        
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def __init__(self, jeu, show_menu=False, show_map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
@@ -150,7 +90,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         
         
     def handle_events_keys(self,event):
-        from menu import Map
+        from général.menu import Map
         #Touches pressées
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
@@ -162,7 +102,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                      self.jeu.changer_etat(Inventaire(self.jeu))
                      
     def handle_events_souris(self,event):
-        from menu import Map
+        from général.menu import Map
         self.last_event = event #pour récuperer event dans le draw pour l'appel d'une fonction
         #CLics souris             
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
@@ -170,10 +110,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           if self.show_menu and self.zone_map_ic.collidepoint(event.pos):
               self.jeu.changer_etat(Map(self.jeu))
           if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
-              from menu import Inventaire # Import retardé pour éviter les boucles circulaires
+              from général.menu import Inventaire # Import retardé pour éviter les boucles circulaires
               self.jeu.changer_etat(Inventaire(self.jeu))
           if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
-              from menu import Reglages # Import retardé pour éviter les boucles circulaires
+              from général.menu import Reglages # Import retardé pour éviter les boucles circulaires
               self.jeu.changer_etat(Reglages(self.jeu))
               
     def handle_events(self, event):
@@ -191,7 +131,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           
     def mini_jeu_fini(self):
         print("mini-jeu réussit !")
-        from menu import Map
+        from général.menu import Map
         self.jeu.changer_etat(Map(self.jeu))
         #MARQUER le jeu comme fait (impossible d'y revenir)
 
@@ -214,29 +154,3 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         '''pour modifier le dico'''
         if int(mini_jeu) in self.niveaux_jeux :
             self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """            
-           
-
-class Etat0(Etats): 
-    def __init__(self,jeu):
-        super().__init__(jeu)
-        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "etat0.jpg"))
-        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.show_menu = True
-
-    def handle_events(self, event):
-        super().handle_events(event)
-        
-
-jeu = Jeu()
-
-menu_debut = Menu_debut(jeu)
-
-jeu.run()
-
-
-#A MARQUER DANS LES REGLAGES : pour revenir en arrière une fois l'inventaire, la carte, les réglages ouverts il est possible de réappuyer sur la touche correspondante
-
-#Pour jeux avec entrée texte : faire un curseur qui clignote ?
-#Les prints dans enigme sont à modifier en messages qui popent
-
-#ATTENTION : pour le bon fonctionnement du jeu, quand on change d'état certaines caracteristiques doivent être conservées (genre le temps du chrono en cours, le niveau atteint)

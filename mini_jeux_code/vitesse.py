@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 class Vitesse(Etats):
     def __init__(self, jeu):
@@ -63,7 +63,7 @@ class Vitesse(Etats):
                     self.mauvaise_rep=0
                     self.debut_timer = pygame.time.get_ticks()
                 if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
-                        from menu import Map
+                        from général.menu import Map
                         self.jeu.changer_etat(Map(self.jeu))
                         print("mini-jeu perdu!")
                         return

@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 """Contient les mini-jeux enigme et traduction (car ils marchent avec un certain nombre de points en commun)"""
 

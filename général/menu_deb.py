@@ -18,7 +18,7 @@ class Menu_debut:
       self.font=self.jeu.font
       
   def handle_events(self, event):
-    from essai3 import Etat0
+    from etat0 import Etat0
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         for bouton, (position, couleur, couleur_texte,nom) in self.boutons.items():
             if position.collidepoint(event.pos) :

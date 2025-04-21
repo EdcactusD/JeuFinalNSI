@@ -1,6 +1,6 @@
 import pygame
 import os 
-from essai3 import Etats
+from général.etats import Etats
 
 class Zephyr(Etats):
     def __init__(self, jeu):

@@ -2,7 +2,7 @@ import pygame
 import os 
 import time
 from math import sqrt
-from essai3 import Etats
+from général.etats import Etats
 
 class Tir_arc(Etats):
     """Mini-jeu qui affiche une cible sur laquelle le joueur doit tirer un flèche (c'est la fin de la trajectoire de cette dernière qui permet de passer d'un niveau à l'autre)

@@ -78,8 +78,9 @@ class Inventaire(Etats):
  pass
 
       
-class Map():
+class Map(Etats):
     def __init__(self,jeu):
+        super().__init__(jeu)
         from mini_jeux_code.enigme_trad import Enigme
         from mini_jeux_code.mont_azur import Mont_azur #importe lui Trad et Donkey_Kong_mario
         from mini_jeux_code.chateau import Chateau #importe Pendu et Pendule
@@ -115,13 +116,12 @@ class Map():
         
         
     def handle_events(self, event):
+        super().handle_events(event)  # Garde le comportement général des événements
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
                 if self.zones_carte[zone][0].collidepoint(event.pos): 
                     self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
                     
-    def draw(self, screen):
-      screen.blit(self.bg_image, (0, 0))
     
     """def draw(self, screen) :
         super().draw(screen)

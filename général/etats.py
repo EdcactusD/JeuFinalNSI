@@ -31,10 +31,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
-       #dico qui stocke les niveaux de jeu (0), les règles(1), les aides (2)
-       self.niveaux_jeux = {"Mont_azur" : [0, " ", " "],
-                             "Chateau" : [0, " ", " "],
-                             "Donkey_kong_mario" :[0, " ", " "],
+       #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2)
+       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " "],
                              "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " "],
                              "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " "],
                              "Pendu" : [0, " ", " "],
@@ -42,7 +40,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                              "Portes" : [0, " ", " "],
                              "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible"],
                              "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " "],
-                             "Bon_minerai" :[0, "Associez le bon\n nom au bon minerai", " "],
+                             "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " "],
                              "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3"],
                              "Eau" : [0, " ", " "],
                              "Krabi" :[0, " ", " "],
@@ -98,7 +96,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
             if event.key == pygame.K_x: 
               self.jeu.changer_etat(Map(self.jeu))
             if event.key == pygame.K_c:  
-                     from menu import Inventaire # Import retardé pour éviter les boucles circulaires
+                     from général.menu import Inventaire # Import retardé pour éviter les boucles circulaires
                      self.jeu.changer_etat(Inventaire(self.jeu))
                      
     def handle_events_souris(self,event):
@@ -116,7 +114,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
               from général.menu import Reglages # Import retardé pour éviter les boucles circulaires
               self.jeu.changer_etat(Reglages(self.jeu))
               
-    def handle_events(self, event):
+    def handle_events(self, event): #dans certains jeu d'entrée de texte il peut être utile de désactiver un temps les raccoucis, c'est pourquoi les deux fonctions sont séparées
         self.handle_events_keys(event)
         self.handle_events_souris(event)            
      

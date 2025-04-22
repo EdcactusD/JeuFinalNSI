@@ -33,9 +33,7 @@ class Jeu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE): 
                     self.running = False
-                self.etat.handle_events(event)  # ICI : PAS COMPRIS : Délègue la gestion des événements à etat
-
-            #self.etat.update() #permet d'avoir des updates différents pour chaque état
+                self.etat.handle_events(event)
             self.etat.draw(self.screen)
             pygame.display.flip()  # Rafraîchissement de l’écran
 

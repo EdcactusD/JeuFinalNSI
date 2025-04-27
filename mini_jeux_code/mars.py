@@ -37,6 +37,7 @@ class Mars(Etats):
         self.chrono_tmps_passe = 0
         self.temps=0 #valeur arbitraire
         self.deja_clignote_temps_depasse = False
+        self.mini_jeu = "Mars"
         
         
     def handle_events(self, event):
@@ -48,7 +49,7 @@ class Mars(Etats):
                             self.couleur=["#4c9f57", self.rects_reponses[cle]] #vert : pour montrer que c'était la bonne réponse (on associe couleur verte au bon rect)
                             self.niveau=str(int(self.niveau)+1)
                           elif self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)>=self.niveau_max:
-                             self.mini_jeu_fini() 
+                             self.mini_jeu_fini(self.mini_jeu)
                           else:
                               self.couleur=["#cf473a", self.rects_reponses[cle]] #rouge
                               self.niveau="0" #le joueur recommence

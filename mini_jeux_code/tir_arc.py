@@ -45,6 +45,7 @@ class Tir_arc(Etats):
         
         self.hauteur = 300
         self.longueur = 210
+        self.mini_jeu = "Tir_arc"
         
 
     def cible_attributs(self, niveau):
@@ -98,7 +99,7 @@ class Tir_arc(Etats):
                   self.niveau=str(int(self.niveau)+1)
                   self.niveau_increment=True
               if not self.niveau_increment and self.niveau=="4": #le mini-jeu est fini
-                 self.mini_jeu_fini()
+                 self.mini_jeu_fini(self.mini_jeu)
                  pygame.mouse.set_visible(True)
     
     def draw(self, screen):

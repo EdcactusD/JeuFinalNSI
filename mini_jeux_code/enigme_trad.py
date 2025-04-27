@@ -31,6 +31,7 @@ class Enigme(Etats):
         self.attendre = False #permet de faire attendre le joueur s'il a proposé trop de mauvaises réponses
         self.attente= 60000*1 #en milisecondes 
         self.debut_attente= -self.attente #par défaut, comme ça le if est vrai si le joueur n'a pas eu faux
+        self.mini_jeu = "Enigme"
         
 
     def handle_events(self, event):
@@ -65,7 +66,7 @@ class Enigme(Etats):
                     self.reponse_uti=""
                     self.mauvaise_rep=0
                 if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau==self.dernier_niveau :
-                    self.mini_jeu_fini()
+                    self.mini_jeu_fini(self.mini_jeu)
                 else:
                     self.mauvaise_rep+=1
                     if self.mauvaise_rep>3:
@@ -129,6 +130,7 @@ class Trad(Enigme):
         self.taille_texte = 0 #va permettre de centrer les tirrets
         self.font_tirets = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/34)) #on aggrandit
         self.lenmax= 85
+        self.mini_jeu = "Trad"
 
         
     def handle_events(self, event):

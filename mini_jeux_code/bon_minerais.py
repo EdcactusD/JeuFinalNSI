@@ -30,6 +30,7 @@ class Bon_minerai(Etats):
 
         self.niveau = str(self.niveaux_jeux["Bon_minerai"][0])
         self.image = None
+        self.mini_jeu = "Bon_minerai"
 
     def handle_events(self, event):
         if self.redaction: 
@@ -58,7 +59,7 @@ class Bon_minerai(Etats):
                     self.reponse_uti=""
                     self.mauvaise_rep=0
                 if self.niveau == "10":
-                    self.mini_jeu_fini()
+                    self.mini_jeu_fini(self.mini_jeu)
             elif len(self.reponse_uti)<=23:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
@@ -83,4 +84,4 @@ class Bon_minerai(Etats):
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
-        self.montrer_regles_aide(screen,self.last_event,"Pendule")
+        self.montrer_regles_aide(screen,self.last_event,"Bon_minerai")

@@ -50,6 +50,7 @@ class Krabi(Etats):
         self.message = ""
 
         self.zone_input = pygame.Rect(int(self.jeu.bg_width * 0.3), int(self.jeu.bg_height * 0.85), int(self.jeu.bg_width * 0.4), int(self.jeu.bg_height * 0.07))
+        self.mini_jeu = "Krabi"
 
     def load_level(self, level_index):
         level = self.levels[level_index]

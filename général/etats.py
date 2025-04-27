@@ -1,5 +1,6 @@
 import pygame
 import os
+import time
 
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
@@ -32,21 +33,21 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
        #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2)
-       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " "],
-                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " "],
-                             "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " "],
-                             "Pendu" : [0, " ", " "],
-                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " "],
-                             "Portes" : [0, " ", " "],
-                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible"],
-                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " "],
-                             "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " "],
-                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3"],
-                             "Eau" : [0, " ", " "],
-                             "Krabi" :[0, " ", " "],
-                             "Zephyr" : [0, " ", " "],
-                             "Mars" : [0, " ", " "],
-                             "Chaudron" : [0, " ", " "]                    
+       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False],
+                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " ",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False],
+                             "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " ",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False],
+                             "Pendu" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False],
+                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " ",pygame.image.load(os.path.join("assets","items", "poudre de perlinpimpim.png")),False],
+                             "Portes" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "pomme de la discorde.png")),False],
+                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible",pygame.image.load(os.path.join("assets","items", "Epine de Sylve.png")),False],
+                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " ",pygame.image.load(os.path.join("assets","items", "éclat d'obsidrune.png")),False],
+                             "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " ",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False],
+                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False],
+                             "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False],
+                             "Krabi" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False],
+                             "Zephyr" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "poussière du Zéphyr.png")),False],
+                             "Mars" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False],
+                             "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False]                    
             }
        
        #pour les icones de regles et aide dans les mini-jeux
@@ -127,8 +128,40 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           screen.blit(self.texte, (pos_x, pos_y+espace))
           espace+=self.jeu.bg_height/espace_ratio
           
-    def mini_jeu_fini(self):
-        print("mini-jeu réussit !")
+    def mini_jeu_fini(self, mini_jeu):
+        print("mini-jeu réussi !")
+        print("obtention de l'objet")
+
+        objet = pygame.image.load(os.path.join("assets","items", "objet.png"))
+        screen_width, screen_height = self.jeu.screen.get_size()
+        objet = pygame.transform.scale(objet, (screen_width, screen_height))
+
+        pygame.mixer.init()  #initialise le module audio
+        pygame.mixer.music.load(os.path.join("assets", "BotW-item.mp3"))
+        self.volume= pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.play()
+
+        prop = 0.5
+        zone_affichage = pygame.Rect(
+        (self.jeu.bg_width - (self.jeu.bg_width / 4)) // 2,  
+        (self.jeu.bg_height - (self.jeu.bg_height / 4)) // 2.4,  
+        self.jeu.bg_width // 4, 
+        self.jeu.bg_height // 4 
+        )
+        new_width = int(self.niveaux_jeux[mini_jeu][3].get_width() * prop)
+        new_height = int(self.niveaux_jeux[mini_jeu][3].get_height() * prop)
+        resized_image = pygame.transform.scale(self.niveaux_jeux[mini_jeu][3], (new_width, new_height)).convert_alpha()
+
+        self.jeu.screen.blit(objet, (0, 0))  
+        self.jeu.screen.blit(resized_image,(zone_affichage.x * 1.02, zone_affichage.y * 1.02))
+        pygame.display.flip()
+
+        self.niveaux_jeux[mini_jeu][4] = True  
+        pygame.time.delay(2000)
+
+        pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
+        pygame.mixer.music.play(-1)
+
         from général.menu import Map
         self.jeu.changer_etat(Map(self.jeu))
         #MARQUER le jeu comme fait (impossible d'y revenir)
@@ -151,4 +184,5 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     """def update_niveau(self, mini_jeu, nouv_niveau):
         '''pour modifier le dico'''
         if int(mini_jeu) in self.niveaux_jeux :
-            self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """            
+            self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """ 
+    

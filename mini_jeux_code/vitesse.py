@@ -26,6 +26,7 @@ class Vitesse(Etats):
         self.timer = False
         self.timer = 1000*5
         self.debut_timer = self.timer
+        self.mini_jeu = "Vitesse"
 
     def handle_events(self, event):
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
@@ -68,7 +69,7 @@ class Vitesse(Etats):
                         print("mini-jeu perdu!")
                         return
                 if self.niveau=="3" :
-                    self.mini_jeu_fini()
+                    self.mini_jeu_fini(self.mini_jeu)
                 else:
                     self.mauvaise_rep+=1
                     if self.mauvaise_rep>=3:

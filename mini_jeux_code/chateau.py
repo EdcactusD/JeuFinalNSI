@@ -64,6 +64,8 @@ class Pendu(Etats):
             "Restart": pygame.Rect(int(self.jeu.bg_width*0.8), int(self.jeu.bg_height*0.1), int(self.jeu.bg_width*0.1), int(self.jeu.bg_height*0.05))
         }
 
+        self.mini_jeu = "Pendu"
+
     def start_new_game(self):
         import random
         self.word = random.choice(self.difficulty_levels[self.difficulty]).upper()
@@ -231,6 +233,7 @@ class Pendule(Etats):
         self.objectif = [self.target_angle,self.target_angle+30]
         self.visee = "Arretez l'horloge entre " + str(self.objectif[0] // 30) +  "heures et " + str(self.objectif[1] // 30) + "heures"
         self.action = True
+        self.mini_jeu = "Pendule"
         print(self.target_angle)
 
     def handle_events(self, event):
@@ -243,7 +246,7 @@ class Pendule(Etats):
             print(self.objectif)
 
             if self.objectif[0] <= self.angle <= self.objectif[1]:
-             self.mini_jeu_fini()
+             self.mini_jeu_fini(self.mini_jeu)
             else:
              print("mini-jeu perdu!")
              from général.menu import Map

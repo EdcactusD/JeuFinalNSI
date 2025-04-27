@@ -25,6 +25,7 @@ class Memoire_combi(Etats):
         self.espacement_additionnel = 50
         self.debut_temps = pygame.time.get_ticks()  
         self.afficher_combi = True
+        self.mini_jeu = "Memoire_combi"
 
     def handle_events(self, event):
         super().handle_events(event)
@@ -52,7 +53,7 @@ class Memoire_combi(Etats):
                return
 
               if self.niveau == "3":
-               self.mini_jeu_fini()
+               self.mini_jeu_fini(self.mini_jeu)
 
     def draw(self, screen):
         super().draw(screen)

@@ -23,6 +23,7 @@ class Portes(Etats):
         self.score = 0
         self.resultat = ""
         self.porte_cliquee = None
+        self.mini_jeu = "Portes"
 
         self.creer_portes()
 

@@ -6,6 +6,10 @@ class Jeu:
     def __init__(self):
         pygame.init()
         
+        logo = pygame.image.load(os.path.join("assets", "logo.png"))
+        logo = pygame.transform.scale(logo, (32, 32))
+        pygame.display.set_icon(logo)
+        
         pygame.mixer.init()  #initialise le module audio
         pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
         pygame.mixer.music.play(-1)  #joue en boucle (-1 : boucle infinie)

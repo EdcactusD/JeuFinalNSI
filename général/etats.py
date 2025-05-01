@@ -4,13 +4,12 @@ import time
 
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
-    def __init__(self, jeu, show_menu=False, show_map=False, show_inventaire=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
+    def __init__(self, jeu, show_menu=False, show_map=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
        self.jeu = jeu
        self.last_event = None #va nous etre utile dans le draw des mini-jeux pour afficher regles et aide
        self.font=self.jeu.font
        self.show_menu = show_menu
        self.show_map = show_map
-       self.show_inventaire = show_inventaire
 
        self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
        self.bg_image.fill((0, 0, 0))
@@ -20,13 +19,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.menu = pygame.transform.scale(self.menu, (self.menu_width, self.menu_height))
        self.menu_x = self.jeu.bg_width - self.menu_width - int(self.jeu.bg_width/384) #pour déclaler du bord (marge de 5 en 1920)
        self.menu_y = self.jeu.bg_height - self.menu_height - int(self.jeu.bg_height/216)
+
        self.zone_map_ic = pygame.Rect(self.menu_x, self.menu_y+int(self.jeu.bg_height/56.84), self.menu_width, int(self.jeu.bg_height/10.8))
        self.zone_inventaire_ic = pygame.Rect(self.menu_x, self.menu_y+int(self.jeu.bg_height/8.0597), self.menu_width, int(self.jeu.bg_height/10.8))
        self.zone_reglages_ic = pygame.Rect(self.menu_x, self.menu_y+int(self.jeu.bg_height/4.4081), self.menu_width, int(self.jeu.bg_height/10.8))
-       
-              
-       self.inventaire = pygame.image.load(os.path.join("assets", "Test.jpg"))
-       self.inventaire = pygame.transform.scale(self.inventaire, (self.jeu.bg_width, self.jeu.bg_height))
 
        self.map = pygame.image.load(os.path.join("assets","fonds","carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
@@ -96,9 +92,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                self.show_menu = not self.show_menu
             if event.key == pygame.K_x: 
               self.jeu.changer_etat(Map(self.jeu))
-            if event.key == pygame.K_c:  
-                     from général.menu import Inventaire # Import retardé pour éviter les boucles circulaires
-                     self.jeu.changer_etat(Inventaire(self.jeu))
                      
     def handle_events_souris(self,event):
         from général.menu import Map
@@ -109,7 +102,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           if self.show_menu and self.zone_map_ic.collidepoint(event.pos):
               self.jeu.changer_etat(Map(self.jeu))
           if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
-              from général.menu import Inventaire # Import retardé pour éviter les boucles circulaires
+              from général.menu import Inventaire
+              print(self.show_menu)
+              self.menu = False
+              print(self.show_menu)
               self.jeu.changer_etat(Inventaire(self.jeu))
           if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
               from général.menu import Reglages # Import retardé pour éviter les boucles circulaires

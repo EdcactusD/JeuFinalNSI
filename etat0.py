@@ -29,7 +29,6 @@ class Etat0(Etats):
         super().__init__(jeu)
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "etat0.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.show_menu = True
 
     def handle_events(self, event):
         super().handle_events(event)

@@ -12,7 +12,7 @@ class Eau(Etats):
         super().__init__(jeu)
         #initialisations :
         self.mouse_pos_x = 0 
-        self.goutte_actuelle,self.feuille_actuelle= 0,0 #permet d'identifier la goutte
+        self.goutte_actuelle,self.feuille_actuelle= 0,0 #permet de savoir quand l'élément doit tomber
         self.nbr_gouttes_recup = 0
         self.objectif_gouttes = 20
         self.transition_niveau = False
@@ -36,62 +36,75 @@ class Eau(Etats):
         self.feuille_wh = self.jeu.bg_width//15
         self.feuille = pygame.transform.scale(self.feuille, (self.feuille_wh, self.feuille_wh))
         self.feuille_rect=pygame.Rect(0,0,self.feuille_wh, self.feuille_wh )
-        self.feuille_rect_liste=[]
+        self.feuille_rect_dico={} #nombre (ID) : rect, bool
         
         self.goutte = pygame.image.load(os.path.join("assets", "goutte.png"))
         self.goutte_wh = self.jeu.bg_width//15
         self.goutte = pygame.transform.scale(self.goutte, (self.goutte_wh, self.goutte_wh))
         self.goutte_rect=pygame.Rect(100,100,self.goutte_wh,self.goutte_wh)
-        self.goutte_rect_liste=[]
+        self.goutte_rect_dico={}
         
         
         self.debut_descente = pygame.time.get_ticks() #en milisecondes
         
-        self.liste_elem_bool_recup_goutte,self.liste_elem_bool_recup_feuille=[],[]
         self.mini_jeu = "Eau"
 
         
 
     def handle_events(self, event):
         super().handle_events(event)
+        
+    def enlever_elem_dico(self,dico):
+         """permet d'optimiser le jeu en limitant la taille des dictionnaires : lorsque l'éléement est sorti de l'écran il est supprimé"""
+         cles_a_supprimer = []
+         for elem in dico:
+           if dico[elem]["rect"].y >= self.jeu.bg_height:
+             cles_a_supprimer.append(elem)
+ 
+         for cle in cles_a_supprimer:
+            del dico[cle]
+            for elem in dico:
+             if dico[elem]["rect"].y>=self.jeu.bg_height:
+                del dico[elem] 
     
     def gerer_elem_tombent(self,screen,elem,niveau):
         if elem=="goutte":
             increment=self.goutte_actuelle
-            liste=self.goutte_rect_liste
-            booleens=self.liste_elem_bool_recup_goutte
             nbr_recup=self.nbr_gouttes_recup
             image=self.goutte
             dimensions=self.goutte_wh
             place_temps_dans_dico=0
+            dico = self.goutte_rect_dico
+            
             
         elif elem=="feuille":
             increment=self.feuille_actuelle
-            liste=self.feuille_rect_liste
-            booleens=self.liste_elem_bool_recup_feuille
             nbr_recup=self.nbr_gouttes_recup #on parle aussi en gouttes (mais à cause des feuilles cette fois-ci leur nombre peut baisser)
             image= self.feuille
             dimensions=self.feuille_wh
             place_temps_dans_dico=1
+            dico = self.feuille_rect_dico
+    
         
         self.temps_actuel = pygame.time.get_ticks()
         if (self.temps_actuel - self.debut_descente)/1000 >= increment*self.nivs[niveau][place_temps_dans_dico] : #on regarde si les temps écoulé correspond au moment auquel l'elem doit tomber
           random_x= random.randint(0,self.jeu.bg_width-dimensions)  
-          liste.append({"rect" : pygame.Rect(random_x,0,dimensions,dimensions),
-                                         "naissance" : self.temps_actuel})
-          booleens.append(False)   
+          dico={str(increment) : {"rect" : pygame.Rect(random_x,0,dimensions,dimensions),
+                        "naissance" : self.temps_actuel,
+                        "bool" : False}}
+
           increment+=1
         
-        for i in range(len(liste)):
-            if booleens[i]=="déja":
+        for truc in dico:
+            if dico[truc]["bool"]=="déja":
                 continue #on ne traite rien si la goutte a déja été récupérée
-            liste[i]["rect"].y = self.nivs[niveau][2] * (self.temps_actuel-liste[i]["naissance"]) #v=d/t d'où d = v*t
+            dico[truc]["rect"].y = self.nivs[niveau][2] * (self.temps_actuel-dico[truc]["naissance"]) #v=d/t d'où d = v*t
             
             portion_seau = pygame.Rect(self.seau_rect.x, self.seau_rect.y, self.seau_rect.w, self.seau_rect.h//3)
             #pygame.draw.rect(screen, (255, 0, 0), portion_seau, 10)
-            if liste[i]["rect"].colliderect(portion_seau):
-               booleens[i]=True
-            if booleens[i]: 
+            if dico[truc]["rect"].colliderect(portion_seau):
+              dico[truc]["bool"]=True
+            if dico[truc]["bool"]: 
                 #on ne blit pas (comme ca il y a l'impression que l'element est rentré dans le seau) 
                 if elem=="goutte":
                     nbr_recup+=1
@@ -100,10 +113,10 @@ class Eau(Etats):
                      nbr_recup-=2
                     else: #on évite que le joueur ai trop de déficit possible 
                         nbr_recup=0
-                booleens[i]="déja" #évite qu'on repasse dans la condition pour un même élément
+                dico[truc]["bool"]="déja" #évite qu'on repasse dans la condition pour un même élément
             else : 
-               screen.blit(image, (liste[i]["rect"].x, liste[i]["rect"].y))
-        return increment,liste,booleens,nbr_recup
+               screen.blit(image, (dico[truc]["rect"].x, dico[truc]["rect"].y))
+        return increment,dico,nbr_recup
 
 
     def draw(self, screen): #on va gérer dans le draw les changements de niveaux (en plus de l'affichage) car ils faut qu'ils soient aussi possible quand il n'y a pas d'event détecté        
@@ -131,22 +144,17 @@ class Eau(Etats):
           self.transition_niveau = True
         
         if self.transition_niveau:
-            i=0 #permet de parcourir en même temps une autre liste
-            for elem in self.feuille_rect_liste:
-                if elem["rect"].y>=self.jeu.bg_height:
-                    self.feuille_rect_liste.remove(elem)
-                    self.liste_elem_bool_recup_feuille.remove(self.liste_elem_bool_recup_feuille[i])
+            self.enlever_elem_dico(self.feuille_rect_dico)
 
-            if len(self.feuille_rect_liste)==0 :
+
+            if len(self.feuille_rect_dico)==0 :
                 self.goutte_actuelle=0
-                self.goutte_rect_liste=[]
-                self.liste_elem_bool_recup_goutte=[]
+                self.goutte_rect_dico={}
                 
                 self.feuille_actuelle=0
-                self.feuille_rect_liste=[]
-                self.liste_elem_bool_recup_feuille=[]
+                self.feuille_rect_dico={}
                 self.transition_niveau=False
-            i+=1
+            
         
         self.mouse_pos_x = pygame.mouse.get_pos()[0]
         if self.mouse_pos_x+self.seau_w//2>=self.menu_x and self.show_menu==True: # pour éviter que le seau soit blit sur le menu
@@ -166,34 +174,38 @@ class Eau(Etats):
         #pygame.draw.rect(screen, (255, 0, 0), self.goutte_rect, 10)
 
         if not self.transition_niveau: #permet d'afficher les dernieres feuilles présentes à l'écran le temps qu'elles en sortent. 
-          self.goutte_actuelle,self.goutte_rect_liste,self.liste_elem_bool_recup_goutte,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"goutte",self.niveau)
-          self.feuille_actuelle,self.feuille_rect_liste,self.liste_elem_bool_recup_feuille,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"feuille",self.niveau)
+          self.goutte_actuelle, self.goutte_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"goutte",self.niveau)
+          self.feuille_actuelle,self.feuille_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"feuille",self.niveau)
+          #optimisation pour éviter d'avoir un dico trop grand :
+          self.enlever_elem_dico(self.feuille_rect_dico)
+          self.enlever_elem_dico(self.goutte_rect_dico)
         
         else: #on le fait que pour les feuilles car dans tous les cas la goutte n'est plus visible quand on change de niveau (puisqu'elle a été récupérée)
             #reprend une grande partie de la fin de la fonction mais avec quelques modifications (donc pas possible de la réutiliser)
             self.temps_actuel = pygame.time.get_ticks()
-            for i in range(len(self.feuille_rect_liste)):
-                if self.liste_elem_bool_recup_feuille[i]=="déja":
-                    self.feuille_rect_liste.remove(self.feuille_rect_liste[i])
-                    self.liste_elem_bool_recup_feuille.remove(self.liste_elem_bool_recup_feuille[i])
-                    continue #on ne traite rien si la goutte a déja été récupérée
-                self.feuille_rect_liste[i]["rect"].y = self.nivs[str(int(self.niveau)-1)][2] * (self.temps_actuel-self.feuille_rect_liste[i]["naissance"]) 
-                portion_seau = pygame.Rect(self.seau_rect.x, self.seau_rect.y, self.seau_rect.w, self.seau_rect.h//3)
+            cles_a_supprimer = []
+            for truc in self.feuille_rect_dico:
+                if self.feuille_rect_dico[truc]["bool"] == "déja":
+                    cles_a_supprimer.append(truc)
+                    continue  # on passe à l'élément suivant
+                self.feuille_rect_dico[truc]["rect"].y = self.nivs[self.niveau][2] * (self.temps_actuel - self.feuille_rect_dico[truc]["naissance"])
                 
-                if self.feuille_rect_liste[i]["rect"].colliderect(portion_seau):
-                   self.liste_elem_bool_recup_feuille[i]=True
+                portion_seau = pygame.Rect(self.seau_rect.x, self.seau_rect.y, self.seau_rect.w, self.seau_rect.h // 3)
                 
-                if self.liste_elem_bool_recup_feuille[i]: 
-                    #on ne blit pas (comme ca il y a l'impression que l'element est rentré dans le seau) 
-                  if self.nbr_gouttes_recup-2>=0:
-                    self.nbr_gouttes_recup-=2
-                  else: #on évite que le joueur ai trop de déficit possible 
-                    self.nbr_gouttes_recup=0
-                  self.liste_elem_bool_recup_feuille[i]="déja" #évite qu'on repasse dans la condition pour un même élément
+                if self.feuille_rect_dico[truc]["rect"].colliderect(portion_seau):
+                    self.feuille_rect_dico[truc]["bool"] = True
                 
-                else : 
-                   screen.blit(self.feuille, (self.feuille_rect_liste[i]["rect"].x, self.feuille_rect_liste[i]["rect"].y))
-        
+                if self.feuille_rect_dico[truc]["bool"]:
+                    if self.nbr_gouttes_recup - 2 >= 0:
+                        self.nbr_gouttes_recup -= 2
+                    else:
+                        self.nbr_gouttes_recup = 0
+                    self.feuille_rect_dico[truc]["bool"] = "déja"
+                else:
+                    screen.blit(self.feuille, (self.feuille_rect_dico[truc]["rect"].x, self.feuille_rect_dico[truc]["rect"].y))
+            for cle in cles_a_supprimer:
+                del self.feuille_rect_dico[cle]
+            
         #screen.blit(self.goutte, (self.goutte_rect.x, self.goutte_rect.y))
         
         self.taille_nbr_gouttes=self.font.size(str(self.nbr_gouttes_recup)+"/"+str(self.objectif_gouttes))

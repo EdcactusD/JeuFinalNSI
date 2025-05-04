@@ -1,6 +1,5 @@
 import pygame
 import os
-import time
 
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
@@ -181,4 +180,56 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         '''pour modifier le dico'''
         if int(mini_jeu) in self.niveaux_jeux :
             self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """ 
+    
+    def Animation_debut(self):
+     print("initialisation cinématique début")
+     prop = 0.25
+     self.objet = pygame.image.load(os.path.join("assets", "items", "objet.png"))
+     self.objet = pygame.transform.scale(self.objet, (self.bg_width, self.bg_height))
+     fee_width = int(self.bg_width * prop)
+     fee_height = int(self.bg_width * prop)
+     self.fee = pygame.image.load(os.path.join("assets", "fee.png"))
+     self.fee = pygame.transform.scale(self.fee, (fee_width, fee_height))
+     self.zone_reponse = pygame.Rect(int(self.bg_width / 8), int(self.bg_height / 1.4), int(self.bg_width / 2),
+                                    int(self.bg_height / 12))
+     self.skip_font = pygame.font.SysFont(None, int(self.bg_height * 0.035))
+     self.skip_text = self.skip_font.render("Skip", True, "#FFFFFF")
+     self.skip_width = self.skip_text.get_width() + 20
+     self.skip_height = self.skip_text.get_height() + 10
+     self.skip_button = pygame.Rect(self.bg_width - self.skip_width - 20, self.bg_height - self.skip_height - 20,
+                                   self.skip_width, self.skip_height)
+     self.mots = ["Bienvenue à Etheris, je suis la fée de ce monde imaginaire et je vous guiderais lors de votre aventure",
+                 "Lors de votre aventure vous allez devoir compléter des mini-jeux afin de concevoir l'elixir des mondes ",
+                 "Il vous permettra de vous échapper et de revenir dans votre monde, Bonne chance"]
+     pygame.draw.rect(self.screen, "#4d3020", self.zone_reponse, border_radius=int(self.bg_height / 54))
+     self.screen.blit(self.objet, (0, 0))
+     self.screen.blit(self.fee, (0, 0))
+     pygame.display.flip()
+     self.temps = pygame.time.get_ticks()  
+     self.durée = 2000  
+
+     i = 0
+     while i < len(self.mots):
+        current_time = pygame.time.get_ticks()  
+        elapsed_time = current_time - self.temps  
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.skip_button.collidepoint(event.pos):  
+                    i = len(self.mots)  
+
+        if elapsed_time >= self.durée:
+            self.temps = current_time  
+            self.screen.blit(self.objet, (0, 0))
+            self.screen.blit(self.fee, (0, 0))
+            pygame.draw.rect(self.screen, "#4d3020", self.skip_button, border_radius=8)
+            self.screen.blit(self.skip_text, (self.skip_button.x + 10, self.skip_button.y + 5))
+            texte = self.font.render(self.mots[i], True, "#FFFFFF")
+            self.screen.blit(texte, (self.zone_reponse.x * 1.02, self.zone_reponse.y * 1.02))
+            pygame.display.flip()
+            i += 1  
+
+     pygame.time.wait(1000)
+     from général.menu_deb import Menu_debut
+     self.etat = Menu_debut(self)
     

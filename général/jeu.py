@@ -1,8 +1,8 @@
 import pygame
 import os
+from général.etats import Etats
 
-
-class Jeu:
+class Jeu(Etats):
     def __init__(self):
         pygame.init()
         
@@ -29,8 +29,7 @@ class Jeu:
         
 
         self.running = True
-        from général.menu_deb import Menu_debut
-        self.etat = Menu_debut(self)  # Définition de la scène actuelle
+        self.Animation_debut()
 
     def run(self):
         while self.running:

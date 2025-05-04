@@ -16,6 +16,7 @@ class Eau(Etats):
         self.nbr_gouttes_recup = 0
         self.objectif_gouttes = 20
         self.transition_niveau = False
+        self.fin_pause , self.debut_pause,self.pause,self.temps_ecoule_en_pause=0, 0,False, 0
         
         self.niveau=str(self.niveaux_jeux["Eau"][0])
         self.nivs = {"0": [2,1.6,0.75], #temps entre les gouttes, temps entre les feuilles, vitesse maximum
@@ -84,9 +85,10 @@ class Eau(Etats):
             dimensions=self.feuille_wh
             place_temps_dans_dico=1
             dico = self.feuille_rect_dico
-    
         
-        self.temps_actuel = pygame.time.get_ticks()
+        self.temps_actuel = pygame.time.get_ticks() - self.temps_ecoule_en_pause
+        #print("fin",self.temps_actuel) 
+        #print("temps en pause", self.temps_ecoule_en_pause)
         if (self.temps_actuel - self.debut_descente)/1000 >= increment*self.nivs[niveau][place_temps_dans_dico] : #on regarde si les temps écoulé correspond au moment auquel l'elem doit tomber
           random_x= random.randint(0,self.jeu.bg_width-dimensions)  
           dico={str(increment) : {"rect" : pygame.Rect(random_x,0,dimensions,dimensions),
@@ -94,7 +96,7 @@ class Eau(Etats):
                         "bool" : False}}
 
           increment+=1
-        
+
         for truc in dico:
             if dico[truc]["bool"]=="déja":
                 continue #on ne traite rien si la goutte a déja été récupérée
@@ -154,57 +156,69 @@ class Eau(Etats):
                 self.feuille_actuelle=0
                 self.feuille_rect_dico={}
                 self.transition_niveau=False
+                self.temps_ecoule_en_pause=0
             
         
         self.mouse_pos_x = pygame.mouse.get_pos()[0]
-        if self.mouse_pos_x+self.seau_w//2>=self.menu_x and self.show_menu==True: # pour éviter que le seau soit blit sur le menu
-            pass
+        if self.mouse_pos_x+self.seau_w//2>=self.menu_x and self.show_menu==True: # pour éviter que le seau soit blit sur le menu : on met en "pause"
+            self.debut_pause = pygame.time.get_ticks()
+            police = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/4))
+            texte = police.render("En pause", True, "#623f37")
+            screen.blit(texte,(self.jeu.bg_width//2 - texte.get_size()[0]//2 , self.jeu.bg_height//2 - texte.get_size()[1]//2, texte.get_size()[0], texte.get_size()[1]))
+            self.pause=True
+            #print("debut", self.temps_actuel)
+        elif self.pause:
+            self.pause=False
+            self.fin_pause=pygame.time.get_ticks()
+            self.temps_ecoule_en_pause += (self.fin_pause - self.debut_pause)*100 #conversion
+            
         else:
+          #self.temps_pause = pygame.time.get_ticks() #on le "réinitialise"
           if self.mouse_pos_x < self.jeu.bg_width : #pour éviter que le seau sorte de l'écran (étant donné que l'image est blit à partir de son coin gauche)
              screen.blit(self.seau, (self.mouse_pos_x-self.seau_w//2, self.seau_rect.y)) #pour que le seau s'affiche au-dessus des icones
              self.seau_rect = pygame.Rect(self.mouse_pos_x-self.seau_w//2, self.rect_regles_ic.y-self.seau_w,self.seau_w,self.seau_w)
           else : 
               screen.blit(self.seau, (self.jeu.bg_width - self.seau_w//2,self.seau_rect.y))
               self.seau_rect = pygame.Rect(self.jeu.bg_width - self.seau_w//2, self.rect_regles_ic.y-self.seau_w,self.seau_w,self.seau_w)
-           
-        
-        #self.feuille_rect=pygame.Rect(0,0,self.feuille_wh, self.feuille_wh )
-        #self.goutte_rect=pygame.Rect(100,100,self.goutte_wh,self.goutte_wh)
-        
-        #pygame.draw.rect(screen, (255, 0, 0), self.goutte_rect, 10)
+          #self.feuille_rect=pygame.Rect(0,0,self.feuille_wh, self.feuille_wh )
+          #self.goutte_rect=pygame.Rect(100,100,self.goutte_wh,self.goutte_wh)
+          
+          #pygame.draw.rect(screen, (255, 0, 0), self.goutte_rect, 10)
 
-        if not self.transition_niveau: #permet d'afficher les dernieres feuilles présentes à l'écran le temps qu'elles en sortent. 
-          self.goutte_actuelle, self.goutte_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"goutte",self.niveau)
-          self.feuille_actuelle,self.feuille_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"feuille",self.niveau)
-          #optimisation pour éviter d'avoir un dico trop grand :
-          self.enlever_elem_dico(self.feuille_rect_dico)
-          self.enlever_elem_dico(self.goutte_rect_dico)
+          if not self.transition_niveau: #permet d'afficher les dernieres feuilles présentes à l'écran le temps qu'elles en sortent. 
+            self.goutte_actuelle, self.goutte_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"goutte",self.niveau)
+            self.feuille_actuelle,self.feuille_rect_dico,self.nbr_gouttes_recup = self.gerer_elem_tombent(screen,"feuille",self.niveau)
+            #optimisation pour éviter d'avoir un dico trop grand :
+            self.enlever_elem_dico(self.feuille_rect_dico)
+            self.enlever_elem_dico(self.goutte_rect_dico)
+          
+          else: #on le fait que pour les feuilles car dans tous les cas la goutte n'est plus visible quand on change de niveau (puisqu'elle a été récupérée)
+              #reprend une grande partie de la fin de la fonction mais avec quelques modifications (donc pas possible de la réutiliser)
+              self.temps_actuel = pygame.time.get_ticks()
+              cles_a_supprimer = []
+              for truc in self.feuille_rect_dico:
+                  if self.feuille_rect_dico[truc]["bool"] == "déja":
+                      cles_a_supprimer.append(truc)
+                      continue  # on passe à l'élément suivant
+                  self.feuille_rect_dico[truc]["rect"].y = self.nivs[self.niveau][2] * (self.temps_actuel - self.feuille_rect_dico[truc]["naissance"])
+                  
+                  portion_seau = pygame.Rect(self.seau_rect.x, self.seau_rect.y, self.seau_rect.w, self.seau_rect.h // 3)
+                  
+                  if self.feuille_rect_dico[truc]["rect"].colliderect(portion_seau):
+                      self.feuille_rect_dico[truc]["bool"] = True
+                  
+                  if self.feuille_rect_dico[truc]["bool"]:
+                      if self.nbr_gouttes_recup - 2 >= 0:
+                          self.nbr_gouttes_recup -= 2
+                      else:
+                          self.nbr_gouttes_recup = 0
+                      self.feuille_rect_dico[truc]["bool"] = "déja"
+                  else:
+                      screen.blit(self.feuille, (self.feuille_rect_dico[truc]["rect"].x, self.feuille_rect_dico[truc]["rect"].y))
+              for cle in cles_a_supprimer:
+                  del self.feuille_rect_dico[cle] 
         
-        else: #on le fait que pour les feuilles car dans tous les cas la goutte n'est plus visible quand on change de niveau (puisqu'elle a été récupérée)
-            #reprend une grande partie de la fin de la fonction mais avec quelques modifications (donc pas possible de la réutiliser)
-            self.temps_actuel = pygame.time.get_ticks()
-            cles_a_supprimer = []
-            for truc in self.feuille_rect_dico:
-                if self.feuille_rect_dico[truc]["bool"] == "déja":
-                    cles_a_supprimer.append(truc)
-                    continue  # on passe à l'élément suivant
-                self.feuille_rect_dico[truc]["rect"].y = self.nivs[self.niveau][2] * (self.temps_actuel - self.feuille_rect_dico[truc]["naissance"])
-                
-                portion_seau = pygame.Rect(self.seau_rect.x, self.seau_rect.y, self.seau_rect.w, self.seau_rect.h // 3)
-                
-                if self.feuille_rect_dico[truc]["rect"].colliderect(portion_seau):
-                    self.feuille_rect_dico[truc]["bool"] = True
-                
-                if self.feuille_rect_dico[truc]["bool"]:
-                    if self.nbr_gouttes_recup - 2 >= 0:
-                        self.nbr_gouttes_recup -= 2
-                    else:
-                        self.nbr_gouttes_recup = 0
-                    self.feuille_rect_dico[truc]["bool"] = "déja"
-                else:
-                    screen.blit(self.feuille, (self.feuille_rect_dico[truc]["rect"].x, self.feuille_rect_dico[truc]["rect"].y))
-            for cle in cles_a_supprimer:
-                del self.feuille_rect_dico[cle]
+        
             
         #screen.blit(self.goutte, (self.goutte_rect.x, self.goutte_rect.y))
         
@@ -213,6 +227,6 @@ class Eau(Etats):
         #pygame.draw.rect(screen, (255, 0, 0), self.feuille_rect, 10)
         #pygame.draw.rect(screen, (0, 255, 0), self.seau_rect, 10)
         
-            
+        
             
         self.montrer_regles_aide(screen, self.last_event, "Eau")

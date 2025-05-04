@@ -47,6 +47,13 @@ class Tir_arc(Etats):
         self.longueur = 210
         self.mini_jeu = "Tir_arc"
         
+        self.afficher_croix = False
+        self.position_croix = (0, 0)
+        self.temps_croix = 0
+        self.image_croix = pygame.image.load(os.path.join("assets", "croix.png"))
+        self.image_croix = pygame.transform.scale(self.image_croix, (50, 50))
+
+        
 
     def cible_attributs(self, niveau):
         """les attributs de la cible bougent en fonction des niveaux, cette fonction va renvoyer les bons attributs pour chaque niveau"""
@@ -98,6 +105,9 @@ class Tir_arc(Etats):
               if not self.niveau_increment and self.niveau!="4":
                   self.niveau=str(int(self.niveau)+1)
                   self.niveau_increment=True
+                  self.croix_ratio = ((self.tir_x - self.rond_cible["centre"][0]) / self.rond_cible["rayon"], (self.tir_y - self.rond_cible["centre"][1]) / self.rond_cible["rayon"])
+                  self.temps_croix = pygame.time.get_ticks()     # moment du contact
+                  self.afficher_croix = True
               if not self.niveau_increment and self.niveau=="4": #le mini-jeu est fini
                  self.mini_jeu_fini(self.mini_jeu)
                  pygame.mouse.set_visible(True)
@@ -121,14 +131,32 @@ class Tir_arc(Etats):
             self.temps_passe_en_vol = time.time() - self.deb_temps_en_vol
             
             self.tir_x = self.tir_x_base - self.vitesse* self.temps_passe_en_vol*10
-            self.tir_y =self.tir_y_base - self.a*(((self.tir_x_base-self.tir_x)-self.alpha)**2)-self.beta #on a calculé l'image dans le repere d'origine (tir_x_base;tir_y_base) donc on ajoute tir_y_base pour que la position soit bonne + on change le signe du trinôme pour que les branches soient vers le haut
+            self.tir_y =self.tir_y_base - self.a*(((self.tir_x_base-self.tir_x)-self.alpha)**2)-self.beta #on a calculé l'image dans le repere d'origine (tir_x_base;tir_y_base) donc on ajoute tir_y_base pour que la position soit bonne + on change le signe du trinôme pour que les branches soient vers le bas
 
             # Vérifier si la distance entre le point de départ et le point actuel dépasse un certain seuil
             if self.tir_x_base - self.tir_x >= self.longueur:
                 self.en_vol = False  # Arrêter le mouvement lorsque la distance est atteinte
             
-            screen.blit(self.fleche_img, (self.tir_x-self.fleche_img_wh//2, self.tir_y-self.fleche_img_wh//2)) #on blit l'image à partir de son centre (si on enleve rien c'est au coin supérieur gauche)
+           #pour faire tourner la flèche
+            distance_x = abs(self.tir_x - self.tir_x_base)
+            t = distance_x / self.longueur  # de 0 à 1
+            self.angle = 180 * t  # de 0° à 180° donc flèche orientée vers le bas
+            self.fleche_img_tourne = pygame.transform.rotozoom(self.fleche_img, self.angle, 1)
+            self.rect_img_tourne =  self.fleche_img_tourne.get_rect(center=(self.tir_x, self.tir_y)) #permet d'être toujours au même endroit même si le coin supérieur gauche change
+            screen.blit( self.fleche_img_tourne, self.rect_img_tourne)
+            
+            #screen.blit(self.fleche_img, (self.tir_x-self.fleche_img_wh//2, self.tir_y-self.fleche_img_wh//2)) #on blit l'image à partir de son centre (si on enleve rien c'est au coin supérieur gauche)
 
         #pygame.draw.circle(screen, (0,255,0), self.rond_cible["centre"], self.rond_cible["rayon"]) #pour dessiner la zone de touche (tests)
+        
+        if self.afficher_croix:
+            if pygame.time.get_ticks() - self.temps_croix < 500:  
+               x = self.rond_cible["centre"][0] + self.croix_ratio[0] * self.rond_cible["rayon"]
+               y = self.rond_cible["centre"][1] + self.croix_ratio[1] * self.rond_cible["rayon"]
+               screen.blit(self.image_croix, (x - self.image_croix.get_width() // 2, y - self.image_croix.get_height() // 2))
+
+            else:
+                self.afficher_croix = False  # on arrête d'afficher
+
         
         self.montrer_regles_aide(screen, self.last_event, "Tir_arc")

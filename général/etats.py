@@ -28,21 +28,20 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
        
        #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2)
-       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False],
-                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " ",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False],
-                             "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " ",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False],
-                             "Pendu" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False],
-                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " ",pygame.image.load(os.path.join("assets","items", "poudre de perlinpimpim.png")),False],
-                             "Portes" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "pomme de la discorde.png")),False],
-                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible",pygame.image.load(os.path.join("assets","items", "Epine de Sylve.png")),False],
-                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " ",pygame.image.load(os.path.join("assets","items", "éclat d'obsidrune.png")),False],
-                             "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " ",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False],
-                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False],
-                             "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False],
-                             "Krabi" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False],
-                             "Zephyr" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "poussière du Zéphyr.png")),False],
-                             "Mars" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False],
-                             "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False]                    
+       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False,"œuf de phénix"],
+                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " ",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False,"Sève de Sagesse"],
+                             "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " ",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False,"grains d’ambre"],
+                             "Pendu" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False,"cheveux de Rossier"],
+                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " ",pygame.image.load(os.path.join("assets","items", "poudre de perlinpimpim.png")),False,"poudre de perlimpinpin"],
+                             "Portes" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "pomme de la discorde.png")),False,"Pomme de la Discorde"],
+                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible",pygame.image.load(os.path.join("assets","items", "Epine de Sylve.png")),False,"Épine de Sylve"],
+                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " ",pygame.image.load(os.path.join("assets","items", "éclat d'obsidrune.png")),False,"Eclat d’obsidrune"],
+                             "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " ",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False,"pépite d'or"],
+                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False,"glace millénaire"],
+                             "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False,"Rosée du désert"],
+                             "Krabi" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False,"pince de Krabi"],
+                             "Mars" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False,"Sel de Mars"],
+                             "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False,"Elixir des mondes"]                    
             }
        
        #pour les icones de regles et aide dans les mini-jeux
@@ -101,10 +100,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           if self.show_menu and self.zone_map_ic.collidepoint(event.pos):
               self.jeu.changer_etat(Map(self.jeu))
           if self.show_menu and self.zone_inventaire_ic.collidepoint(event.pos):
+              print(self.show_menu)
+              self.show_menu = False
+              print(self.show_menu)
+              pygame.display.flip()
               from général.menu import Inventaire
-              print(self.show_menu)
-              self.menu = False
-              print(self.show_menu)
               self.jeu.changer_etat(Inventaire(self.jeu))
           if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
               from général.menu import Reglages # Import retardé pour éviter les boucles circulaires
@@ -149,9 +149,10 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
         self.jeu.screen.blit(objet, (0, 0))  
         self.jeu.screen.blit(resized_image,(zone_affichage.x * 1.02, zone_affichage.y * 1.02))
-        pygame.display.flip()
 
-        self.niveaux_jeux[mini_jeu][4] = True  
+        self.niveaux_jeux["Vitesse"][4] = True 
+        print("Le mini-jeu est à " + str(self.niveaux_jeux[mini_jeu][4]) )
+        pygame.display.flip()
         pygame.time.delay(2000)
 
         pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
@@ -232,4 +233,5 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
      pygame.time.wait(1000)
      from général.menu_deb import Menu_debut
      self.etat = Menu_debut(self)
+
     

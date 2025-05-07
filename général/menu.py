@@ -75,11 +75,13 @@ class Reglages(Etats):
 
 
 class Inventaire(Etats):
-    def __init__(self,jeu):
+    def __init__(self,jeu,):
        super().__init__(jeu)
        self.bg_image = pygame.image.load(os.path.join("assets","parchemin3.png"))
        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
        self.show_menu = False
+       self.nbr = 0
+
 
     def handle_events(self, event):
         super().handle_events(event)
@@ -90,31 +92,33 @@ class Inventaire(Etats):
 
     def draw(self, screen):
      super().draw(screen)
+     self.nbr = 0
      font = pygame.font.SysFont("arial", int(self.jeu.bg_height / 36))
      checkbox_size = int(self.jeu.bg_height / 36)
 
-     objets = list(self.jeu.etat.niveaux_jeux.items())  # récupère tous les objets du dico
-     for i, (nom_mini_jeu, valeurs) in enumerate(objets):
-        nom_objet = nom_mini_jeu.replace("_", " ").capitalize() 
-        if i < 7:
-            x = int(self.jeu.bg_width / 8)
-            y = int(self.jeu.bg_height / 5) + i * int(self.jeu.bg_height / 12)
-        else:
-            x = int(self.jeu.bg_width * 0.58)
-            y = int(self.jeu.bg_height / 5) + (i - 7) * int(self.jeu.bg_height / 12)
+     for i in self.niveaux_jeux:
+      self.nbr += 1
+    
+      if self.nbr < 7:
+        x = int(self.jeu.bg_width / 8)
+        y = int(self.jeu.bg_height / 5) + self.nbr * int(self.jeu.bg_height / 12)
+      else:
+        x = int(self.jeu.bg_width * 0.58)
+        y = int(self.jeu.bg_height / 5) + (self.nbr - 7) * int(self.jeu.bg_height / 12)
 
-        rect = pygame.Rect(x, y, checkbox_size, checkbox_size)
 
-        text = font.render(nom_objet, True, (255, 255, 255))
-        screen.blit(text, (x + checkbox_size + 10, y))
+      rect = pygame.Rect(x, y, checkbox_size, checkbox_size)
 
-        if self.niveaux_jeux[nom_mini_jeu][4] == True:
-            pygame.draw.rect(screen, (0, 200, 0), rect)  
-            pygame.draw.line(screen, (255, 255, 255), rect.topleft, rect.bottomright, 2)
-            pygame.draw.line(screen, (255, 255, 255), rect.topright, rect.bottomleft, 2)
-        else:
-            pygame.draw.rect(screen, (200, 200, 200), rect, 2)
+      text = font.render((str(self.niveaux_jeux[i][5])), True, (255, 255, 255))
+      screen.blit(text, (x + checkbox_size + 10, y))
 
+      if self.niveaux_jeux[i][4] == True:
+        pygame.draw.rect(screen, (0, 200, 0), rect)  
+        pygame.draw.line(screen, (255, 255, 255), rect.topleft, rect.bottomright, 3)
+        pygame.draw.line(screen, (255, 255, 255), rect.topright, rect.bottomleft, 3)
+      else:
+        pygame.draw.rect(screen, (200, 200, 200), rect, 2)
+     print(self.niveaux_jeux["Vitesse"][4])
       
 class Map(Etats):
     def __init__(self,jeu):

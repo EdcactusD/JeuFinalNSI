@@ -98,7 +98,7 @@ class Krabi(Etats):
             if not self.finished:
                 if event.key == pygame.K_RETURN:
                     if self.reponse.upper() == self.secret:
-                        self.message = "✨ Succès ! ✨"
+                        self.message = "Succès !"
                         self.advance_level()
                     else:
                         self.message = "Mot incorrect"
@@ -191,3 +191,5 @@ class Krabi(Etats):
         elif self.message:
             msg_surface = self.jeu.font.render(self.message, True, (255, 215, 0))
             screen.blit(msg_surface, (self.zone_input.x, self.zone_input.y - 40))
+            
+        self.montrer_regles_aide(screen, self.last_event, "Krabi")

@@ -16,10 +16,10 @@ class Enigme(Etats):
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.niveau = str(self.niveaux_jeux["Enigme"][0])
         self.enigmes = { "0": ["On me pose sans me toucher.","question"], #dico des énigmes (énigme, réponse)
-                         "1": ["Je ne suis pas vivant mais je grandi,\nJe meurs sous l’eau\nJe n’ai pas de poumons mais j’ai besoin d’air","feu"],
+                         "1": ["On dit que je meurs sous l'eau\net que j'ai besoin d'air\npourtant je ne suis pas vivant\net je n'ai pas de poumons.","feu"],
                          "2": ["Je peux être audible, visible ou odorante,\nmais jamais les trois à la fois \nJe peux être basse \nou haute sans jamais tomber.\nJ’évalue sans parler.\nJe suis florale ou boisée.","note"],
                          "3": ["Je suis mort et je peux hanter \nou bien je peux être ouvert \nou fermé sans être touché\net vif ou lent sans jamais bouger","esprit"],
-                         "4": ["Encore une fois, on ne peut me voir,\nmais on ne peut me toucher. \nLes pauvres m’ont,\nles riches ont besoin de moi.","rien"]            
+                         "4": ["Les pauvres m’ont,\nles riches ont besoin de moi.","rien"]            
 }
         self.dernier_niveau="4"
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
@@ -92,16 +92,9 @@ class Enigme(Etats):
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
-        if self.attente-(pygame.time.get_ticks()-self.debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
-          self.minutes = (self.attente - (pygame.time.get_ticks() - self.debut_attente)) // 60000  # Nombre de minutes restantes
-          self.secondes = (self.attente - (pygame.time.get_ticks() - self.debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
-
-          # Format propre mm:ss (avec zéro devant si nécessaire)
-          self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
-          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
-          
 
         self.montrer_regles_aide(screen, self.last_event, "Enigme")
+        self.mini_jeu_perdu(screen, self.attente, self.debut_attente,(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
         
         
 class Trad(Enigme):
@@ -201,10 +194,4 @@ class Trad(Enigme):
         else: 
             screen.blit(self.font_symboles_petit.render("--disparu--", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+self.jeu.bg_height*0.04))
         
-        if self.attente-(pygame.time.get_ticks()-self.debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
-          self.minutes = (self.attente - (pygame.time.get_ticks() - self.debut_attente)) // 60000  # Nombre de minutes restantes
-          self.secondes = (self.attente - (pygame.time.get_ticks() - self.debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
-
-          # Format propre mm:ss (avec zéro devant si nécessaire)
-          self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
-          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(int(self.jeu.bg_width/2 - self.texte_rect.w/2), int(self.jeu.bg_height/2.4)))
+        self.mini_jeu_perdu(screen, self.attente, self.debut_attente,(int(self.jeu.bg_width/2 - self.texte_rect.w/2), int(self.jeu.bg_height/2.4)))

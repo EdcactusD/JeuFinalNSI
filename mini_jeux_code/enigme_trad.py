@@ -19,7 +19,7 @@ class Enigme(Etats):
                          "1": ["On dit que je meurs sous l'eau\net que j'ai besoin d'air\npourtant je ne suis pas vivant\net je n'ai pas de poumons.","feu"],
                          "2": ["Je peux être audible, visible ou odorante,\nmais jamais les trois à la fois \nJe peux être basse \nou haute sans jamais tomber.\nJ’évalue sans parler.\nJe suis florale ou boisée.","note"],
                          "3": ["Je suis mort et je peux hanter \nou bien je peux être ouvert \nou fermé sans être touché\net vif ou lent sans jamais bouger","esprit"],
-                         "4": ["Les pauvres m’ont,\nles riches ont besoin de moi.","rien"]            
+                         "4": ["Les pauvres m’ont,\nles riches ont besoin de moi.","rien"]     
 }
         self.dernier_niveau="4"
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
@@ -60,13 +60,12 @@ class Enigme(Etats):
                         self.reponse_uti=""
                         print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
                         
-            elif len(self.reponse_uti)<=self.lenmax and self.case_en_cour_de_modif==None:    
+            elif len(self.reponse_uti)<=self.lenmax:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
                 print("trop long!")
         
-    def handle_events(self, event):
-        
+    def handle_events(self, event):  
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
            self.attendre=False
         else : 

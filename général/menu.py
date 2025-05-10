@@ -93,7 +93,8 @@ class Inventaire(Etats):
      super().draw(screen)
      from général.etats import niveaux_jeux
      self.nbr = 0
-     font = pygame.font.SysFont("arial", int(self.jeu.bg_height / 36))
+     #font = pygame.font.SysFont("arial", int(self.jeu.bg_height / 36))
+     font=self.jeu.font 
      checkbox_size = int(self.jeu.bg_height / 36)
 
      for i in niveaux_jeux:

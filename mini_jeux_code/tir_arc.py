@@ -42,6 +42,8 @@ class Tir_arc(Etats):
          
         self.tir_x = 0 #position finale de la fleche une fois tout le mouvement effectué, mise à 0 pour eviter les bugs (car cible ne sera jamais à 0;0 donc pas de problemes et ce sont des valeurs de coordonées possibles donc pas de modifiactions dans la logique du code)
         self.tir_y = 0
+        self.tir_y_base, self.tir_x_base=0,0
+        self.anciennes_coord_fleche=(0,0)
         self.vitesse = 15 #represente la vitesse de la fleche a parcourir la trajectoire
         
         self.hauteur = 300
@@ -99,19 +101,6 @@ class Tir_arc(Etats):
            self.beta= self.hauteur
            self.a = -self.beta/(self.alpha**2) #on trouve a tel que les points sont sur la parabole
 
-        
-        #self.tir_x est calculé dand le draw pour une meilleure fluidité     
-        self.distance_cible_fleche= sqrt((self.rond_cible["centre"][0]-self.tir_x)**2 + (self.rond_cible["centre"][1]-self.tir_y)**2) #théroème de Pythagore
-        if self.distance_cible_fleche<= self.rond_cible["rayon"] and self.tir_x_base-self.tir_x>self.longueur/2:  #on vérifie qu'on est assez avancé dans la trajectoire (éviter qu'on puisse juste viser directement sur al cible)
-              if not self.niveau_increment and self.niveau!="4":
-                  self.niveau=str(int(self.niveau)+1)
-                  self.niveau_increment=True
-                  self.croix_ratio = ((self.tir_x - self.rond_cible["centre"][0]) / self.rond_cible["rayon"], (self.tir_y - self.rond_cible["centre"][1]) / self.rond_cible["rayon"])
-                  self.temps_croix = pygame.time.get_ticks()     # moment du contact
-                  self.afficher_croix = True
-              if not self.niveau_increment and self.niveau=="4": #le mini-jeu est fini
-                 self.mini_jeu_fini(self.mini_jeu)
-                 pygame.mouse.set_visible(True)
     
     def draw(self, screen):
         self.cible_taille,self.cible_pos, self.cible_img,self.rond_cible=self.cible_attributs(self.niveau)
@@ -150,6 +139,24 @@ class Tir_arc(Etats):
 
         #pygame.draw.circle(screen, (0,255,0), self.rond_cible["centre"], self.rond_cible["rayon"]) #pour dessiner la zone de touche (tests)
         
+        #self.tir_x est calculé dand le draw pour une meilleure fluidité      
+        self.distance_cible_fleche= sqrt((self.rond_cible["centre"][0]-self.tir_x)**2 + (self.rond_cible["centre"][1]-self.tir_y)**2) #théroème de Pythagore
+        if self.distance_cible_fleche<= self.rond_cible["rayon"] and self.tir_x_base-self.tir_x>self.longueur/2:  #on vérifie qu'on est assez avancé dans la trajectoire (éviter qu'on puisse juste viser directement sur la cible)
+              if not self.niveau_increment and self.niveau!="4":
+                  if self.tir_x!=0:
+                        self.anciennes_coord_fleche= (self.tir_x,self.tir_y)
+                        self.tir_x, self.tir_y = 0,0
+                  self.niveau=str(int(self.niveau)+1)
+                  self.niveau_increment=True
+                  self.croix_ratio = ((self.anciennes_coord_fleche[0]- self.rond_cible["centre"][0]) / self.rond_cible["rayon"], (self.anciennes_coord_fleche[1] - self.rond_cible["centre"][1]) / self.rond_cible["rayon"])
+                  self.temps_croix = pygame.time.get_ticks()     # moment du contact
+                  self.afficher_croix = True
+                  
+              if not self.niveau_increment and self.niveau=="4": #le mini-jeu est fini 
+                 self.mini_jeu_fini(self.mini_jeu)
+                 pygame.mouse.set_visible(True)
+          
+        
         if self.afficher_croix:
             if pygame.time.get_ticks() - self.temps_croix < 500:  
                x = self.rond_cible["centre"][0] + self.croix_ratio[0] * self.rond_cible["rayon"]
@@ -159,5 +166,4 @@ class Tir_arc(Etats):
             else:
                 self.afficher_croix = False  # on arrête d'afficher
 
-        
         self.montrer_regles_aide(screen, self.last_event, "Tir_arc")

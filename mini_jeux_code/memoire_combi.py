@@ -6,9 +6,10 @@ from général.etats import Etats
 class Memoire_combi(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets", "fonds", "Mémoire_combi.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.niveau = str(self.niveaux_jeux["Memoire_combi"][0])
+        self.niveau = str(niveaux_jeux["Memoire_combi"][0])
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width / 2.8), int(self.jeu.bg_height / 1.4), int(self.jeu.bg_width / 3.5), int(self.jeu.bg_height / 12))
         self.zone_affichage = pygame.Rect(int(self.jeu.bg_width / 2.8), int(self.jeu.bg_height / 2), int(self.jeu.bg_width / 3.5), int(self.jeu.bg_height / 6))
         self.zone_noms = pygame.Rect(int(self.jeu.bg_width / 10000), int(self.jeu.bg_height / 5.1), int(self.jeu.bg_width / 10), int(self.jeu.bg_height / 1.95))

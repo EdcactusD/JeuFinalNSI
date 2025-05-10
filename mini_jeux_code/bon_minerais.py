@@ -5,10 +5,11 @@ from général.etats import Etats
 class Bon_minerai(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Bon_minerai.jpeg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.niveau = str(self.niveaux_jeux["Bon_minerai"][0])
+        self.niveau = str(niveaux_jeux["Bon_minerai"][0])
         self.Bon_minerai = { "0": ["éthérium",pygame.image.load(os.path.join("assets","Bon_minerai", "éthérium.png"))],
                          "1": ["lunarium",pygame.image.load(os.path.join("assets","Bon_minerai", "lunarium.png"))],
                          "2": ["mythril",pygame.image.load(os.path.join("assets","Bon_minerai", "mythril.png"))],
@@ -28,7 +29,7 @@ class Bon_minerai(Etats):
 
         self.mauvaise_rep=0
 
-        self.niveau = str(self.niveaux_jeux["Bon_minerai"][0])
+        self.niveau = str(niveaux_jeux["Bon_minerai"][0])
         self.image = None
         self.mini_jeu = "Bon_minerai"
 

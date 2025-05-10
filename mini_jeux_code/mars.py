@@ -4,13 +4,14 @@ from général.etats import Etats
 
 class Mars(Etats):
     """Mini-jeu qui affiche 4 propositions possible à des questions de culture générale, le joueur doit cliquer sur la bonne pour augmenter de niveau
-     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico niveaux_jeux pour adapter au bon niveau
      renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Mars.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.niveau = str(self.niveaux_jeux["Mars"][0])
+        self.niveau = str(niveaux_jeux["Mars"][0])
         self.niveau_max=9
         self.dico_questions = {"0" : ["Combien y a t’il de 0 dans un million ?",["3","6","9","10"],"6",25], #question, reponses possible, bonne reponse, chrono disponible
                                "1" : ["Quelle est la planète la plus proche du Soleil dans le monde que vous connaissez ?",["Vénus","Terre","Mars","Mercure"],"Mercure",15],

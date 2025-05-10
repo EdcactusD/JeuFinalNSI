@@ -1,6 +1,22 @@
 import pygame
 import os
 
+#dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2) , les images(3), la reussite du mini-jeu(4) , le nom de l'item(5)
+global niveaux_jeux
+niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False,"œuf de phénix"],
+                "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " ",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False,"Sève de Sagesse"],
+                "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " ",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False,"grains d’ambre"],
+                "Pendu" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False,"cheveux de Rossier"],
+                "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " ",pygame.image.load(os.path.join("assets","items", "poudre de perlinpimpim.png")),False,"poudre de perlimpinpin"],
+                "Portes" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "pomme de la discorde.png")),False,"Pomme de la Discorde"],
+                "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible",pygame.image.load(os.path.join("assets","items", "Epine de Sylve.png")),False,"Épine de Sylve"],
+                "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " ",pygame.image.load(os.path.join("assets","items", "éclat d'obsidrune.png")),False,"Eclat d’obsidrune"],
+                "Bon_minerai" :[0, "Associez le bon\nnom au bon minerai", " ",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False,"pépite d'or"],
+                "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False,"glace millénaire"],
+                "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False,"Rosée du désert"],
+                "Krabi" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False,"pince de Krabi"],
+                "Mars" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False,"Sel de Mars"],
+                "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False,"Elixir des mondes"]}
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def __init__(self, jeu, show_menu=False, show_map=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
@@ -26,24 +42,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.map = pygame.image.load(os.path.join("assets","fonds","carte.png"))
        self.map = pygame.transform.scale(self.map, (self.jeu.bg_width, self.jeu.bg_height))
        #FAIRE UNE CLASSE A PART POUR INVENTAIRE, REGLAGES, CARTE
-       
-       #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2)
-       self.niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False,"œuf de phénix"],
-                             "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", " ",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False,"Sève de Sagesse"],
-                             "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", " ",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False,"grains d’ambre"],
-                             "Pendu" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False,"cheveux de Rossier"],
-                             "Pendule" : [0, "Cliquez sur le\nbouton stop au\nbon moment\npour arreter\nles aiguilles", " ",pygame.image.load(os.path.join("assets","items", "poudre de perlinpimpim.png")),False,"poudre de perlimpinpin"],
-                             "Portes" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "pomme de la discorde.png")),False,"Pomme de la Discorde"],
-                             "Tir_arc" :[0, "Cliquez sur l'écran pour\ntirer une flèche\nle niveau est passé\n si elle atteint la cible\nà la fin de la\ntrajectoire", "C'est à la fin de son\nmouvement que la flèche\npeut toucher la cible",pygame.image.load(os.path.join("assets","items", "Epine de Sylve.png")),False,"Épine de Sylve"],
-                             "Vitesse" : [0, "Ecrivez les mots\nles plus rapidement\n possibles en \nrespectant le délai\n des 5 secondes", " ",pygame.image.load(os.path.join("assets","items", "éclat d'obsidrune.png")),False,"Eclat d’obsidrune"],
-                             "Bon_minerai" :[0, "Associez le bon        \nnom au bon \nminerai                                  ", " ",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False,"pépite d'or"],
-                             "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False,"glace millénaire"],
-                             "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False,"Rosée du désert"],
-                             "Krabi" :[0, "Appuyez sur\nles mots pour\nréveller des\nlettres\npuis remettez les\ndans le bon ordre", " ",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False,"pince de Krabi"],
-                             "Mars" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False,"Sel de Mars"],
-                             "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False,"Elixir des mondes"]                    
-            }
-       
+             
        #pour les icones de regles et aide dans les mini-jeux
        self.regles_ic = pygame.image.load(os.path.join("assets","regles.png"))
        self.regles_ic=pygame.transform.scale(self.regles_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
@@ -56,11 +55,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.rect_aide_ic=pygame.Rect(int(self.jeu.bg_width/18), self.jeu.bg_height - int(self.jeu.bg_height/10.8),int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8))
        self.show_aide=False
        self.rect_aide=pygame.Rect(self.rect_aide_ic.x, self.rect_aide_ic.y - int(self.jeu.bg_height/5) ,int(self.jeu.bg_width/7.5), int(self.jeu.bg_height/5))
-       
-       self.menu_rond_ic = pygame.image.load(os.path.join("assets","menu_rond.png"))
-       self.menu_rond_ic=pygame.transform.scale(self.menu_rond_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
-       self.rect_menu_rond = pygame.Rect(int(self.jeu.bg_width -  self.menu_rond_ic.get_width() -10), int(self.jeu.bg_height -self.menu_rond_ic.get_height()-10),int(self.menu_rond_ic.get_width()), int(self.menu_rond_ic.get_height()))
-       
     
     def montrer_regles_aide(self, screen,event, nom_mini_jeu):
          if event != None :
@@ -76,14 +70,14 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
              screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))
              screen.blit(self.aide_ic, (self.rect_aide_ic.x, self.rect_aide_ic.y)) 
              
-             self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux[nom_mini_jeu][1])/1.2)))
+             self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(niveaux_jeux[nom_mini_jeu][1])/1.2)))
              if self.show_regles:
-               self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(self.niveaux_jeux[nom_mini_jeu][1])/1.2)))
+               self.font_petit = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_width/(len(niveaux_jeux[nom_mini_jeu][1])/1.2)))
                pygame.draw.rect(screen, "white", self.rect_regles, border_radius=int(self.jeu.bg_height/54))
-               self.sauter_ligne(self.niveaux_jeux[nom_mini_jeu][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
+               self.sauter_ligne(niveaux_jeux[nom_mini_jeu][1], self.rect_regles.x+10, self.rect_regles.y,45,self.font_petit,(123,85,57), screen)
              if self.show_aide:
                  pygame.draw.rect(screen, "white", self.rect_aide, border_radius=int(self.jeu.bg_height/54))
-                 self.sauter_ligne(self.niveaux_jeux[nom_mini_jeu][2], self.rect_aide.x+10, self.rect_aide.y,45,self.font_petit,(123,85,57), screen)
+                 self.sauter_ligne(niveaux_jeux[nom_mini_jeu][2], self.rect_aide.x+10, self.rect_aide.y,45,self.font_petit,(123,85,57), screen)
  
         
         
@@ -114,8 +108,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           if self.show_menu and self.zone_reglages_ic.collidepoint(event.pos):
               from général.menu import Reglages # Import retardé pour éviter les boucles circulaires
               self.jeu.changer_etat(Reglages(self.jeu))
-          if not self.show_menu and self.rect_menu_rond.collidepoint(event.pos):
-              self.show_menu=True
               
     def handle_events(self, event): #dans certains jeu d'entrée de texte il peut être utile de désactiver un temps les raccoucis, c'est pourquoi les deux fonctions sont séparées
         self.handle_events_keys(event)
@@ -150,15 +142,15 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         self.jeu.bg_width // 4, 
         self.jeu.bg_height // 4 
         )
-        new_width = int(self.niveaux_jeux[mini_jeu][3].get_width() * prop)
-        new_height = int(self.niveaux_jeux[mini_jeu][3].get_height() * prop)
-        resized_image = pygame.transform.scale(self.niveaux_jeux[mini_jeu][3], (new_width, new_height)).convert_alpha()
+        new_width = int(niveaux_jeux[mini_jeu][3].get_width() * prop)
+        new_height = int(niveaux_jeux[mini_jeu][3].get_height() * prop)
+        resized_image = pygame.transform.scale(niveaux_jeux[mini_jeu][3], (new_width, new_height)).convert_alpha()
 
         self.jeu.screen.blit(objet, (0, 0))  
         self.jeu.screen.blit(resized_image,(zone_affichage.x * 1.02, zone_affichage.y * 1.02))
 
-        self.niveaux_jeux["Vitesse"][4] = True 
-        print("Le mini-jeu est à " + str(self.niveaux_jeux[mini_jeu][4]) )
+        niveaux_jeux[mini_jeu][4] = True 
+        
         pygame.display.flip()
         pygame.time.delay(2000)
 
@@ -170,27 +162,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         #MARQUER le jeu comme fait (impossible d'y revenir)
 
  
-    def mini_jeu_perdu(self, screen, attente, debut_attente,position):
-        pixel_10_dans_ref = int(self.jeu.bg_width/192)
-        if attente-(pygame.time.get_ticks()-debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
-          self.minutes = (attente - (pygame.time.get_ticks() - debut_attente)) // 60000  # Nombre de minutes restantes
-          self.secondes = (attente - (pygame.time.get_ticks() - debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
-
-          # Format propre mm:ss (avec zéro devant si nécessaire)
-          self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
-          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(position))
-
-          texte="Vous avez fait trop de mauvaises propositions\nattendez pour pouvoir soumettre une nouvelle réponse"
-          lignes = texte.split("\n")
-          largeur_max = max([self.font.size(ligne)[0] for ligne in lignes])
-          ratio = pixel_10_dans_ref*3
-          hauteur_totale = len(lignes) * (self.jeu.bg_height / ratio)  # même valeur que l'espace ratio pour le blit
-          texte_dimensions = (largeur_max+10, int(hauteur_totale)+pixel_10_dans_ref)
-          popup = pygame.Rect(self.rect_menu_rond.x - texte_dimensions[0] - pixel_10_dans_ref , self.jeu.bg_height- texte_dimensions[1]-pixel_10_dans_ref ,int(texte_dimensions[0]),int(texte_dimensions[1]))
-          
-          pygame.draw.rect(screen, "white", popup, border_radius=15)
-          self.sauter_ligne(texte, popup.x+pixel_10_dans_ref//2, popup.y+pixel_10_dans_ref//2, ratio, self.font,(123,85,57), screen)
-          #screen.blit(self.font.render(texte, True, "#4d3020"),(popup.x+5, popup.y+5))
+    """def update(self):
+        pass  # permet de gerer independament les updates de chaque mini-jeu"""
 
     def draw(self, screen):
         #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)
@@ -202,13 +175,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
             #pygame.draw.rect(screen, (255, 0, 0), self.zone_map_ic, 2)  # Contour rouge pour tester
             #pygame.draw.rect(screen, (0, 255, 0), self.zone_inventaire_ic, 2)
             #pygame.draw.rect(screen, (0, 0, 255), self.zone_reglages_ic, 2)
-        if not self.show_menu : 
-            screen.blit(self.menu_rond_ic, (self.rect_menu_rond.x, self.rect_menu_rond.y))
           
     """def update_niveau(self, mini_jeu, nouv_niveau):
         '''pour modifier le dico'''
-        if int(mini_jeu) in self.niveaux_jeux :
-            self.niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """ 
+        if int(mini_jeu) in niveaux_jeux :
+            niveaux_jeux[int(mini_jeu)]=nouv_niveau # pour l'instant ne sert à rien """ 
     
     def Animation_debut(self):
      print("initialisation cinématique début")

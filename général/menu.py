@@ -82,7 +82,6 @@ class Inventaire(Etats):
        self.show_menu = False
        self.nbr = 0
 
-
     def handle_events(self, event):
         super().handle_events(event)
         if self.show_menu == False:
@@ -92,11 +91,12 @@ class Inventaire(Etats):
 
     def draw(self, screen):
      super().draw(screen)
+     from général.etats import niveaux_jeux
      self.nbr = 0
      font = pygame.font.SysFont("arial", int(self.jeu.bg_height / 36))
      checkbox_size = int(self.jeu.bg_height / 36)
 
-     for i in self.niveaux_jeux:
+     for i in niveaux_jeux:
       self.nbr += 1
     
       if self.nbr < 7:
@@ -109,16 +109,13 @@ class Inventaire(Etats):
 
       rect = pygame.Rect(x, y, checkbox_size, checkbox_size)
 
-      text = font.render((str(self.niveaux_jeux[i][5])), True, (255, 255, 255))
+      text = font.render((str(niveaux_jeux[i][5])), True, (0, 0, 0))
       screen.blit(text, (x + checkbox_size + 10, y))
 
-      if self.niveaux_jeux[i][4] == True:
+      if niveaux_jeux[i][4] == True:
         pygame.draw.rect(screen, (0, 200, 0), rect)  
-        pygame.draw.line(screen, (255, 255, 255), rect.topleft, rect.bottomright, 3)
-        pygame.draw.line(screen, (255, 255, 255), rect.topright, rect.bottomleft, 3)
       else:
-        pygame.draw.rect(screen, (200, 200, 200), rect, 2)
-     print(self.niveaux_jeux["Vitesse"][4])
+        pygame.draw.rect(screen, (0, 0, 0), rect, 2)
       
 class Map(Etats):
     def __init__(self,jeu):

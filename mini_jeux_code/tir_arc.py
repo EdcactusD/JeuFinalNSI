@@ -6,10 +6,11 @@ from général.etats import Etats
 
 class Tir_arc(Etats):
     """Mini-jeu qui affiche une cible sur laquelle le joueur doit tirer un flèche (c'est la fin de la trajectoire de cette dernière qui permet de passer d'un niveau à l'autre)
-     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico niveaux_jeux pour adapter au bon niveau
      renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Tir_arc.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.curseur_img= pygame.image.load(os.path.join("assets", "viseur.png"))
@@ -20,7 +21,7 @@ class Tir_arc(Etats):
         
         self.cible_img = pygame.image.load(os.path.join("assets", "cible.png"))
         
-        self.niveau = str(self.niveaux_jeux["Tir_arc"][0])
+        self.niveau = str(niveaux_jeux["Tir_arc"][0])
         self.niveau_increment = False #permet d'incrementer 1 fois par bon tir le niveau
         
         self.dico_niveaux = { "0" : { "cible_taille" : self.jeu.bg_width//4},

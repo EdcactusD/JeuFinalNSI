@@ -6,7 +6,7 @@ from général.etats import Etats
 #POUR LA SAUVEGARDE : ne pas mettre le niveau dans le dico des niveaux, mais garder en mémoire le nombre de gouttes! 
 class Eau(Etats):
     """Mini-jeu qui avec des gouttes et des feuilles tombent du haut de l’écran, le joueur doit récupérer les gouttes (avec le seau) en vue de faire monter leur nombre récupéré et finir le mini-jeu. S’il récupère des feuilles, le compteur descend de 2.
-     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon nombre de gouttes déjà récupérées
+     réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico niveaux_jeux pour adapter au bon nombre de gouttes déjà récupérées
      renvoie le nouveau nombre de gouttes/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
@@ -17,8 +17,9 @@ class Eau(Etats):
         self.objectif_gouttes = 20
         self.transition_niveau = False
         self.fin_pause , self.debut_pause,self.pause,self.temps_ecoule_en_pause=0, 0,False, 0
+        from général.etats import niveaux_jeux
         
-        self.niveau=str(self.niveaux_jeux["Eau"][0])
+        self.niveau=str(niveaux_jeux["Eau"][0])
         self.nivs = {"0": [2,1.6,0.75], #temps entre les gouttes, temps entre les feuilles, vitesse maximum
                      "1": [2,1.5,0.9],
                      "2": [2,1.5,1.2],

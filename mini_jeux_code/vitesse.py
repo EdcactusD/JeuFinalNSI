@@ -5,13 +5,14 @@ from général.etats import Etats
 class Vitesse(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Vitesse.jpg"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
         self.mots = { "0": ["anticonstitutionellement"],
                          "1": ["zygomatique"],
                          "2": ["tétrathionate"] }
-        self.niveau = str(self.niveaux_jeux["Vitesse"][0])
+        self.niveau = str(niveaux_jeux["Vitesse"][0])
 
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
         self.zone_affichage = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/2),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/6))

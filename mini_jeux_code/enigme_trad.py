@@ -6,15 +6,15 @@ from général.etats import Etats
 
 class Enigme(Etats):
     """Mini-jeu qui affiche des énigmes, le joueur doit y répondre en les tapant dans une zone de texte
-    réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico self.niveaux_jeux pour adapter au bon niveau
+    réutilise les méthodes d'Etats() et prend notamment les valeurs dans son dico niveaux_jeux pour adapter au bon niveau
     renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
-        
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "enigme2.png"))
         
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.niveau = str(self.niveaux_jeux["Enigme"][0])
+        self.niveau = str(niveaux_jeux["Enigme"][0])
         self.enigmes = { "0": ["On me pose sans me toucher.","question"], #dico des énigmes (énigme, réponse)
                          "1": ["On dit que je meurs sous l'eau\net que j'ai besoin d'air\npourtant je ne suis pas vivant\net je n'ai pas de poumons.","feu"],
                          "2": ["Je peux être audible, visible ou odorante,\nmais jamais les trois à la fois \nJe peux être basse \nou haute sans jamais tomber.\nJ’évalue sans parler.\nJe suis florale ou boisée.","note"],
@@ -32,6 +32,7 @@ class Enigme(Etats):
         self.attente= 60000*1 #en milisecondes 
         self.debut_attente= -self.attente #par défaut, comme ça le if est vrai si le joueur n'a pas eu faux
         self.mini_jeu = "Enigme"
+        
         
 
     def handle_events(self, event):
@@ -103,6 +104,7 @@ class Trad(Enigme):
      renvoie le nouveau niveau atteind/si le jeu est fini"""
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Trad.jpeg"))
         self.zone_reponse = pygame.Rect(0, int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2-self.zone_reponse.w/2),self.zone_reponse.y ,self.zone_reponse.w,self.zone_reponse.h) #on redefini les x pour que la zone soit centrée
@@ -110,7 +112,7 @@ class Trad(Enigme):
         
         self.font_symboles = pygame.font.Font(os.path.join("assets", "unifont-16.0.02.otf"), int(self.jeu.bg_height/25)) #sinon les symboles ne sont pas supportés par la police actuelle
         self.font_symboles_petit = pygame.font.Font(os.path.join("assets", "unifont-16.0.02.otf"), int(self.jeu.bg_height/40))
-        self.niveau = str(self.niveaux_jeux["Trad"][0])
+        self.niveau = str(niveaux_jeux["Trad"][0])
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.enigmes = {   "0": ["ᛚᚠ ⛥☉ᚢ♃ᚠ♇ᚢ☾ ᛟᚠᚱᛚ☾","la montagne parle", "sachant que le mot 'montagne' est présent dans la phrase,\ntraduire mot par mot :"], #dico des traductions(on reprend nom engime pour garder le mem fonctionnement que dans la super clsse) (traduction à effectuer, réponse, énoncé)
                          "1": ["ᛚ☾ ♅☾ᚢ♃ ⛥♄ᚱ⛥♄ᚱ☾ ᚲ☾☿ ⛥☉♃☿ ☉♄ᛒᛚᛉ☽☿","le vent murmure des mots oubliés", "sachant que le 'e' et le 'é' se ressemblent,\nle 'o' et le 'b' sont proche de notre alphabet\net que la dernière lettre est un 's', traduire :"],

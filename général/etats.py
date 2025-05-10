@@ -161,6 +161,28 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         self.jeu.changer_etat(Map(self.jeu))
         #MARQUER le jeu comme fait (impossible d'y revenir)
 
+    def mini_jeu_perdu(self, screen, attente, debut_attente,position):
+        pixel_10_dans_ref = int(self.jeu.bg_width/192)
+        if attente-(pygame.time.get_ticks()-debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
+          self.minutes = (attente - (pygame.time.get_ticks() - debut_attente)) // 60000  # Nombre de minutes restantes
+          self.secondes = (attente - (pygame.time.get_ticks() - debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
+
+          # Format propre mm:ss (avec zéro devant si nécessaire)
+          self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
+          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(position))
+
+          texte="Vous avez fait trop de mauvaises propositions\nattendez pour pouvoir soumettre une nouvelle réponse"
+          lignes = texte.split("\n")
+          largeur_max = max([self.font.size(ligne)[0] for ligne in lignes])
+          ratio = pixel_10_dans_ref*3
+          hauteur_totale = len(lignes) * (self.jeu.bg_height / ratio)  # même valeur que l'espace ratio pour le blit
+          texte_dimensions = (largeur_max+10, int(hauteur_totale)+pixel_10_dans_ref)
+          popup = pygame.Rect(self.rect_menu_rond.x - texte_dimensions[0] - pixel_10_dans_ref , self.jeu.bg_height- texte_dimensions[1]-pixel_10_dans_ref ,int(texte_dimensions[0]),int(texte_dimensions[1]))
+          
+          pygame.draw.rect(screen, "white", popup, border_radius=15)
+          self.sauter_ligne(texte, popup.x+pixel_10_dans_ref//2, popup.y+pixel_10_dans_ref//2, ratio, self.font,(123,85,57), screen)
+          #screen.blit(self.font.render(texte, True, "#4d3020"),(popup.x+5, popup.y+5))
+
  
     """def update(self):
         pass  # permet de gerer independament les updates de chaque mini-jeu"""

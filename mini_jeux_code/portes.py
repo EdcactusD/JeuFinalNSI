@@ -9,14 +9,11 @@ class Portes(Etats):
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
 
         self.questions = [
-            {"texte": "Quelle est la capitale de la France ?", "choix": ["Lyon", "Paris", "Marseille"], "bonne": "Paris"},
-            {"texte": "Combien y a-t-il de continents ?", "choix": ["5", "6", "7"], "bonne": "7"},
-            {"texte": "Quel est l'élément chimique O ?", "choix": ["Or", "Oxygène", "Osmium"], "bonne": "Oxygène"},
-            {"texte": "Qui a peint la Joconde ?", "choix": ["Picasso", "Léonard de Vinci", "Van Gogh"], "bonne": "Léonard de Vinci"},
-            {"texte": "Combien font 8 × 7 ?", "choix": ["56", "64", "49"], "bonne": "56"},
-            {"texte": "Quel est le plus grand océan ?", "choix": ["Atlantique", "Arctique", "Pacifique"], "bonne": "Pacifique"},
-            {"texte": "Quelle planète est la plus proche du Soleil ?", "choix": ["Mercure", "Vénus", "Mars"], "bonne": "Mercure"},
-            {"texte": "Quelle langue est parlée au Brésil ?", "choix": ["Espagnol", "Portugais", "Français"], "bonne": "Portugais"}
+            {"texte": "La fée est au fond d’un puits de 10 mètres\nChaque matin elle monte 3 mètres et chaque nuit descend de 2 mètres.\nCombien de jours lui faudra-t-il pour sortir du puits ?", "choix": ["10", "8", "4"], "bonne": "8"},
+            {"texte": "Quelle pierre complète cette suite :\nquartz, rubis, saphir ?", "choix": ["topaze", "améthyste", "émeraude"], "bonne": "topaze"},
+            {"texte": "Une barque voguant au nord de l’îlot Zéphyr possède un dessin d’étoile\nà 20 cm de l’eau sur sa coque. Si l’eau monte de 10 cm,\nquelle est la distance entre le dessin et l’eau ? ", "choix": ["20", "15", "10"], "bonne": "20"},
+            {"texte": "Dans la forêt des âmes perdues\n100 esprits habitent la lisière circulaire de la forêt,\ntous ont le même discours : “je ne mens jamais mais mon voisin de gauche ment toujours”.\nCombien y-a-t’il d’esprits menteurs ?", "choix": ["100", "99", "50"], "bonne": "50"},
+            {"texte": "Dans la bibliothèque du château\nune suite de lettres étranges est inscrite mais la dernière est effacée :\nU-D-T-Q-C-S-S- quelle est cette lettre ?", "choix": ["H", "S", "N"], "bonne": "H"},
         ]
 
         self.niveau = 0

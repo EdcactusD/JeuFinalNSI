@@ -36,27 +36,11 @@ class Enigme(Etats):
         
 
     def handle_events(self, event):
+        self.case_en_cour_de_modif=None #utile pour trad (on ne s'en occuppe pas ici)
         
-        if pygame.time.get_ticks()-self.debut_attente>self.attente:
-           self.attendre=False
-        else : 
-            self.attendre=True
-        
-        if self.redaction: 
-            """pour qu'il soit possible d'écrire avec toutes les touches"""
-            super().handle_events_souris(event)
-        else:
-            super().handle_events(event)  
-            
-        #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos) and self.attendre==False:
-            self.redaction=True
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
-            self.redaction=False
-            
+    def handle_events_ecrire(self,event):
         if self.redaction==True and event.type == pygame.KEYDOWN:
-            """Pour enlever un caractère"""
-            if event.key==pygame.K_BACKSPACE: 
+            if event.key==pygame.K_BACKSPACE: #Pour enlever un caractère
                 self.ancienne_rep=self.reponse_uti
                 self.reponse_uti=""
                 for i in range(len(self.ancienne_rep)-1):
@@ -76,11 +60,30 @@ class Enigme(Etats):
                         self.reponse_uti=""
                         print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
                         
-            elif len(self.reponse_uti)<=self.lenmax:    
+            elif len(self.reponse_uti)<=self.lenmax and self.case_en_cour_de_modif==None:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
                 print("trop long!")
         
+    def handle_events(self, event):
+        
+        if pygame.time.get_ticks()-self.debut_attente>self.attente:
+           self.attendre=False
+        else : 
+            self.attendre=True
+        
+        if self.redaction: 
+            """pour qu'il soit possible d'écrire avec toutes les touches"""
+            super().handle_events_souris(event)
+        else:
+            super().handle_events(event)  
+            
+        #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos) and self.attendre==False:
+            self.redaction=True
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
+            self.redaction=False
+        self.handle_events_ecrire(event)
     
     def draw(self, screen):
         super().draw(screen)
@@ -114,41 +117,74 @@ class Trad(Enigme):
         self.font_symboles_petit = pygame.font.Font(os.path.join("assets", "unifont-16.0.02.otf"), int(self.jeu.bg_height/40))
         self.niveau = str(niveaux_jeux["Trad"][0])
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
-        self.enigmes = {   "0": ["ᛚᚠ ⛥☉ᚢ♃ᚠ♇ᚢ☾ ᛟᚠᚱᛚ☾","la montagne parle", "sachant que le mot 'montagne' est présent dans la phrase,\ntraduire mot par mot :"], #dico des traductions(on reprend nom engime pour garder le mem fonctionnement que dans la super clsse) (traduction à effectuer, réponse, énoncé)
-                         "1": ["ᛚ☾ ♅☾ᚢ♃ ⛥♄ᚱ⛥♄ᚱ☾ ᚲ☾☿ ⛥☉♃☿ ☉♄ᛒᛚᛉ☽☿","le vent murmure des mots oubliés", "sachant que le 'e' et le 'é' se ressemblent,\nle 'o' et le 'b' sont proche de notre alphabet\net que la dernière lettre est un 's', traduire :"],
-                         "2": ["ᛚ☾☿ ᛚ☽♇☾ᚢᚲ☾☿ ᚲᛉ☿☾ᚢ♃ ⊕♄☾ ᛚ☾☿ ᚠᚢᚦᛉ☾ᚢ☿ ☉ᛒ☿☾ᚱ♅☾ᚢ♃ ☾ᚢᚦ☉ᚱ☾ ᚲ☾ᛟ♄ᛉ☿ ᛚ☾☿ ☿☉⛥⛥☾♃☿","les légendes disent que les anciens observent encore depuis les sommets", "avec les traductions trouvées précédemment,\ntraduire :"],
-                         "3": ["ᛚ☾☿ ⛥☉ᚢ♃☿ ☿☉ᚢ♃ ☿☾ᚦᚱ☾♃☿","les monts sont secrets", "à l’aide de vos connaissances sur la langue d’Etheris\nacquises grâce aux traductions précédentes,\ntraduire :"],
+        self.enigmes = {   "0": ["ᛚᚠ ⛥☉ᚢ♃ᚠ♇ᚢ☾ ᛟᚠᚱᛚ☾","lamontagneparle", "sachant que le mot 'montagne' est présent dans la phrase,\ntraduire mot par mot :", [],"la montagne parle"], #dico des traductions(on reprend nom engime pour garder le meme fonctionnement que dans la super clsse) (traduction à effectuer, réponse, énoncé, liste des rects pour les tirets, réponse pour l'historique)
+                         "1": ["ᛚ☾ ♅☾ᚢ♃ ⛥♄ᚱ⛥♄ᚱ☾ ᚲ☾☿ ⛥☉♃☿ ☉♄ᛒᛚᛉ☽☿","leventmurmuredesmotsoubliés", "sachant que le 'e' et le 'é' se ressemblent,\nle 'o' et le 'b' sont proche de notre alphabet\net que la dernière lettre est un 's', traduire :", [],"le vent murmure des mots oubliés"],
+                         "2": ["ᛚ☾☿ ᛚ☽♇☾ᚢᚲ☾☿ ᚲᛉ☿☾ᚢ♃ ⊕♄☾ ᛚ☾☿ ᚠᚢᚦᛉ☾ᚢ☿ ☉ᛒ☿☾ᚱ♅☾ᚢ♃ ☾ᚢᚦ☉ᚱ☾ ᚲ☾ᛟ♄ᛉ☿ ᛚ☾☿ ☿☉⛥⛥☾♃☿","leslégendesdisentquelesanciensobserventencoredepuislessommets", "avec les traductions trouvées précédemment,\ntraduire :", [],"les légendes disent que les anciens observent encore depuis les sommets"],
+                         "3": ["ᛚ☾☿ ⛥☉ᚢ♃☿ ☿☉ᚢ♃ ☿☾ᚦᚱ☾♃☿","lesmontssontsecrets", "à l’aide de vos connaissances sur la langue d’Etheris\nacquises grâce aux traductions précédentes,\ntraduire :", [],"les monts sont secrets"],
                          }
         self.dernier_niveau="3"
         self.tirets="" #va afficher les endroits où une lettre doit être tapée (ex : __ ___ pour le mont)
         self.tirets_defini = False #permet de savoir si on a déjà défini les tirets ou pas (pour le faire qu'une seule fois par traduction)
+        self.tiret_milieu=0
         self.taille_texte = 0 #va permettre de centrer les tirrets
         self.font_tirets = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/34)) #on aggrandit
         self.lenmax= 85
         self.mini_jeu = "Trad"
+        
+        self.case_en_cour_de_modif=None
+        self.reponse_uti = [" " for i in range(len(self.enigmes[self.niveau][0]))]
+        self.nbr_tirets=0
 
         
-    def handle_events(self, event):
-        self.mauvaises_lettres_id #ATTENTION : ou les reinitialiser??? 
+    def handle_events_ecrire(self,event):
+        if self.redaction == True and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
+          for i in range(len(self.enigmes[self.niveau][3])):
+            if self.enigmes[self.niveau][3][i].collidepoint(event.pos):
+               self.case_en_cour_de_modif=i
+               
         if self.redaction==True and event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            if event.key==pygame.K_BACKSPACE: #Pour enlever un caractère
+                if self.case_en_cour_de_modif!=None:
+                    if self.case_en_cour_de_modif>0:
+                        self.case_en_cour_de_modif-=1
+                    self.reponse_uti[self.case_en_cour_de_modif] = " "
+                    if self.case_en_cour_de_modif in self.mauvaises_lettres_id:
+                        self.mauvaises_lettres_id.remove(self.case_en_cour_de_modif)
+                        
+                    
+                
+                
+            elif event.key == pygame.K_RETURN:
                 self.mauvaises_lettres_id=[]
-                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() :
+                for i in range(len(self.enigmes[self.niveau][1])):
+                   if self.reponse_uti[i].upper()!=self.enigmes[self.niveau][1][i].upper():
+                      self.mauvaises_lettres_id.append(i)
+                      if self.mauvaise_rep>3:
+                        self.mauvaise_rep=0
+                        self.debut_attente=pygame.time.get_ticks()
+                if len(self.mauvaises_lettres_id)!=0:
+                    self.mauvaise_rep+=1
+                if len(self.mauvaises_lettres_id)==0 and self.niveau!=self.dernier_niveau :
+                    self.mauvaises_lettres_id=[]
+                    self.niveau=str(int(self.niveau)+1)
+                    self.reponse_uti = [" " for i in range(len(self.enigmes[self.niveau][0]))]
+                    self.mauvaise_rep=0
+                    self.nbr_tirets=0
+                    self.case_en_cour_de_modif=None
                     self.tirets_defini=False
                     self.tirets=""
                     self.taille_texte=0
-                else :
-                    if len(self.reponse_uti)>len(self.enigmes[self.niveau][1]):
-                        for i in range(len(self.enigmes[self.niveau][1]),len(self.reponse_uti)):
-                            self.mauvaises_lettres_id.append(i)               
-                    else: 
-                      for i in range(len(self.reponse_uti)):
-                        if self.reponse_uti[i]!=self.enigmes[self.niveau][1][i]:
-                          self.mauvaises_lettres_id.append(i)
-        
-        super().handle_events(event)
-            
-
+                    
+                elif len(self.mauvaises_lettres_id)==0 and self.niveau==self.dernier_niveau: 
+                    self.mini_jeu_fini(self.mini_jeu)
+                
+                        
+            if self.case_en_cour_de_modif!=None:
+                if event.key != pygame.K_RETURN and event.key != pygame.K_BACKSPACE:
+                  self.reponse_uti[self.case_en_cour_de_modif] = event.unicode
+                  if self.case_en_cour_de_modif<self.nbr_tirets : #si on est pas sur la dernière case, on passe à la suivante pour plus de fluidité
+                     self.case_en_cour_de_modif+=1
+                
         
     def draw(self,screen):
         Etats.draw(self,screen)
@@ -171,28 +207,41 @@ class Trad(Enigme):
                 self.tirets+=" "
               else:
                 self.tirets+="_"
+                self.nbr_tirets+=1
               self.taille_texte+=self.espacement
               self.tirets_defini=True
-        self.tiret_milieu= int(self.jeu.bg_width/2 - self.taille_texte/2)
-        self.zone_reponse = pygame.Rect(int(self.tiret_milieu), int(self.jeu.bg_height/1.5), int(self.taille_texte), int(self.taille_tiret[1]*2)) #pour coller au format de la super classe, sinon le handle event est défini sur celui de la super classe !
-    
+              
+            for i in range(len(self.tirets)):
+                self.tiret_milieu= int(self.jeu.bg_width/2 - self.taille_texte/2)
+                self.espacement_x = self.tiret_milieu + i * self.espacement
+                self.zone_reponse = pygame.Rect(int(self.tiret_milieu), int(self.jeu.bg_height/1.5), int(self.taille_texte), int(self.taille_tiret[1]*2)) #pour coller au format de la super classe, sinon le handle event est défini sur celui de la super classe !
+                if self.tirets[i]!=" ":   
+                  #ATTENTION : que pour la taille des tirets 
+                  self.enigmes[self.niveau][3].append(pygame.Rect(int(self.espacement_x), self.zone_reponse.y,self.taille_tiret[0],self.taille_tiret[1]))
+                  
+                
+                
         for i in range(len(self.tirets)):
             """permet de centrer les lettres sur les tirets"""
+            self.tiret_milieu= int(self.jeu.bg_width/2 - self.taille_texte/2)
+            self.zone_reponse = pygame.Rect(int(self.tiret_milieu), int(self.jeu.bg_height/1.5), int(self.taille_texte), int(self.taille_tiret[1]*2)) #pour coller au format de la super classe, sinon le handle event est défini sur celui de la super classe !
+            
             self.espacement_x = self.tiret_milieu + i * self.espacement
             screen.blit(self.font_tirets.render(self.tirets[i], True, "black"),(int(self.espacement_x), self.zone_reponse.y))
+        for i in range(self.nbr_tirets):    
             if self.redaction and len(self.reponse_uti)>i:   #on vérifie que l'indice i existe pour self.reponse_uti
               if i in self.mauvaises_lettres_id:
-                 screen.blit(self.font_tirets.render(self.reponse_uti[i], True, "red"),(int(self.espacement_x), self.zone_reponse.y)) 
+                 screen.blit(self.font_tirets.render(self.reponse_uti[i], True, "red"),(self.enigmes[self.niveau][3][i].x, self.enigmes[self.niveau][3][i].y)) 
               else:
-                  screen.blit(self.font_tirets.render(self.reponse_uti[i], True, "#4d3020"),(int(self.espacement_x), self.zone_reponse.y))
-        if self.redaction and len(self.reponse_uti)>len(self.tirets):
-            self.reponse_uti="" #si on dépasse la zone, la réponse se réinitialise
+                  screen.blit(self.font_tirets.render(self.reponse_uti[i], True, "#4d3020"),(self.enigmes[self.niveau][3][i].x, self.enigmes[self.niveau][3][i].y))
+            #pygame.draw.rect(screen, "red", self.enigmes[self.niveau][3][i], 10)
+    
             
         #on affiche l'historique:
         screen.blit(self.font.render("historique :", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005))
         if self.niveau!=self.dernier_niveau:
           for i in range(int(self.niveau)):
-           screen.blit(self.font_symboles_petit.render(self.enigmes[str(i)][0] + " = " + self.enigmes[str(i)][1], True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+(i+1)*self.jeu.bg_height*0.04))
+           screen.blit(self.font_symboles_petit.render(self.enigmes[str(i)][0] + " = " + self.enigmes[str(i)][4], True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+(i+1)*self.jeu.bg_height*0.04))
         else: 
             screen.blit(self.font_symboles_petit.render("--disparu--", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+self.jeu.bg_height*0.04))
         

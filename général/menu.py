@@ -17,7 +17,7 @@ class Reglages(Etats):
        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "reglagesessai.png"))
        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
        self.font=self.jeu.font 
-       self.boutons = {"ON" : [pygame.Rect(int(self.jeu.bg_width/1.9), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/13), int(self.jeu.bg_height/15)), (176,143,101), (143,116,81),"ON"], 
+       self.boutons = {"ON" : [pygame.Rect(int(self.jeu.bg_width/1.8), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/13), int(self.jeu.bg_height/15)), (176,143,101), (143,116,81),"ON"], 
                        "réin_SAUVEGARDE" : [pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.6), int(self.jeu.bg_width/4), int(self.jeu.bg_height/14)), (176,143,101), (143,116,81),"Réinitialiser la sauvegarde"],
                        }
        self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
@@ -27,7 +27,7 @@ class Reglages(Etats):
        self.volume = self.jeu.volume
        self.dico_commande={"menu" : ["w", int(self.jeu.bg_width/3.14),int(self.jeu.bg_height/2.05)],
                            "carte" : ["x",int(self.jeu.bg_width/2.34),int(self.jeu.bg_height/2.05)],
-                           "inventaire" : ["c",int(self.jeu.bg_width/1.7),int(self.jeu.bg_height/2.05)] }
+                           }
        self.resu_histoire= "suite à un accident vous êtes bloqué dans le monde d'Etheris,\npour en sortit il vous faut réaliser une potion et donc récuperer par les mini-jeux\nles ingrédients recquis. Arrivez à la fin de chaque niveau des mini-jeux\npour récuperer l'ingrédient et marquer le défi comme fait , vous ne pourrez plus y revenir "
        self.font_resu = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/50))
        self.font_grand = pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/17))

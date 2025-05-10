@@ -2,6 +2,9 @@ import pygame
 import os 
 from général.etats import Etats
 
+global volume
+volume = 0.5
+
 """compore toutes les classes utiles pour le menu : Reglages, Inventaire et Map"""
   
 class Reglages(Etats):
@@ -14,6 +17,7 @@ class Reglages(Etats):
        super().__init__(jeu)
        self.menu_debut= menu_debut
        super().__init__(jeu)
+       self.volume = self.jeu.volume
        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "reglagesessai.png"))
        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
        self.font=self.jeu.font 
@@ -24,7 +28,6 @@ class Reglages(Etats):
        self.barre = pygame.Rect(int(self.jeu.bg_width/2.77), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/6), self.boutons["ON"][0].h)
        self.curseur = pygame.Rect(self.barre.x + self.barre.w/2-self.barre.w/8 , self.barre.y, self.barre.w/4, self.barre.h)
        self.c_mouv= False
-       self.volume = self.jeu.volume
        self.dico_commande={"menu" : ["w", int(self.jeu.bg_width/3.14),int(self.jeu.bg_height/2.05)],
                            "carte" : ["x",int(self.jeu.bg_width/2.34),int(self.jeu.bg_height/2.05)],
                            }
@@ -39,18 +42,14 @@ class Reglages(Etats):
              self.c_mouv = True
          for bouton, (position, couleur, couleur_texte,nom) in list(self.boutons.items()): #on cree une copie du dictionnaire qui est donc figée
              if position.collidepoint(event.pos) :
-                 if bouton=="ON" and self.boutons["ON"][3] == "ON" :
-                     self.boutons["ON"][1], self.boutons["ON"][2],self.boutons["ON"][3]=(143,116,81), (176,143,101),"OFF"  #on change la couleur des boutons
-                     pygame.mixer.music.pause()
-                 elif bouton=="ON" and self.boutons["ON"][3] == "OFF" :
-                     self.boutons["ON"][1], self.boutons["ON"][2], self.boutons["ON"][3]=(176,143,101), (143,116,81), "ON"
-                     pygame.mixer.music.unpause()
-                 elif bouton=="réin_SAUVEGARDE" :
+                if bouton=="réin_SAUVEGARDE" :
                      print("reinitialisation")
      elif event.type == pygame.MOUSEMOTION and self.c_mouv : 
          self.curseur.x = event.pos[0]  # Suit la souris
          self.curseur.clamp_ip(self.barre)  # .clamp_ip contraint un Rect pour qu'il reste entièrement à l’intérieur d’un autre Rect
          self.volume = (self.curseur.x - self.barre.x) / (self.barre.w - self.curseur.w)
+         global volume
+         volume = self.volume
          pygame.mixer.music.set_volume(self.volume)
      elif event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
          self.c_mouv = False           
@@ -58,7 +57,6 @@ class Reglages(Etats):
    def draw(self, screen):
      screen.blit(self.bg_image, (0, 0))
      super().draw(screen) 
-     self.menu_debut.aggrandir_bouton(screen, self.boutons,self.boutons_ref)
      pygame.draw.rect(screen,(176,143,101), (self.barre.x, self.barre.y, self.barre.w, self.barre.h), border_radius=int(self.barre.w/15)) #pour rect self.barre
      pygame.draw.rect(screen,(143,116,81), (self.curseur.x, self.curseur.y, self.curseur.w, self.curseur.h), border_radius=int(self.barre.w/15)) # pour curseur
      screen.blit(self.font_grand.render("Son : ", True, (6,3,3)), (int(self.jeu.bg_width/3.64), int(self.jeu.bg_height/4)))

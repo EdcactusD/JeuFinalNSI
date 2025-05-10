@@ -1,6 +1,8 @@
 import pygame
 import os 
 from général.etats import Etats
+#Mini jeu où une combinaison de lettres d'Etheris apparait puis disparait , le but est de s'en rappeller et de la recréer avec le clavier numérique, on prend 
+#les valeurs du dictionnaire niveaux_jeux pour s'adapter au niveau et on renvoie si le joueur perd ou gagne le mini-jeu , on y reutulise les méthodes de Etats()
 
 
 class Memoire_combi(Etats):
@@ -19,7 +21,7 @@ class Memoire_combi(Etats):
             "1": ["ᚠᛏ♆ᛗ☉ᛉ"],
             "2": ["ᚦᛚᛋᛟᛞ♆♄♃☿"]
         }
-        self.noms = "ᚠ   ᛒ\nᚦ   ᚲ\n☾   ᚨ\n♇   ᚹ\nᛉ   ᛋ\nᛏ   ᛚ\n⛥  ᚢ\n☉   ᛟ\n⊕   ᚱ\n☿   ♃\n♄   ♅\n⛧  ᛞ\nᛗ   ♆"
+        self.noms = "ᚠ   ᛒ\nᚦ   ᚲ\n☾   ᚨ\n♇   ᚹ\nᛉ   ᛋ\nᛏ   ᛚ\n⛥  ᚢ\n☉   ᛟ\n⊕   ᚱ\n☿   ♃\n♄   ♅\n⛧  ᛞ\nᛗ   ♆" #caractères affichés dans le clavier numérique à gauche#
         self.symboles_liste = self.noms.split("\n")
 
         self.reponse_uti = ""
@@ -35,7 +37,7 @@ class Memoire_combi(Etats):
             pos = pygame.mouse.get_pos()
             for rect, symbole in self.rects_symboles:
                 if rect.collidepoint(pos):
-                    self.reponse_uti += symbole 
+                    self.reponse_uti += symbole  #ajout d'un symbole à la suite quand on clique dessus#
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:

@@ -25,6 +25,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.font=self.jeu.font
        self.show_menu = show_menu
        self.show_map = show_map
+       self.volume = self.jeu.volume
+       self.volume = 0.5
 
        self.bg_image = pygame.Surface((self.jeu.bg_width, self.jeu.bg_height))  # Fond par défaut (evite de planter si sous classe n'a pas de fond) // Surface crée un sorte de zone de dessin
        self.bg_image.fill((0, 0, 0))
@@ -58,7 +60,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
        self.menu_rond_ic = pygame.image.load(os.path.join("assets","menu_rond.png"))
        self.menu_rond_ic=pygame.transform.scale(self.menu_rond_ic,(int(self.jeu.bg_width/19.2), int(self.jeu.bg_height/10.8)))
        self.rect_menu_rond = pygame.Rect(int(self.jeu.bg_width -  self.menu_rond_ic.get_width() -10), int(self.jeu.bg_height -self.menu_rond_ic.get_height()-10),int(self.menu_rond_ic.get_width()), int(self.menu_rond_ic.get_height()))
-    
+
     def montrer_regles_aide(self, screen,event, nom_mini_jeu):
          if event != None :
              if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
@@ -136,11 +138,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         screen_width, screen_height = self.jeu.screen.get_size()
         objet = pygame.transform.scale(objet, (screen_width, screen_height))
 
-        pygame.mixer.init()  #initialise le module audio
-        pygame.mixer.music.load(os.path.join("assets", "BotW-item.mp3"))
-        self.volume= pygame.mixer.music.set_volume(1)
-        pygame.mixer.music.play()
-
         prop = 0.5
         zone_affichage = pygame.Rect(
         (self.jeu.bg_width - (self.jeu.bg_width / 4)) // 2,  
@@ -158,39 +155,25 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         niveaux_jeux[mini_jeu][4] = True 
         
         pygame.display.flip()
-        pygame.time.delay(2000)
+        from général.menu import volume
+        print(volume)
+        if volume != 0:
+         pygame.mixer.init()
+         pygame.mixer.music.load(os.path.join("assets", "BotW-item.mp3"))
+         self.volume= pygame.mixer.music.set_volume(volume)
+         pygame.mixer.music.play()
 
-        pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
-        pygame.mixer.music.play(-1)
+        pygame.time.delay(2000)
+        
+        if volume != 0:
+         pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
+         pygame.mixer.music.set_volume(volume)
+         pygame.mixer.music.play(-1)
 
         from général.menu import Map
         self.jeu.changer_etat(Map(self.jeu))
         #MARQUER le jeu comme fait (impossible d'y revenir)
 
-    def mini_jeu_perdu(self, screen, attente, debut_attente,position):
-        pixel_10_dans_ref = int(self.jeu.bg_width/192)
-        if attente-(pygame.time.get_ticks()-debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
-          self.minutes = (attente - (pygame.time.get_ticks() - debut_attente)) // 60000  # Nombre de minutes restantes
-          self.secondes = (attente - (pygame.time.get_ticks() - debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
-
-          # Format propre mm:ss (avec zéro devant si nécessaire)
-          self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
-          screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(position))
-
-          texte="Vous avez fait trop de mauvaises propositions\nattendez pour pouvoir soumettre une nouvelle réponse"
-          lignes = texte.split("\n")
-          largeur_max = max([self.font.size(ligne)[0] for ligne in lignes])
-          ratio = pixel_10_dans_ref*3
-          hauteur_totale = len(lignes) * (self.jeu.bg_height / ratio)  # même valeur que l'espace ratio pour le blit
-          texte_dimensions = (largeur_max+10, int(hauteur_totale)+pixel_10_dans_ref)
-          popup = pygame.Rect(self.rect_menu_rond.x - texte_dimensions[0] - pixel_10_dans_ref , self.jeu.bg_height- texte_dimensions[1]-pixel_10_dans_ref ,int(texte_dimensions[0]),int(texte_dimensions[1]))
-          
-          pygame.draw.rect(screen, "white", popup, border_radius=15)
-          self.sauter_ligne(texte, popup.x+pixel_10_dans_ref//2, popup.y+pixel_10_dans_ref//2, ratio, self.font,(123,85,57), screen)
-          #screen.blit(self.font.render(texte, True, "#4d3020"),(popup.x+5, popup.y+5))
-
-
-        
     def mini_jeu_perdu(self, screen, attente, debut_attente,position):
         pixel_10_dans_ref = int(self.jeu.bg_width/192)
         if attente-(pygame.time.get_ticks()-debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre

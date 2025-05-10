@@ -14,8 +14,7 @@ class Jeu(Etats):
         pygame.mixer.music.load(os.path.join("assets", "musique_jeu.mp3"))
         pygame.mixer.music.play(-1)  #joue en boucle (-1 : boucle infinie)
         self.volume= pygame.mixer.music.set_volume(0.5)  # Ajuste le volume (0.0 à 1.0)
-        
-
+    
         info = pygame.display.Info()  # Récupérer les infos de l'écran
         print(f"Résolution réelle utilisée : {info.current_w}x{info.current_h}")
    

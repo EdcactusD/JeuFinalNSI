@@ -2,6 +2,9 @@ import pygame
 import os 
 from général.etats import Etats
 
+#Mini_jeu où le but est de deviner le nom du minerai affiché à l'écran , on reprend le dictionnaire niveauux_jeux et
+#on renvoie la reussite ou non du joueur du mini-jeu , on reutulise les méthodes de Etats()
+
 class Bon_minerai(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)

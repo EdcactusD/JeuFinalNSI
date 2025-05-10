@@ -1,6 +1,8 @@
 import pygame
 import os 
 from général.etats import Etats
+#Le but du mini-jeu est de taper dans le temps imparti les mots qui s'affichent , il prend les valeurs du dictionnaire niveaux_jeux pour s'adapter aux niveaux
+#et renvoie si le niveau est réussi ou non , on y reutulise les méthodes de Etats#
 
 class Vitesse(Etats):
     def __init__(self, jeu):

@@ -153,10 +153,18 @@ class Map(Etats):
         
     def handle_events(self, event):
         super().handle_events(event)  # Garde le comportement général des événements
+        from général.etats import niveaux_jeux
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
-                if self.zones_carte[zone][0].collidepoint(event.pos): 
+                if self.zones_carte[zone][0].collidepoint(event.pos) and zone!="zone_Chaudron": 
                     self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
+                if self.zones_carte[zone][0].collidepoint(event.pos) and zone=="zone_Chaudron":
+                    nbr_reussi=0
+                    for jeu in niveaux_jeux: #on ne prend pas en compte le dernier mini-jeu qui est chaudron
+                      if niveaux_jeux[jeu][4]==True:
+                         nbr_reussi+=1
+                    if nbr_reussi == range(len(niveaux_jeux)-1):
+                       self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
                     
     
     """def draw(self, screen) :

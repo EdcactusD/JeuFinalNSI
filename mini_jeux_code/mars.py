@@ -31,14 +31,18 @@ class Mars(Etats):
                                 "2" : pygame.Rect(self.espace*9,self.rect_reponse_y,int(self.espace*3),int(self.espace*3)),
                                 "3" : pygame.Rect(self.espace*13,self.rect_reponse_y,int(self.espace*3),int(self.espace*3))
             }
+        self.nbr_reponses_possibles=4
         
         self.couleur = "#facf79" #jaune, la couleur des carrés où sont les réponses
+        self.couleur_base="#facf79"
         self.chrono_debut= pygame.time.get_ticks()
         self.temps_ecoule = False
         self.chrono_tmps_passe = 0
         self.temps=0 #valeur arbitraire
         self.deja_clignote_temps_depasse = False
         self.mini_jeu = "Mars"
+        self.reponse_soumise=False
+        self.temps_affichage_couleur=300
         
         
     def handle_events(self, event):
@@ -55,7 +59,8 @@ class Mars(Etats):
                               self.couleur=["#cf473a", self.rects_reponses[cle]] #rouge
                               self.niveau="0" #le joueur recommence
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
-                          self.temps = pygame.time.get_ticks()            
+                          self.temps = pygame.time.get_ticks()
+                      self.reponse_soumise=True
     
     def draw(self, screen):
         super().draw(screen)
@@ -64,12 +69,16 @@ class Mars(Etats):
         self.texte_rect = self.texte_rect.get_rect()
         self.sauter_ligne(self.dico_questions[self.niveau][0], int(self.jeu.bg_width/2-self.texte_rect.w/2), int(self.jeu.bg_height*84/self.jeu.bg_height),23,self.font,"white", screen)
   
-        self.temps_actuel=pygame.time.get_ticks() 
+        self.temps_actuel=pygame.time.get_ticks()
+         
         for cle in self.rects_reponses:
-              if self.rects_reponses[cle]==self.couleur[1] and self.temps_actuel-self.temps<100: #on affiche la couleur différente seulement pendant un certain temps
+              if self.rects_reponses[cle]==self.couleur[1] and self.temps_actuel-self.temps<=self.temps_affichage_couleur and self.reponse_soumise==True: #on affiche la couleur différente seulement pendant un certain temps
                   pygame.draw.rect(screen, self.couleur[0], self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+                  if self.temps_actuel-self.temps==self.temps_affichage_couleur:
+                    self.reponse_soumise=False
               else:
-                  pygame.draw.rect(screen, "#facf79", self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+                  pygame.draw.rect(screen, self.couleur_base, self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80)
+              
         
         #ici chrono : on met la condition ici car dans le handle_event(), il faudrait qu'il y ait un évenement avant que le changement soit remarqué
         self.chrono_tmps_passe = pygame.time.get_ticks()
@@ -84,7 +93,7 @@ class Mars(Etats):
         if self.temps_actuel-self.temps<100 and self.temps_ecoule:
             #self.temps_ecoule = True
             for cle in self.rects_reponses:
-                pygame.draw.rect(screen, "#cf473a", self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80) #rouge
+                pygame.draw.rect(screen, self.couleur_base, self.rects_reponses[cle],  border_radius=self.jeu.bg_height//80) #rouge
         else:
             self.temps_ecoule = False
             self.deja_clignote_temps_depasse=False
@@ -92,7 +101,7 @@ class Mars(Etats):
           
         
 
-        for i in range(4): #car il y a 4 réponses possibles
+        for i in range(self.nbr_reponses_possibles): 
           self.taille_reponse=self.font.size(self.dico_questions[self.niveau][1][i])
           screen.blit(self.font.render(self.dico_questions[self.niveau][1][i], True, "white"),(self.rects_reponses[str(i)].x+self.rects_reponses[str(i)].w//2-self.taille_reponse[0]//2, self.rects_reponses[str(i)].y+self.rects_reponses[str(i)].h//2-self.taille_reponse[1]//2)) #on centre au milieu des carrés
         

@@ -1,7 +1,7 @@
 import pygame
 import os
 import random
-# Removed incorrect import of mini_jeu_fini
+
 from général.etats import Etats
 
 class Krabi(Etats):

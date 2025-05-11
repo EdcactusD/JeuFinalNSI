@@ -54,6 +54,11 @@ class Pendu(Etats):
 
         self.completed_difficulties = {"Easy": False, "Medium": False, "Hard": False}
         self.reward_given = False
+        
+        
+        self.attendre = False
+        self.attente = 10000  
+        self.debut_attente = -self.attente
 
         self.start_new_game()
 
@@ -65,7 +70,7 @@ class Pendu(Etats):
         }
 
         self.mini_jeu = "Pendu"
-        self.fichier =  "chateau"  #recommencement du mini-jeu si perdu(voir classe recommencement dans général.Etats)#
+        self.fichier =  "chateau"  
 
     def start_new_game(self):
         import random
@@ -79,7 +84,14 @@ class Pendu(Etats):
         self.input_active = True
 
     def handle_events(self, event):
-        super().handle_events(event)
+        
+        super().handle_events_souris(event)
+        
+       
+        if self.attendre:
+            if pygame.time.get_ticks() - self.debut_attente > self.attente:
+                self.attendre = False
+        
         if self.game_over:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.buttons["Restart"].collidepoint(event.pos):
@@ -95,7 +107,7 @@ class Pendu(Etats):
                         self.start_new_game()
                     return
 
-        if event.type == pygame.KEYDOWN and self.input_active and not self.game_over:
+        if event.type == pygame.KEYDOWN and self.input_active and not self.game_over and not self.attendre:
             if event.key == pygame.K_BACKSPACE:
                 self.letter_input = ""
             elif event.key == pygame.K_RETURN:
@@ -111,6 +123,8 @@ class Pendu(Etats):
                                 self.game_over = True
                                 self.win = False
                                 self.message = f"Perdu ! Le mot était : {self.word}"
+                                self.debut_attente = pygame.time.get_ticks()
+                                self.attendre = True
                         else:
                             if all(l in self.guessed_letters for l in self.word):
                                 self.game_over = True
@@ -120,6 +134,7 @@ class Pendu(Etats):
                                 if all(self.completed_difficulties.values()) and not self.reward_given:
                                     self.reward_given = True
                                     self.message = "Félicitations ! Vous avez obtenu l'objet : cheveux de rossier"
+                                    self.mini_jeu_fini(self.mini_jeu)
                     self.letter_input = ""
                 else:
                     self.message = "Entrez une seule lettre valide."
@@ -132,24 +147,32 @@ class Pendu(Etats):
         base_x = int(self.jeu.bg_width * 0.7)
         base_y = int(self.jeu.bg_height * 0.8)
         line_color = (139, 69, 19)
+        
+       
+        pygame.draw.rect(screen, (60, 60, 60, 180), (base_x - 120, base_y - 320, 250, 340))
 
+       
         pygame.draw.line(screen, line_color, (base_x - 100, base_y), (base_x + 100, base_y), 8)
         pygame.draw.line(screen, line_color, (base_x - 50, base_y), (base_x - 50, base_y - 300), 8)
         pygame.draw.line(screen, line_color, (base_x - 50, base_y - 300), (base_x + 50, base_y - 300), 8)
         pygame.draw.line(screen, line_color, (base_x + 50, base_y - 300), (base_x + 50, base_y - 250), 8)
 
+       
+        person_color = (230, 230, 230)  
+        stroke_width = 4  
+
         if self.wrong_guesses > 0:
-            pygame.draw.circle(screen, (0, 0, 0), (base_x + 50, base_y - 230), 20, 3)
+            pygame.draw.circle(screen, person_color, (base_x + 50, base_y - 230), 20, stroke_width)
         if self.wrong_guesses > 1:
-            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 210), (base_x + 50, base_y - 150), 3)
+            pygame.draw.line(screen, person_color, (base_x + 50, base_y - 210), (base_x + 50, base_y - 150), stroke_width)
         if self.wrong_guesses > 2:
-            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 200), (base_x + 20, base_y - 170), 3)
+            pygame.draw.line(screen, person_color, (base_x + 50, base_y - 200), (base_x + 20, base_y - 170), stroke_width)
         if self.wrong_guesses > 3:
-            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 200), (base_x + 80, base_y - 170), 3)
+            pygame.draw.line(screen, person_color, (base_x + 50, base_y - 200), (base_x + 80, base_y - 170), stroke_width)
         if self.wrong_guesses > 4:
-            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 150), (base_x + 20, base_y - 110), 3)
+            pygame.draw.line(screen, person_color, (base_x + 50, base_y - 150), (base_x + 20, base_y - 110), stroke_width)
         if self.wrong_guesses > 5:
-            pygame.draw.line(screen, (0, 0, 0), (base_x + 50, base_y - 150), (base_x + 80, base_y - 110), 3)
+            pygame.draw.line(screen, person_color, (base_x + 50, base_y - 150), (base_x + 80, base_y - 110), stroke_width)
 
     def draw_word(self, screen):
         display_word = ""
@@ -214,6 +237,13 @@ class Pendu(Etats):
         if self.wrong_guesses > 0:
             filled_width = bar_width * (self.wrong_guesses / self.max_wrong_guesses)
             pygame.draw.rect(screen, (200, 60, 60), (bar_x, bar_y, filled_width, bar_height), border_radius=10)
+        
+        
+        if self.attendre:
+            temps_restant = max(0, (self.attente - (pygame.time.get_ticks() - self.debut_attente)) // 1000)
+            attente_text = self.font_medium.render(f"Veuillez attendre {temps_restant} secondes...", True, (255, 0, 0))
+            attente_rect = attente_text.get_rect(center=(self.jeu.bg_width * 0.5, self.jeu.bg_height * 0.3))
+            screen.blit(attente_text, attente_rect)
         
         self.montrer_regles_aide(screen, self.last_event, "Pendu")
 

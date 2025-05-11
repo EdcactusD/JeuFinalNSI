@@ -1,5 +1,6 @@
 import pygame
 import os
+import json
 
 #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2) , les images(3), la reussite du mini-jeu(4) , le nom de l'item(5)
 global niveaux_jeux
@@ -14,9 +15,25 @@ niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join
                 "Bon_minerai" :[0, "Associez le bon        \nnom au bon \nminerai                                  ", "Parfois c'est \nlogique",pygame.image.load(os.path.join("assets","items", "pépite d'or.png")),False,"pépite d'or"],
                 "Trad" : [0, "En cliquant sur les tirets\nentrez lettres à lettres\nvos propositions\nde traduction puis\nvalidez, si la lettre est\nmauvaise elle sera\nrouge", "Résolvez la\ntraduction 4\njuste après la 3",pygame.image.load(os.path.join("assets","items", "glace millénaire.png")),False,"glace millénaire"],
                 "Eau" : [0, "Récupérez       \nles gouttes     \nqui tombent    \nen évitant   \nles feuilles    ", "Au plus vous    \nrécupérez     \nde gouttes    \nau plus   \nle jeu devient   \ndur",pygame.image.load(os.path.join("assets","items", "rosée du désert.png")),False,"Rosée du désert"],
-                "Krabi" :[0, "Appuyez sur\nles mots pour\nréveller des\nlettres\npuis remettez les\ndans le bon ordre", "Si vous avez\ndu temps à\nperdre vous\npouvez faire\ntoutes les\ncombinaisons\npossibles",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False,"pince de Krabi"],
+                "Krabi" :[0, "Appuyez sur\nles mots pour\nréveller des\nlettres\npuis remettez les\ndans le bon ordre", "Si vous avez\ndu temps à\nperdre vous\npouvez faire\ntoutes les\ncombinaisons\npossibles",pygame.image.load(os.path.join("assets","items", "pince de Kraby.png")),False,"pince de Kraby"],
                 "Mars" : [0, "Appuyez sur la\ncase contenant\nla bonne réponse\nrecommencez si\nvous avez faux", "Pour le plus\ndur, tout\nest question\nd'unité",pygame.image.load(os.path.join("assets","items", "Sel de Mars.png")),False,"Sel de Mars"],
                 "Chaudron" : [0, " ", " ",pygame.image.load(os.path.join("assets","items", "Elixir des mondes.png")),False,"Elixir des mondes"]}
+
+SAVE_FILE = os.path.join(os.path.dirname(__file__), "save_data.json")
+
+def save_game():
+    data = {key: niveaux_jeux[key][4] for key in niveaux_jeux}
+    with open(SAVE_FILE, "w") as f:
+        json.dump(data, f)
+
+def load_game():
+    if os.path.exists(SAVE_FILE):
+        with open(SAVE_FILE, "r") as f:
+            data = json.load(f)
+        for key in data:
+            if key in niveaux_jeux:
+                niveaux_jeux[key][4] = data[key]
+
 
 class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     def __init__(self, jeu, show_menu=False, show_map=False): #on récupère les éléments essentiels et on met des valeurs par défaut pour éviter les problèmes
@@ -153,6 +170,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         self.jeu.screen.blit(resized_image,(zone_affichage.x * 1.02, zone_affichage.y * 1.02))
 
         niveaux_jeux[mini_jeu][4] = True 
+        save_game()
         
         pygame.display.flip()
         from général.menu import volume

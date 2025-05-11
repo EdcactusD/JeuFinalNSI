@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+# Removed incorrect import of mini_jeu_fini
 from général.etats import Etats
 
 class Krabi(Etats):
@@ -49,6 +50,13 @@ class Krabi(Etats):
         self.input_active = False
         self.message = ""
 
+        self.nb_mauvaises = 0
+        self.fichier = "krabi"
+
+        self.attendre = False
+        self.attente = 60000  # 1 minute
+        self.debut_attente = -self.attente
+
         self.zone_input = pygame.Rect(int(self.jeu.bg_width * 0.3), int(self.jeu.bg_height * 0.85), int(self.jeu.bg_width * 0.4), int(self.jeu.bg_height * 0.07))
         self.mini_jeu = "Krabi"
 
@@ -79,7 +87,10 @@ class Krabi(Etats):
             })
 
     def handle_events(self, event):
-        super().handle_events(event)
+        if pygame.time.get_ticks() - self.debut_attente > self.attente:
+            self.attendre = False
+        else:
+            self.attendre = True
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mx, my = event.pos
             if not self.finished:
@@ -95,7 +106,7 @@ class Krabi(Etats):
                             item["brillance_sens"] = 1
             self.input_active = self.zone_input.collidepoint(event.pos)
 
-        if event.type == pygame.KEYDOWN and self.input_active:
+        if event.type == pygame.KEYDOWN and self.input_active and not self.attendre:
             if not self.finished:
                 if event.key == pygame.K_RETURN:
                     if self.reponse.upper() == self.secret:
@@ -103,6 +114,12 @@ class Krabi(Etats):
                         self.advance_level()
                     else:
                         self.message = "Mot incorrect"
+                        self.nb_mauvaises += 1
+                        if self.nb_mauvaises >= 3:
+                            self.nb_mauvaises = 0
+                            self.debut_attente = pygame.time.get_ticks()
+                            from général.etats import recommencement
+                            self.jeu.changer_etat(recommencement(self.__class__, self.jeu))
                 elif event.key == pygame.K_BACKSPACE:
                     self.reponse = self.reponse[:-1]
                 elif len(self.reponse) < len(self.secret):
@@ -111,7 +128,15 @@ class Krabi(Etats):
     def advance_level(self):
         self.current_level += 1
         if self.current_level >= len(self.levels):
-            self.finished = True
+            if not hasattr(self, 'completed_levels'):
+                self.completed_levels = [False] * len(self.levels)
+            if not hasattr(self, 'reward_given'):
+                self.reward_given = False
+            self.completed_levels = [True] * len(self.levels)
+            if not self.reward_given:
+                self.reward_given = True
+                self.message = "Félicitations ! Vous avez obtenu un objet spécial !"
+                self.mini_jeu_fini(self.mini_jeu)
             self.reponse = ""
         else:
             self.load_level(self.current_level)
@@ -192,5 +217,12 @@ class Krabi(Etats):
         elif self.message:
             msg_surface = self.jeu.font.render(self.message, True, (255, 215, 0))
             screen.blit(msg_surface, (self.zone_input.x, self.zone_input.y - 40))
-            
+
+        self.mini_jeu_perdu(
+            screen,
+            self.attente,
+            self.debut_attente,
+            (int(self.jeu.bg_width * 0.05), int(self.jeu.bg_height * 0.75))
+        )
+
         self.montrer_regles_aide(screen, self.last_event, "Krabi")

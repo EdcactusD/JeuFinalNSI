@@ -27,14 +27,18 @@ class Bon_minerai(Etats):
         self.zone_noms = pygame.Rect(int(self.jeu.bg_width/10000), int(self.jeu.bg_height/3),int(self.jeu.bg_width/10),int(self.jeu.bg_height/2))
         self.zone_reponse = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/3.5),int(self.jeu.bg_height/12))
         self.zone_affichage = pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/6),int(self.jeu.bg_width/4),int(self.jeu.bg_height/4))
+        self.zone_essais = pygame.Rect(int(self.jeu.bg_width/1.15), int(self.jeu.bg_height/1.95),int(self.jeu.bg_width/1.9),int(self.jeu.bg_height/1.95))
+        self.zone_reponse_fausse = pygame.Rect(int(self.jeu.bg_width/1.3), int(self.jeu.bg_height/1.95),int(self.jeu.bg_width/1.9),int(self.jeu.bg_height/1.95))
         self.reponse_uti = ""
         self.redaction=False
-
+        self.essais = 5
+        self.total_essais = 5
         self.mauvaise_rep=0
-
         self.niveau = str(niveaux_jeux["Bon_minerai"][0])
         self.image = None
         self.mini_jeu = "Bon_minerai"
+        self.reponse_fausse = "Réponse incorrecte"
+        self.show_reponse_fausse = False
 
     def handle_events(self, event):
         if self.redaction: 
@@ -62,12 +66,21 @@ class Bon_minerai(Etats):
                     self.niveau=str(int(self.niveau)+1)
                     self.reponse_uti=""
                     self.mauvaise_rep=0
-                if self.niveau == "10":
-                    self.mini_jeu_fini(self.mini_jeu)
+                    self.show_reponse_fausse = False
+                else:
+                   self.essais -= 1
+                   self.show_reponse_fausse = True
             elif len(self.reponse_uti)<=23:    
-              self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
+               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
-                print("trop long!")
+              print("trop long!")
+        if self.niveau == "10":
+            self.mini_jeu_fini(self.mini_jeu)
+        if self.essais <= 0:
+           from général.etats import recommencement
+           self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+           print("mini-jeu perdu!")
+           
 
     def draw(self,screen):
         super().draw(screen)
@@ -78,6 +91,10 @@ class Bon_minerai(Etats):
         new_height = int(self.Bon_minerai[self.niveau][1].get_height() * prop)
         resized_image = pygame.transform.scale(self.Bon_minerai[self.niveau][1], (new_width, new_height)).convert_alpha() #Convert_alpha permet la transparence de l'image#
         screen.blit(resized_image,(self.zone_affichage.x * 1.02, self.zone_affichage.y * 1.02))
+        self.texte_essais = self.font.render(str(self.essais) + "/" + str(self.total_essais), True, "white")
+        self.position_x = self.jeu.bg_width - self.texte_essais.get_width() - 20
+        self.position_y = 20
+        screen.blit(self.texte_essais, (self.position_x, self.position_y))
 
         noms = "azurite\nvolcanium\nnetherite\nmythril\nobsidienne\némeraude\npyromithril\nlunarium\néthérium\nopale"
         noms_liste = noms.split("\n")  # Séparer les noms en une liste
@@ -88,4 +105,7 @@ class Bon_minerai(Etats):
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
+        if self.show_reponse_fausse:
+           screen.blit(self.font.render(self.reponse_fausse, True, "red"),(self.zone_reponse_fausse.x,self.zone_reponse_fausse.y))
+                       
         self.montrer_regles_aide(screen,self.last_event,"Bon_minerai")

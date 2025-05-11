@@ -221,6 +221,7 @@ class Pendu(Etats):
 class Pendule(Etats):
     def __init__(self, jeu):
         super().__init__(jeu)
+        from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.zone_bouton = pygame.Rect(int(self.jeu.bg_width/2.1), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/11),int(self.jeu.bg_height/16))
@@ -233,35 +234,44 @@ class Pendule(Etats):
         self.center = (self.menu_width // 0.1, self.menu_height // 1)
         self.radius = 200
         self.angle = 0
-        self.target_angle = random.choice([i * 30 for i in range(12)])
-        self.objectif = [self.target_angle,self.target_angle+30]
+        self.target_angle = random.choice([i * 30 for i in range(12)]) #on prned une valeur random dans une liste aléatoire
+        self.objectif = [self.target_angle,self.target_angle+30] #l'objectif est donc de cette angle + 30
         self.visee = "Arretez l'horloge entre " + str(self.objectif[0] // 30) +  "heures et " + str(self.objectif[1] // 30) + "heures"
         self.action = True
         self.mini_jeu = "Pendule"
+        self.etapes = [0,1,2,3]
+        self.niveau = str(niveaux_jeux["Pendule"][0])
+        self.vitesse = 10
         print(self.target_angle)
 
     def handle_events(self, event):
         super().handle_events(event)
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_bouton.collidepoint(event.pos):
-            self.action = False
-            angle = self.angle
-            print(angle)
-            print(self.objectif)
-
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+          if self.zone_bouton.collidepoint(event.pos):
             if self.objectif[0] <= self.angle <= self.objectif[1]:
-             self.mini_jeu_fini(self.mini_jeu)
+             self.niveau=str(int(self.niveau)+1)
+             self.vitesse += 5
+             angle = self.angle
+             print(angle)
+             print(self.objectif)
+             self.target_angle = random.choice([i * 30 for i in range(12)])
+             self.objectif = [self.target_angle,self.target_angle+30]
+             self.visee = "Arretez l'horloge entre " + str(self.objectif[0] // 30) +  "heures et " + str(self.objectif[1] // 30) + "heures"
             else:
              print("mini-jeu perdu!")
              from général.etats import recommencement
              self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+        if self.niveau=="3":
+            self.mini_jeu_fini(self.mini_jeu)
+  
             
 
     
     def draw(self, screen):
         super().draw(screen)
         if self.action == True:
-          self.angle = (self.angle + 10) % 360
+          self.angle = (self.angle + self.vitesse) % 360
 
         pygame.draw.rect(screen,self.brown,self.zone_bouton,border_radius=int(self.jeu.bg_height / 5))
         screen.blit(self.font.render("   Stop", True, self.white),(self.zone_bouton.x*1.02, self.zone_bouton.y*1.02)) #Le True est pour adoucir le bord des textes

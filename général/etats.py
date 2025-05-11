@@ -195,7 +195,30 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           pygame.draw.rect(screen, "white", popup, border_radius=15)
           self.sauter_ligne(texte, popup.x+pixel_10_dans_ref//2, popup.y+pixel_10_dans_ref//2, ratio, self.font,(123,85,57), screen)
           #screen.blit(self.font.render(texte, True, "#4d3020"),(popup.x+5, popup.y+5))
+ 
+    
+ #les 2 premières méthodes permettent (ensemble) d'afficher un bouton pour valider une saisie
+    def bouton_valider_detection(self, event, rect):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and rect.collidepoint(event.pos):
+            self.valide = True
+        if self.redaction==True and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            self.valide = True
+    def bouton_valider_blit(self, screen, rect):
+        pygame.draw.rect(screen, "#7ace77", rect, border_radius=int(self.jeu.bg_height/54))
+        texte = pygame.font.SysFont("arial", int(rect.height * 0.6)).render("→", True, "#50844e")
+        screen.blit(texte, texte.get_rect(center=rect.center))
+        #va permettre d'afficher qu'une séléction a été effectuée :
+        if self.valide==True:
+           self.deb_temps=pygame.time.get_ticks()
+        if hasattr(self, "deb_temps") and pygame.time.get_ticks()-self.deb_temps<900 : #hasattr(self, "deb_temps") permet de vérifier que self.deb_temps existe (pour éviter les bugs)
+           rect_validerr= pygame.Rect(rect.x, int(rect.y+ rect.h+self.jeu.bg_height/(108*2)), rect.w,rect.h//3)
+           pygame.draw.rect(screen, "#7ace77",rect_validerr, border_radius=int(self.jeu.bg_height/54))
+           font= pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/70))
+           texte=font.render("validé !", True, "#50844e" )
+           screen.blit(texte, texte.get_rect(center=rect_validerr.center))
 
+
+    
     def draw(self, screen):
         #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)
         screen.blit(self.bg_image, (0, 0))

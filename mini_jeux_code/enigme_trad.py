@@ -34,12 +34,33 @@ class Enigme(Etats):
         self.mini_jeu = "Enigme"
         self.fichier =  "enigme_trad"  #recommencement du mini-jeu si perdu(voir classe recommencement dans général.Etats)#
         
+        self.valide=False
+        self.rect_valide=pygame.Rect(self.zone_reponse.x+self.zone_reponse.w+self.jeu.bg_width/(192*2),self.zone_reponse.y, self.zone_reponse.h, self.zone_reponse.h)
         
-
+    def verification(self):
+        if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau!=self.dernier_niveau :
+            self.niveau=str(int(self.niveau)+1)
+            self.reponse_uti=""
+            self.mauvaise_rep=0
+        if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau==self.dernier_niveau :
+            self.mini_jeu_fini(self.mini_jeu)
+        else:
+            self.mauvaise_rep+=1
+            if self.mauvaise_rep>3:
+                self.mauvaise_rep=0
+                self.debut_attente=pygame.time.get_ticks()
+                self.reponse_uti=""
+                print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
+        self.valide=True
+        
     def handle_events(self, event):
         self.case_en_cour_de_modif=None #utile pour trad (on ne s'en occuppe pas ici)
         
     def handle_events_ecrire(self,event):
+        self.valide=False
+        self.bouton_valider_detection(event, self.rect_valide)
+        if event.type==pygame.MOUSEBUTTONDOWN and self.valide==True:
+            self.verification()   
         if self.redaction==True and event.type == pygame.KEYDOWN:
             if event.key==pygame.K_BACKSPACE: #Pour enlever un caractère
                 self.ancienne_rep=self.reponse_uti
@@ -47,20 +68,7 @@ class Enigme(Etats):
                 for i in range(len(self.ancienne_rep)-1):
                     self.reponse_uti+=self.ancienne_rep[i]
             elif event.key == pygame.K_RETURN:
-                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau!=self.dernier_niveau :
-                    self.niveau=str(int(self.niveau)+1)
-                    self.reponse_uti=""
-                    self.mauvaise_rep=0
-                if self.reponse_uti.upper()==self.enigmes[self.niveau][1].upper() and self.niveau==self.dernier_niveau :
-                    self.mini_jeu_fini(self.mini_jeu)
-                else:
-                    self.mauvaise_rep+=1
-                    if self.mauvaise_rep>3:
-                        self.mauvaise_rep=0
-                        self.debut_attente=pygame.time.get_ticks()
-                        self.reponse_uti=""
-                        print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
-                        
+                self.verification()              
             elif len(self.reponse_uti)<=self.lenmax:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
@@ -79,9 +87,9 @@ class Enigme(Etats):
             super().handle_events(event)  
             
         #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos) and self.attendre==False:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and (self.zone_reponse.collidepoint(event.pos) or self.rect_valide.collidepoint(event.pos))  and self.attendre==False:
             self.redaction=True
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos) and self.rect_valide.collidepoint(event.pos)) or self.attendre==True:
             self.redaction=False
         self.handle_events_ecrire(event)
     
@@ -96,7 +104,8 @@ class Enigme(Etats):
           screen.blit(self.font.render(self.reponse_uti, True, "white"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         else :
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
-
+        
+        self.bouton_valider_blit(screen, self.rect_valide)
         self.montrer_regles_aide(screen, self.last_event, "Enigme")
         self.mini_jeu_perdu(screen, self.attente, self.debut_attente,(int(self.jeu.bg_width/2.9), int(self.jeu.bg_height/3.8)))
         

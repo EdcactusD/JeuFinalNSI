@@ -12,20 +12,15 @@ class Reglages(Etats):
    prends en argument Etats pour garder les méthodes du handle_events, sauter_ligne, aggrandir_boutons
    renvoie les modifications apportées au son (pour ensuite les dessiner de la bonne manière)/ une nouvelle partie si la sauvegarde est réinitialisée"""
    def __init__(self,jeu):
-       from général.menu_deb import Menu_debut
-       menu_debut = Menu_debut(jeu)
-       super().__init__(jeu)
-       self.menu_debut= menu_debut
        super().__init__(jeu)
        self.volume = self.jeu.volume
        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "reglagesessai.png"))
        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
        self.font=self.jeu.font 
-       self.boutons = {"ON" : [pygame.Rect(int(self.jeu.bg_width/1.8), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/13), int(self.jeu.bg_height/15)), (176,143,101), (143,116,81),"ON"], 
-                       "réin_SAUVEGARDE" : [pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.6), int(self.jeu.bg_width/4), int(self.jeu.bg_height/14)), (176,143,101), (143,116,81),"Réinitialiser la sauvegarde"],
+       self.boutons = {"réin_SAUVEGARDE" : [pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.6), int(self.jeu.bg_width/4), int(self.jeu.bg_height/14)), (176,143,101), (143,116,81),"Réinitialiser la sauvegarde"],
                        }
        self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
-       self.barre = pygame.Rect(int(self.jeu.bg_width/2.77), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/6), self.boutons["ON"][0].h)
+       self.barre = pygame.Rect(int(self.jeu.bg_width/2.77), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/6), int(self.jeu.bg_height/15))
        self.curseur = pygame.Rect(self.barre.x + self.barre.w/2-self.barre.w/8 , self.barre.y, self.barre.w/4, self.barre.h)
        self.c_mouv= False
        self.dico_commande={"menu" : ["w", int(self.jeu.bg_width/3.14),int(self.jeu.bg_height/2.05)],
@@ -158,7 +153,10 @@ class Map(Etats):
         from général.etats import niveaux_jeux
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
-                if self.zones_carte[zone][0].collidepoint(event.pos) and zone!="zone_Chaudron": 
+                if self.zones_carte[zone][0].collidepoint(event.pos) : 
+                    self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
+                
+                """if self.zones_carte[zone][0].collidepoint(event.pos) and zone!="zone_Chaudron": 
                     self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
                 if self.zones_carte[zone][0].collidepoint(event.pos) and zone=="zone_Chaudron":
                     nbr_reussi=0
@@ -168,7 +166,7 @@ class Map(Etats):
                     if nbr_reussi == range(len(niveaux_jeux)-1):
                        self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
                     else :
-                        self.afficher_pop_up_bool=True
+                        self.afficher_pop_up_bool=True"""
                     
     
     def draw(self, screen) :

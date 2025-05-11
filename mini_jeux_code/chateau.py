@@ -214,6 +214,8 @@ class Pendu(Etats):
         if self.wrong_guesses > 0:
             filled_width = bar_width * (self.wrong_guesses / self.max_wrong_guesses)
             pygame.draw.rect(screen, (200, 60, 60), (bar_x, bar_y, filled_width, bar_height), border_radius=10)
+        
+        self.montrer_regles_aide(screen, self.last_event, "Pendu")
 
 #Mini-jeu où le but est d'arrêter la pendule au bon moment , on y reprend le dictionnaire niveaux_jeux pour gérer les niveaux
 #On renvoie la reussité du mini-jeu par le joueur et on réutulise les methodes de Etats()

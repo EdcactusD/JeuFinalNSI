@@ -3,7 +3,37 @@ import os
 from général.etats import Etats
 from mini_jeux_code.mars import Mars
 
-class Chaudron(Mars):
+class Chaudron(Etats):
+    def __init__(self, jeu):
+        super().__init__(jeu)
+        self.bg_image = pygame.image.load(os.path.join("assets","fonds", "chaudron.png"))
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        from général.menu_deb import Menu_debut
+        menu_debut = Menu_debut(jeu)
+        self.menu_debut= menu_debut
+        
+        #self.surface_texte= self.jeu.font.render("Créer l'élixir des mondes",True, "white")
+        self.rect_creer_potion= pygame.Rect(0,0,self.jeu.bg_width//4.3,self.jeu.bg_height//15)
+        self.rect_creer_potion= pygame.Rect(self.jeu.bg_width//2-self.rect_creer_potion.w//2,self.jeu.bg_height//1.2,self.rect_creer_potion.w,self.rect_creer_potion.h)
+        
+        self.boutons = {"creer_potion" : [self.rect_creer_potion,"#a6cbb2","white","Créer l'élixir des mondes"]
+                        }
+        self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
+
+    
+    def handle_events(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect_creer_potion.collidepoint(event.pos):
+            print("lancement cinématiques : mélange puis et fée// passage au dernier mini-jeu")
+    
+    def draw(self,screen):
+        super().draw(screen)
+        """pygame.draw.rect(screen, "#a6cbb2",self.rect_creer_potion, border_radius=int(self.jeu.bg_height/54)) 
+        screen.blit(self.surface_texte, self.surface_texte.get_rect(center=self.rect_creer_potion.center))"""
+        self.menu_debut.aggrandir_bouton(screen, self.boutons,self.boutons_ref)
+        
+    
+        
+class Mini_jeu_final(Mars):   
     def __init__(self, jeu):
         super().__init__(jeu)
         from général.etats import niveaux_jeux
@@ -53,5 +83,4 @@ class Chaudron(Mars):
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
                           self.temps = pygame.time.get_ticks()
                       self.reponse_soumise=True
-        
     

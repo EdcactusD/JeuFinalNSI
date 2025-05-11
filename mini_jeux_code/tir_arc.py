@@ -126,6 +126,7 @@ class Tir_arc(Etats):
             # Vérifier si la distance entre le point de départ et le point actuel dépasse un certain seuil
             if self.tir_x_base - self.tir_x >= self.longueur:
                 self.en_vol = False  # Arrêter le mouvement lorsque la distance est atteinte
+                self.tir_x, self.tir_y = 0,0
             
            #pour faire tourner la flèche
             distance_x = abs(self.tir_x - self.tir_x_base)

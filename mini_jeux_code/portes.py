@@ -90,4 +90,6 @@ class Portes(Etats):
         
         score_surface = self.font.render(f"Score : {self.score}/{len(self.questions)}", True, (255, 255, 255))
         screen.blit(score_surface, (self.jeu.bg_width - int(self.jeu.bg_width / 6), int(self.jeu.bg_height / 20)))
+        
+        self.montrer_regles_aide(screen, self.last_event, "Portes")
  

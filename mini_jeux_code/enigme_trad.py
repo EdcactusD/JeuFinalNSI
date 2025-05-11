@@ -32,6 +32,7 @@ class Enigme(Etats):
         self.attente= 60000*1 #en milisecondes 
         self.debut_attente= -self.attente #par défaut, comme ça le if est vrai si le joueur n'a pas eu faux
         self.mini_jeu = "Enigme"
+        self.fichier =  "enigme_trad"  #recommencement du mini-jeu si perdu(voir classe recommencement dans général.Etats)#
         
         
 

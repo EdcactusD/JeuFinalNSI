@@ -50,10 +50,9 @@ class Memoire_combi(Etats):
                 self.debut_temps = pygame.time.get_ticks()
                 self.afficher_combi = True  
               else:
-               from général.menu import Map
-               self.jeu.changer_etat(Map(self.jeu))
-               print("Mini-jeu perdu")
-               return
+                from général.etats import recommencement
+                self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+                print("mini-jeu perdu!")
 
               if self.niveau == "3":
                self.mini_jeu_fini(self.mini_jeu)

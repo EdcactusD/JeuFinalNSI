@@ -47,7 +47,9 @@ class Chaudron(Mars):
                              print("gagné!: Mettre animation fin")
                           else:
                               self.couleur=["#cf473a", self.rects_reponses[cle]] #rouge
-                              print("perdu ! mettre animation fin")
+                              from général.etats import recommencement
+                              self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+                              print("mini-jeu perdu!")
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
                           self.temps = pygame.time.get_ticks()
                       self.reponse_soumise=True

@@ -65,6 +65,7 @@ class Pendu(Etats):
         }
 
         self.mini_jeu = "Pendu"
+        self.fichier =  "chateau"  #recommencement du mini-jeu si perdu(voir classe recommencement dans général.Etats)#
 
     def start_new_game(self):
         import random
@@ -252,8 +253,9 @@ class Pendule(Etats):
              self.mini_jeu_fini(self.mini_jeu)
             else:
              print("mini-jeu perdu!")
-             from général.menu import Map
-             self.jeu.changer_etat(Map(self.jeu))
+             from général.etats import recommencement
+             self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+            
 
     
     def draw(self, screen):

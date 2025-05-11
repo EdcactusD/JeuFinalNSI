@@ -67,10 +67,9 @@ class Vitesse(Etats):
                     self.mauvaise_rep=0
                     self.debut_timer = pygame.time.get_ticks()
                 if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
-                        from général.menu import Map
-                        self.jeu.changer_etat(Map(self.jeu))
+                        from général.etats import recommencement
+                        self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
                         print("mini-jeu perdu!")
-                        return
                 if self.niveau=="3" :
                     self.mini_jeu_fini(self.mini_jeu)
                 else:

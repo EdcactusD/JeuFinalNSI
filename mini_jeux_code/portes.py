@@ -21,7 +21,6 @@ class Portes(Etats):
         self.resultat = ""
         self.porte_cliquee = None
         self.mini_jeu = "Portes"
-
         self.creer_portes()
 
     def creer_portes(self):
@@ -64,8 +63,9 @@ class Portes(Etats):
 
         elif event.type == pygame.USEREVENT + 1:
             pygame.time.set_timer(pygame.USEREVENT + 1, 0)
-            from général.menu import Map
-            self.jeu.changer_etat(Map(self.jeu))
+            from général.etats import recommencement
+            self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+            print("mini-jeu perdu!")
 
     def draw(self, screen):
         super().draw(screen)

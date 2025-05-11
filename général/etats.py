@@ -261,5 +261,37 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
      pygame.time.wait(1000)
      from général.menu_deb import Menu_debut
      self.etat = Menu_debut(self)
+     
+class recommencement(Etats):
+    def __init__(self, mini_jeu_cls, jeu):
+        super().__init__(jeu)  
+        self.mini_jeu_cls = mini_jeu_cls
+        self.white = (255, 255, 255)
+        self.brown = (139, 69, 19)
+        self.red = (255, 0, 0)
+        self.zone_bouton = pygame.Rect(int(self.jeu.bg_width / 2.3),int(self.jeu.bg_height / 1.4),int(self.jeu.bg_width / 9),int(self.jeu.bg_height / 16))
+        self.zone_message = pygame.Rect(int(self.jeu.bg_width / 3.3),int(self.jeu.bg_height / 5),int(self.jeu.bg_width / 3.5),int(self.jeu.bg_height / 7))
+        self.font_perdu = pygame.font.Font(os.path.join("assets", "lacquer.ttf"),int(self.jeu.bg_height / 15))
+
+    def handle_events(self, event):
+        super().handle_events(event)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.zone_bouton.collidepoint(event.pos):
+                self.jeu.changer_etat(self.mini_jeu_cls(self.jeu))  
+
+    def draw(self, screen):
+        super().draw(screen)
+        screen.fill((0, 0, 0))  
+        pygame.draw.rect(screen, self.brown, self.zone_bouton, border_radius=int(self.jeu.bg_height / 5))
+        screen.blit(self.font.render("Recommencer", True, self.white),(self.zone_bouton.x * 1.02, self.zone_bouton.y * 1.02))
+        screen.blit(self.font_perdu.render("Vous avez perdu !", True, self.red),(self.zone_message.x * 1.02, self.zone_message.y * 1.02))
+
+      
+    
+      
+   
+   
+
+
 
     

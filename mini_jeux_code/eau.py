@@ -51,8 +51,6 @@ class Eau(Etats):
         
         self.mini_jeu = "Eau"
 
-        
-
     def handle_events(self, event):
         super().handle_events(event)
         

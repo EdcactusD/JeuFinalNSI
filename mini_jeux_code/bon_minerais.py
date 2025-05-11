@@ -39,7 +39,23 @@ class Bon_minerai(Etats):
         self.mini_jeu = "Bon_minerai"
         self.reponse_fausse = "Réponse incorrecte"
         self.show_reponse_fausse = False
-
+        
+        self.valide=False
+        self.rect_valide=pygame.Rect(self.zone_reponse.x+self.zone_reponse.w+self.jeu.bg_width/(192*2),self.zone_reponse.y, self.zone_reponse.h, self.zone_reponse.h)
+        
+    def verification(self):
+        if self.reponse_uti.upper() == self.Bon_minerai[self.niveau][0].upper():
+            self.image = self.Bon_minerai[self.niveau][1]
+            self.niveau=str(int(self.niveau)+1)
+            self.reponse_uti=""
+            self.mauvaise_rep=0
+            self.show_reponse_fausse = False
+        else:
+           self.essais -= 1
+           self.show_reponse_fausse = True
+        self.valide=True
+        
+        
     def handle_events(self, event):
         if self.redaction: 
             """pour qu'il soit possible d'écrire avec toutes les touches"""
@@ -48,11 +64,16 @@ class Bon_minerai(Etats):
             super().handle_events(event)  
             
         #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and (self.zone_reponse.collidepoint(event.pos) or self.rect_valide.collidepoint(event.pos)):
             self.redaction=True
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)):
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos) and self.rect_valide.collidepoint(event.pos)):
             self.redaction=False
             
+        self.valide=False
+        self.bouton_valider_detection(event, self.rect_valide)
+        if event.type==pygame.MOUSEBUTTONDOWN and self.valide==True:
+             self.verification()     
+             
         if self.redaction==True and event.type == pygame.KEYDOWN:
             """Pour enlever un caractère"""
             if event.key==pygame.K_BACKSPACE: 
@@ -61,15 +82,7 @@ class Bon_minerai(Etats):
                 for i in range(len(self.ancienne_rep)-1):
                     self.reponse_uti+=self.ancienne_rep[i]
             elif event.key == pygame.K_RETURN:
-                if self.reponse_uti.upper() == self.Bon_minerai[self.niveau][0].upper():
-                    self.image = self.Bon_minerai[self.niveau][1]
-                    self.niveau=str(int(self.niveau)+1)
-                    self.reponse_uti=""
-                    self.mauvaise_rep=0
-                    self.show_reponse_fausse = False
-                else:
-                   self.essais -= 1
-                   self.show_reponse_fausse = True
+                self.verification()
             elif len(self.reponse_uti)<=23:    
                self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
             else:
@@ -107,5 +120,6 @@ class Bon_minerai(Etats):
           screen.blit(self.font.render("Entrez votre réponse ici", True, "#6f553c"),(self.zone_reponse.x*1.02, self.zone_reponse.y*1.02)) #Le True est pour adoucir le bord des textes
         if self.show_reponse_fausse:
            screen.blit(self.font.render(self.reponse_fausse, True, "red"),(self.zone_reponse_fausse.x,self.zone_reponse_fausse.y))
-                       
+        
+        self.bouton_valider_blit(screen, self.rect_valide)      
         self.montrer_regles_aide(screen,self.last_event,"Bon_minerai")

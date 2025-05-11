@@ -30,6 +30,30 @@ class Vitesse(Etats):
         self.timer = 1000*5
         self.debut_timer = self.timer
         self.mini_jeu = "Vitesse"
+        
+        self.valide=False
+        self.rect_valide=pygame.Rect(self.zone_reponse.x+self.zone_reponse.w+self.jeu.bg_width/(192*2),self.zone_reponse.y, self.zone_reponse.h, self.zone_reponse.h)
+        
+    def verification(self):
+        if self.reponse_uti.upper()==self.mots[self.niveau][0].upper():
+            self.niveau=str(int(self.niveau)+1)
+            self.reponse_uti=""
+            self.mauvaise_rep=0
+            self.debut_timer = pygame.time.get_ticks()
+        if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
+                from général.etats import recommencement
+                self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+                print("mini-jeu perdu!")
+        if self.niveau=="3" :
+            self.mini_jeu_fini(self.mini_jeu)
+        else:
+            self.mauvaise_rep+=1
+            if self.mauvaise_rep>=3:
+                self.mauvaise_rep=0
+                self.debut_attente=pygame.time.get_ticks()
+                self.reponse_uti=""
+                print("vous devez attendre 5 minutes pour soumettre de nouveau une réponse")
+        self.valide=True
 
     def handle_events(self, event):
         if pygame.time.get_ticks()-self.debut_attente>self.attente:
@@ -42,12 +66,17 @@ class Vitesse(Etats):
             super().handle_events_souris(event)
         else:
             super().handle_events(event)  
-            
+        
+        self.valide=False
+        self.bouton_valider_detection(event, self.rect_valide)
+        if event.type==pygame.MOUSEBUTTONDOWN and self.valide==True:
+            self.verification()   
+        
         #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.zone_reponse.collidepoint(event.pos) and self.attendre==False:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and (self.zone_reponse.collidepoint(event.pos) or self.rect_valide.collidepoint(event.pos))  and self.attendre==False:
             self.redaction = True
             self.debut_timer = True
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos)) or self.attendre==True:
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos) and self.rect_valide.collidepoint(event.pos)) or self.attendre==True:
             self.redaction=False
             
         if self.redaction==True and event.type == pygame.KEYDOWN:
@@ -61,24 +90,7 @@ class Vitesse(Etats):
                     self.reponse_uti+=self.ancienne_rep[i]
 
             elif event.key == pygame.K_RETURN:
-                if self.reponse_uti.upper()==self.mots[self.niveau][0].upper():
-                    self.niveau=str(int(self.niveau)+1)
-                    self.reponse_uti=""
-                    self.mauvaise_rep=0
-                    self.debut_timer = pygame.time.get_ticks()
-                if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
-                        from général.etats import recommencement
-                        self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
-                        print("mini-jeu perdu!")
-                if self.niveau=="3" :
-                    self.mini_jeu_fini(self.mini_jeu)
-                else:
-                    self.mauvaise_rep+=1
-                    if self.mauvaise_rep>=3:
-                        self.mauvaise_rep=0
-                        self.debut_attente=pygame.time.get_ticks()
-                        self.reponse_uti=""
-                        print("vous devez attendre 5 minutes pour soumettre de nouveau une réponse")
+                self.verification()
                         
             elif len(self.reponse_uti)<=23:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
@@ -104,4 +116,5 @@ class Vitesse(Etats):
           self.temps_affiche = f"{self.minutes}:{self.secondes:02d}"  #0 : complete par un 0, 2 :le nombre doit avoir 2 chiffres, d : est un entier (digit)
           screen.blit(self.font.render(self.temps_affiche, True, "white"),(0, 0))
         
+        self.bouton_valider_blit(screen, self.rect_valide)
         self.montrer_regles_aide(screen,self.last_event,"Vitesse")

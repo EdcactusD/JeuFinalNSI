@@ -29,10 +29,33 @@ class Memoire_combi(Etats):
         self.debut_temps = pygame.time.get_ticks()  
         self.afficher_combi = True
         self.mini_jeu = "Memoire_combi"
+        
+        self.valide=False
+        self.rect_valide=pygame.Rect(self.zone_reponse.x+self.zone_reponse.w+self.jeu.bg_width/(192*2),self.zone_reponse.y, self.zone_reponse.h, self.zone_reponse.h)
+        self.redaction=True #tout le temps (pour coller au format des méthodes pour le bouton "valider")
+    
+    def verification(self):
+        if self.reponse_uti.upper() == self.combi[self.niveau][0].upper():
+          self.niveau = str(int(self.niveau) + 1) 
+          self.reponse_uti = ""  
+          self.debut_temps = pygame.time.get_ticks()
+          self.afficher_combi = True  
+        else:
+          from général.etats import recommencement
+          self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
+          print("mini-jeu perdu!")
 
+        if self.niveau == "3":
+         self.mini_jeu_fini(self.mini_jeu)
+        self.valide=True
+        
     def handle_events(self, event):
         super().handle_events(event)
-        
+        self.valide=False
+        self.bouton_valider_detection(event, self.rect_valide)
+        if event.type==pygame.MOUSEBUTTONDOWN and self.valide==True:
+            self.verification()
+            
         if event.type == pygame.MOUSEBUTTONDOWN and self.afficher_combi == False:
             pos = pygame.mouse.get_pos()
             for rect, symbole in self.rects_symboles:
@@ -44,22 +67,11 @@ class Memoire_combi(Etats):
                 self.reponse_uti = self.reponse_uti[:-1]  # Supprimer le dernier caractère
 
             if event.key == pygame.K_RETURN: 
-              if self.reponse_uti.upper() == self.combi[self.niveau][0].upper():
-                self.niveau = str(int(self.niveau) + 1) 
-                self.reponse_uti = ""  
-                self.debut_temps = pygame.time.get_ticks()
-                self.afficher_combi = True  
-              else:
-                from général.etats import recommencement
-                self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
-                print("mini-jeu perdu!")
-
-              if self.niveau == "3":
-               self.mini_jeu_fini(self.mini_jeu)
+              self.verification()
 
     def draw(self, screen):
         super().draw(screen)
-        self.montrer_regles_aide(screen, self.last_event, "Memoire_combi")
+        
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height / 54))
         pygame.draw.rect(screen, "#4d3020", self.zone_affichage, border_radius=int(self.jeu.bg_height / 54))
         pygame.draw.rect(screen, "#4d3020", self.zone_noms, border_radius=int(self.jeu.bg_height / 54))
@@ -93,3 +105,6 @@ class Memoire_combi(Etats):
          temps_restant = max(0, 5 - (temps_ecoule // 1000))  # Temps restant pour afficher la combinaison
          screen.blit(self.font_symboles.render(f"Temps restant : {temps_restant}s", True, "black"), 
                     (self.zone_affichage.x, self.zone_affichage.y - 40))
+        
+        self.bouton_valider_blit(screen, self.rect_valide)
+        self.montrer_regles_aide(screen, self.last_event, "Memoire_combi")

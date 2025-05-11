@@ -175,7 +175,6 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         #MARQUER le jeu comme fait (impossible d'y revenir)
 
     def mini_jeu_perdu(self, screen, attente, debut_attente,position):
-        pixel_10_dans_ref = int(self.jeu.bg_width/192)
         if attente-(pygame.time.get_ticks()-debut_attente)>0: #on affiche le chronomètre tant qu'il reste du temps à attendre
           self.minutes = (attente - (pygame.time.get_ticks() - debut_attente)) // 60000  # Nombre de minutes restantes
           self.secondes = (attente - (pygame.time.get_ticks() - debut_attente)) % 60000 // 1000  # Nombre de secondes restantes
@@ -185,6 +184,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
           screen.blit(self.font.render(self.temps_affiche, True, "#4d3020"),(position))
 
           texte="Vous avez fait trop de mauvaises propositions\nattendez pour pouvoir soumettre une nouvelle réponse"
+          pixel_10_dans_ref = int(self.jeu.bg_width/192)
           lignes = texte.split("\n")
           largeur_max = max([self.font.size(ligne)[0] for ligne in lignes])
           ratio = pixel_10_dans_ref*3
@@ -199,7 +199,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
     
  #les 2 premières méthodes permettent (ensemble) d'afficher un bouton pour valider une saisie
     def bouton_valider_detection(self, event, rect):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and rect.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and rect.collidepoint(event.pos) and self.redaction:
             self.valide = True
         if self.redaction==True and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
             self.valide = True
@@ -210,14 +210,25 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
         #va permettre d'afficher qu'une séléction a été effectuée :
         if self.valide==True:
            self.deb_temps=pygame.time.get_ticks()
-        if hasattr(self, "deb_temps") and pygame.time.get_ticks()-self.deb_temps<900 : #hasattr(self, "deb_temps") permet de vérifier que self.deb_temps existe (pour éviter les bugs)
+        if hasattr(self, "deb_temps") and pygame.time.get_ticks()-self.deb_temps<900 and self.redaction: #hasattr(self, "deb_temps") permet de vérifier que self.deb_temps existe (pour éviter les bugs)
            rect_validerr= pygame.Rect(rect.x, int(rect.y+ rect.h+self.jeu.bg_height/(108*2)), rect.w,rect.h//3)
            pygame.draw.rect(screen, "#7ace77",rect_validerr, border_radius=int(self.jeu.bg_height/54))
            font= pygame.font.Font(os.path.join("assets", "lacquer.ttf"), int(self.jeu.bg_height/70))
-           texte=font.render("validé !", True, "#50844e" )
+           texte=font.render("soumis !", True, "#50844e" )
            screen.blit(texte, texte.get_rect(center=rect_validerr.center))
 
-
+    def afficher_pop_up(self,screen, texte):
+        """permet d'afficher un message sur l'écran"""
+        pixel_10_dans_ref = int(self.jeu.bg_width/192)
+        lignes = texte.split("\n")
+        largeur_max = max([self.font.size(ligne)[0] for ligne in lignes])
+        ratio = pixel_10_dans_ref*3
+        hauteur_totale = len(lignes) * (self.jeu.bg_height / ratio)  # même valeur que l'espace ratio pour le blit
+        texte_dimensions = (largeur_max+10, int(hauteur_totale)+pixel_10_dans_ref)
+        popup = pygame.Rect(self.rect_menu_rond.x - texte_dimensions[0] - pixel_10_dans_ref , self.jeu.bg_height- texte_dimensions[1]-pixel_10_dans_ref ,int(texte_dimensions[0]),int(texte_dimensions[1]))
+        
+        pygame.draw.rect(screen, "white", popup, border_radius=15)
+        self.sauter_ligne(texte, popup.x+pixel_10_dans_ref//2, popup.y+pixel_10_dans_ref//2, ratio, self.font,(123,85,57), screen)
     
     def draw(self, screen):
         #screen.fill((0, 0, 0))  # Efface l’écran avec du noir avant d’afficher les images (pas necessaire si tout l'écran est rempli et non transaparent)

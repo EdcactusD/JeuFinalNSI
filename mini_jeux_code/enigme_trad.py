@@ -53,9 +53,6 @@ class Enigme(Etats):
                 print("vous devez attendre 1 minutes pour soumettre de nouveau une réponse")
         self.valide=True
         
-    def handle_events(self, event):
-        self.case_en_cour_de_modif=None #utile pour trad (on ne s'en occuppe pas ici)
-        
     def handle_events_ecrire(self,event):
         self.valide=False
         self.bouton_valider_detection(event, self.rect_valide)
@@ -144,8 +141,36 @@ class Trad(Enigme):
         self.reponse_uti = [" " for i in range(len(self.enigmes[self.niveau][0]))]
         self.nbr_tirets=0
 
+    def verification(self):
+        self.mauvaises_lettres_id=[]
+        for i in range(len(self.enigmes[self.niveau][1])):
+           if self.reponse_uti[i].upper()!=self.enigmes[self.niveau][1][i].upper():
+              self.mauvaises_lettres_id.append(i)
+              if self.mauvaise_rep>3:
+                self.mauvaise_rep=0
+                self.debut_attente=pygame.time.get_ticks()
+        if len(self.mauvaises_lettres_id)!=0:
+            self.mauvaise_rep+=1
+        if len(self.mauvaises_lettres_id)==0 and self.niveau!=self.dernier_niveau :
+            self.mauvaises_lettres_id=[]
+            self.niveau=str(int(self.niveau)+1)
+            self.reponse_uti = [" " for i in range(len(self.enigmes[self.niveau][0]))]
+            self.mauvaise_rep=0
+            self.nbr_tirets=0
+            self.case_en_cour_de_modif=None
+            self.tirets_defini=False
+            self.tirets=""
+            self.taille_texte=0
+            
+        elif len(self.mauvaises_lettres_id)==0 and self.niveau==self.dernier_niveau: 
+            self.mini_jeu_fini(self.mini_jeu)
+            
         
     def handle_events_ecrire(self,event):
+        self.valide=False
+        self.bouton_valider_detection(event, self.rect_valide)
+        if event.type==pygame.MOUSEBUTTONDOWN and self.valide==True:
+            self.verification()
         if self.redaction == True and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
           for i in range(len(self.enigmes[self.niveau][3])):
             if self.enigmes[self.niveau][3][i].collidepoint(event.pos):
@@ -159,34 +184,9 @@ class Trad(Enigme):
                     self.reponse_uti[self.case_en_cour_de_modif] = " "
                     if self.case_en_cour_de_modif in self.mauvaises_lettres_id:
                         self.mauvaises_lettres_id.remove(self.case_en_cour_de_modif)
-                        
-                    
-                
-                
+                                       
             elif event.key == pygame.K_RETURN:
-                self.mauvaises_lettres_id=[]
-                for i in range(len(self.enigmes[self.niveau][1])):
-                   if self.reponse_uti[i].upper()!=self.enigmes[self.niveau][1][i].upper():
-                      self.mauvaises_lettres_id.append(i)
-                      if self.mauvaise_rep>3:
-                        self.mauvaise_rep=0
-                        self.debut_attente=pygame.time.get_ticks()
-                if len(self.mauvaises_lettres_id)!=0:
-                    self.mauvaise_rep+=1
-                if len(self.mauvaises_lettres_id)==0 and self.niveau!=self.dernier_niveau :
-                    self.mauvaises_lettres_id=[]
-                    self.niveau=str(int(self.niveau)+1)
-                    self.reponse_uti = [" " for i in range(len(self.enigmes[self.niveau][0]))]
-                    self.mauvaise_rep=0
-                    self.nbr_tirets=0
-                    self.case_en_cour_de_modif=None
-                    self.tirets_defini=False
-                    self.tirets=""
-                    self.taille_texte=0
-                    
-                elif len(self.mauvaises_lettres_id)==0 and self.niveau==self.dernier_niveau: 
-                    self.mini_jeu_fini(self.mini_jeu)
-                
+                self.verification()
                         
             if self.case_en_cour_de_modif!=None:
                 if event.key != pygame.K_RETURN and event.key != pygame.K_BACKSPACE:
@@ -197,7 +197,6 @@ class Trad(Enigme):
         
     def draw(self,screen):
         Etats.draw(self,screen)
-        self.montrer_regles_aide(screen,self.last_event,"Trad")
         
         self.texte_rect=self.font_symboles.render(self.enigmes[self.niveau][0], True, (255, 255, 255))
         self.texte_rect = self.texte_rect.get_rect() #on récupere les dimensions du texte pour ensuite bien centrer l'affichage
@@ -255,3 +254,8 @@ class Trad(Enigme):
             screen.blit(self.font_symboles_petit.render("--disparu--", True, "#6f553c"),(0+self.jeu.bg_width*0.005, 0+self.jeu.bg_height*0.005+self.jeu.bg_height*0.04))
         
         self.mini_jeu_perdu(screen, self.attente, self.debut_attente,(int(self.jeu.bg_width/2 - self.texte_rect.w/2), int(self.jeu.bg_height/2.4)))
+        
+        
+        self.bouton_valider_blit(screen, self.rect_valide)
+        self.montrer_regles_aide(screen,self.last_event,"Trad")
+        

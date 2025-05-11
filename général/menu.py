@@ -150,6 +150,8 @@ class Map(Etats):
         "zone_Mars" : [pygame.Rect(int(self.jeu.bg_width/1.536),int(self.jeu.bg_height/3.6),int(self.jeu.bg_width/6.4),int(self.jeu.bg_height/6.2)),Mars],
         "zone_Chaudron" : [pygame.Rect(int(self.jeu.bg_width/1.6),int(self.jeu.bg_height/1.54),int(self.jeu.bg_width/8),int(self.jeu.bg_height/9.5)),Chaudron], }
         
+        self.afficher_pop_up_bool=False
+        self.deb_affichage_pop_up=0
         
     def handle_events(self, event):
         super().handle_events(event)  # Garde le comportement général des événements
@@ -165,10 +167,18 @@ class Map(Etats):
                          nbr_reussi+=1
                     if nbr_reussi == range(len(niveaux_jeux)-1):
                        self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
+                    else :
+                        self.afficher_pop_up_bool=True
                     
     
-    """def draw(self, screen) :
+    def draw(self, screen) :
         super().draw(screen)
-        for zone in  self.zones_carte:
+        if self.afficher_pop_up_bool:
+          self.deb_affichage_pop_up=pygame.time.get_ticks()
+          self.afficher_pop_up_bool=False
+        if pygame.time.get_ticks()-self.deb_affichage_pop_up<2000: #dans tous les cas, si self.afficher_pop_up n'est pas passé True avant, la condition ne sera pas réalisée
+             self.afficher_pop_up(screen, "Vous devez finir tous les mini-jeux\navant de lancer celui-ci")
+             
+        """for zone in  self.zones_carte:
             pygame.draw.rect(screen, (255, 0, 0), self.zones_carte[zone][0], 10)
         pygame.display.flip() #pour tester les zones"""

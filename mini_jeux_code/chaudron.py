@@ -1,5 +1,6 @@
 import pygame
 import os 
+import time
 from général.etats import Etats
 from mini_jeux_code.mars import Mars
 
@@ -20,10 +21,29 @@ class Chaudron(Etats):
                         }
         self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
 
+    def afficher_cinematique(self, dossier_images, fps=10):
+        dossier_complet = os.path.join("assets", dossier_images)
+        noms_fichiers = sorted(os.listdir(dossier_complet)) #permet de ranger toutes les images dans le bon ordre
+        
+        images = []
+        for nom in noms_fichiers :
+            image=pygame.image.load(os.path.join("assets", dossier_images,str(nom)))
+            image = pygame.transform.scale(image, (self.jeu.bg_width, self.jeu.bg_height))  # redimensionne si besoin
+            images.append(image)
+                
+        duree_frame = 1 / fps
+        for frame in images:
+            self.jeu.screen.blit(frame, (0, 0))
+            pygame.display.flip()
+            time.sleep(0.05)
+
     
+    
+
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect_creer_potion.collidepoint(event.pos):
             print("lancement cinématiques : mélange puis et fée// passage au dernier mini-jeu")
+            self.afficher_cinematique("animation_potion")
     
     def draw(self,screen):
         super().draw(screen)

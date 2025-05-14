@@ -77,6 +77,7 @@ class Portes(Etats):
             else:
                 self.resultat = "Partie terminée ! Score: {}/{}".format(self.score, len(self.questions))
                 pygame.time.set_timer(pygame.USEREVENT + 1, 3000)
+                self.mini_jeu_fini(self.mini_jeu)
 
         elif event.type == pygame.USEREVENT + 1:
             pygame.time.set_timer(pygame.USEREVENT + 1, 0)

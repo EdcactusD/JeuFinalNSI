@@ -38,7 +38,7 @@ class Pendu(Etats):
             "Hard": self.words_hard
         }
 
-        self.difficulty = "Medium"
+        self.difficulty = "Easy"
         self.word = ""
         self.guessed_letters = set()
         self.wrong_guesses = 0

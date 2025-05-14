@@ -46,7 +46,7 @@ class Chaudron(Etats):
             self.afficher_cinematique("animation_potion")
     
     def draw(self,screen):
-        super().draw(screen)
+        screen.blit(self.bg_image, (0, 0))
         """pygame.draw.rect(screen, "#a6cbb2",self.rect_creer_potion, border_radius=int(self.jeu.bg_height/54)) 
         screen.blit(self.surface_texte, self.surface_texte.get_rect(center=self.rect_creer_potion.center))"""
         self.menu_debut.aggrandir_bouton(screen, self.boutons,self.boutons_ref)

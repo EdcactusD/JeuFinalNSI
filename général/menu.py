@@ -77,10 +77,6 @@ class Inventaire(Etats):
 
     def handle_events(self, event):
         super().handle_events(event)
-        if self.show_menu == False:
-          print("menu false")
-        if self.show_menu == True:
-          print("menu true")
 
     def draw(self, screen):
      super().draw(screen)

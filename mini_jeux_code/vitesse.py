@@ -40,10 +40,6 @@ class Vitesse(Etats):
             self.reponse_uti=""
             self.mauvaise_rep=0
             self.debut_timer = pygame.time.get_ticks()
-        if self.redaction and pygame.time.get_ticks() - self.debut_timer >= 5000:
-                from général.etats import recommencement
-                self.jeu.changer_etat(recommencement(self.__class__,self.jeu))
-                print("mini-jeu perdu!")
         if self.niveau=="3" :
             self.mini_jeu_fini(self.mini_jeu)
         else:
@@ -75,14 +71,11 @@ class Vitesse(Etats):
         #si on clique sur la zone de texte il est possible de commencer à taper la réponse sinon non 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and (self.zone_reponse.collidepoint(event.pos) or self.rect_valide.collidepoint(event.pos))  and self.attendre==False:
             self.redaction = True
-            self.debut_timer = True
+            self.debut_timer = pygame.time.get_ticks()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(self.zone_reponse.collidepoint(event.pos) and self.rect_valide.collidepoint(event.pos)) or self.attendre==True:
             self.redaction=False
             
         if self.redaction==True and event.type == pygame.KEYDOWN:
-            if self.reponse_uti == "":  # Premier caractère tapé
-               self.debut_timer = pygame.time.get_ticks()  # On lance le timer
-            """Pour enlever un caractère"""
             if event.key==pygame.K_BACKSPACE: 
                 self.ancienne_rep=self.reponse_uti
                 self.reponse_uti=""
@@ -95,7 +88,6 @@ class Vitesse(Etats):
             elif len(self.reponse_uti)<=23:    
               self.reponse_uti += event.unicode  # Ajoute uniquement le caractère tapé
 
-                       
     def draw(self, screen):
         super().draw(screen)
         pygame.draw.rect(screen, "#4d3020", self.zone_reponse, border_radius=int(self.jeu.bg_height/54))
@@ -118,3 +110,8 @@ class Vitesse(Etats):
         
         self.bouton_valider_blit(screen, self.rect_valide)
         self.montrer_regles_aide(screen,self.last_event,"Vitesse")
+
+        if self.redaction and pygame.time.get_ticks() - self.debut_timer >= self.timer:
+         from général.etats import recommencement
+         self.jeu.changer_etat(recommencement(self.__class__, self.jeu))
+         print("mini-jeu perdu !")

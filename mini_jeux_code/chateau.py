@@ -257,14 +257,14 @@ class Pendule(Etats):
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "Pendule.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
         self.zone_bouton = pygame.Rect(int(self.jeu.bg_width/2.1), int(self.jeu.bg_height/1.4),int(self.jeu.bg_width/11),int(self.jeu.bg_height/16))
-        self.zone_angle = pygame.Rect(int(self.jeu.bg_width/3), int(self.jeu.bg_height/5),int(self.jeu.bg_width/2.8),int(self.jeu.bg_height/16))
+        self.zone_angle = pygame.Rect(int(self.jeu.bg_width/3), int(self.jeu.bg_height/6),int(self.jeu.bg_width/2.8),int(self.jeu.bg_height/16))
 
         self.white = (255, 255, 255)
         self.black = (0, 0, 0)
         self.gris = (112, 128, 144)
         self.brown = (139, 69, 19)
         self.center = (self.menu_width // 0.1, self.menu_height // 1)
-        self.radius = 200
+        self.radius = 150
         self.angle = 0
         self.target_angle = random.choice([i * 30 for i in range(12)]) #on prned une valeur random dans une liste aléatoire
         self.objectif = [self.target_angle,self.target_angle+30] #l'objectif est donc de cette angle + 30

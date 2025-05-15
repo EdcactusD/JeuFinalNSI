@@ -149,30 +149,22 @@ class Map(Etats):
         from général.etats import niveaux_jeux
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
-                if self.zones_carte[zone][0].collidepoint(event.pos) : 
-                    self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
-                
-                """if self.zones_carte[zone][0].collidepoint(event.pos) and zone!="zone_Chaudron": 
-                    self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
-                if self.zones_carte[zone][0].collidepoint(event.pos) and zone=="zone_Chaudron":
-                    nbr_reussi=0
-                    for jeu in niveaux_jeux: #on ne prend pas en compte le dernier mini-jeu qui est chaudron
-                      if niveaux_jeux[jeu][4]==True:
-                         nbr_reussi+=1
-                    if nbr_reussi == range(len(niveaux_jeux)-1):
-                       self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
-                    else :
-                        self.afficher_pop_up_bool=True"""
+                if self.zones_carte[zone][0].collidepoint(event.pos):
+                    mini_game_key = zone if zone in niveaux_jeux else zone.replace("zone_", "")
+                    if mini_game_key in niveaux_jeux and niveaux_jeux[mini_game_key][4]:
+                        self.afficher_pop_up_bool = True
+                        self.pop_up_text = f"Vous avez déjà terminé ce mini-jeu : {niveaux_jeux[mini_game_key][5]}\nVeuillez lancer une nouvelle partie pour recommencer"
+                        self.deb_affichage_pop_up = pygame.time.get_ticks()
+                    else:
+                        self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
+
+                elif self.afficher_pop_up_bool and self.pop_up_text and self.zones_carte[zone][0].collidepoint(event.pos):
+                    self.afficher_pop_up_bool = False
+                    from général.menu import Map
+                    self.jeu.changer_etat(Map(self.jeu))
                     
     
     def draw(self, screen) :
         super().draw(screen)
         if self.afficher_pop_up_bool:
-          self.deb_affichage_pop_up=pygame.time.get_ticks()
-          self.afficher_pop_up_bool=False
-        if pygame.time.get_ticks()-self.deb_affichage_pop_up<2000: #dans tous les cas, si self.afficher_pop_up n'est pas passé True avant, la condition ne sera pas réalisée
-             self.afficher_pop_up(screen, "Vous devez finir tous les mini-jeux\navant de lancer celui-ci")
-             
-        """for zone in  self.zones_carte:
-            pygame.draw.rect(screen, (255, 0, 0), self.zones_carte[zone][0], 10)
-        pygame.display.flip() #pour tester les zones"""
+            self.afficher_pop_up(screen, self.pop_up_text)

@@ -1,5 +1,6 @@
 import pygame
 import os
+from général.etats import niveaux_jeux, save_game
 
 class Menu_debut:
   """gère l'écran qui s'affiche pour lancer le jeu"""
@@ -25,7 +26,11 @@ class Menu_debut:
                     from général.menu import Map
                     self.jeu.changer_etat(Map(self.jeu))
                 elif bouton=="Lancer une nouvelle partie" :
-                    print("lancement d'une nouvelle partie")
+                    for key in niveaux_jeux:
+                        niveaux_jeux[key][4] = False
+                    save_game()
+                    from général.menu import Map
+                    self.jeu.changer_etat(Map(self.jeu))
                 elif bouton=="Quitter":
                     self.jeu.running=False
             

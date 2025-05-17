@@ -83,7 +83,6 @@ class Portes(Etats):
             pygame.time.set_timer(pygame.USEREVENT + 1, 0)
             from général.etats import recommencement
             self.jeu.changer_etat(recommencement(self.__class__, self.jeu))
-            print("mini-jeu perdu!")
 
     def draw(self, screen):
         super().draw(screen)

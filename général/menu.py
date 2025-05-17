@@ -152,6 +152,7 @@ class Map(Etats):
         "zone_Chaudron" : [pygame.Rect(int(self.jeu.bg_width/1.6),int(self.jeu.bg_height/1.54),int(self.jeu.bg_width/8),int(self.jeu.bg_height/9.5)),Chaudron], }
         
         self.afficher_pop_up_bool=False
+        self.afficher_pop_up_bool_chaudron=False
         self.deb_affichage_pop_up=0
         
     def handle_events(self, event):
@@ -159,22 +160,38 @@ class Map(Etats):
         from général.etats import niveaux_jeux
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for zone in self.zones_carte:
-                if self.zones_carte[zone][0].collidepoint(event.pos):
+                if self.zones_carte[zone][0].collidepoint(event.pos) and zone!="zone_Chaudron":
                     mini_game_key = zone if zone in niveaux_jeux else zone.replace("zone_", "")
                     if mini_game_key in niveaux_jeux and niveaux_jeux[mini_game_key][4]:
                         self.afficher_pop_up_bool = True
+                        self.afficher_pop_up_bool_chaudron=False
                         self.pop_up_text = f"Vous avez déjà terminé ce mini-jeu : {niveaux_jeux[mini_game_key][5]}\nVeuillez lancer une nouvelle partie pour recommencer"
                         self.deb_affichage_pop_up = pygame.time.get_ticks()
                     else:
                         self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))
-
+                elif self.zones_carte[zone][0].collidepoint(event.pos) and zone=="zone_Chaudron":
+                    nbr_reussi=0
+                    for jeu in niveaux_jeux:
+                        if niveaux_jeux[jeu][4]==True:
+                            nbr_reussi+=1
+                    if nbr_reussi == len(niveaux_jeux)-1: #on ne compte pas l'élixir des mondes
+                       self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
+                    else :
+                        self.afficher_pop_up_bool_chaudron=True
+                        self.afficher_pop_up_bool = False
                 elif self.afficher_pop_up_bool and self.pop_up_text and self.zones_carte[zone][0].collidepoint(event.pos):
                     self.afficher_pop_up_bool = False
+                    self.afficher_pop_up_bool_chaudron=False
                     from général.menu import Map
                     self.jeu.changer_etat(Map(self.jeu))
+                    
+                    
+                
                     
     
     def draw(self, screen) :
         super().draw(screen)
         if self.afficher_pop_up_bool:
             self.afficher_pop_up(screen, self.pop_up_text)
+        if self.afficher_pop_up_bool_chaudron:
+            self.afficher_pop_up(screen, "finissez tous les mini-jeux avant de pouvoir accéder\nà celui-ci et récuperer l'elixir des mondes")

@@ -81,6 +81,8 @@ class Inventaire(Etats):
     def __init__(self,jeu,):
        super().__init__(jeu)
        self.bg_image = pygame.image.load(os.path.join("assets","parchemin3.png"))
+       self.image_bois = pygame.image.load(os.path.join("assets","bois.png"))
+       self.image_seau_cire=pygame.transform.scale(self.image_bois, (self.jeu.bg_width, self.jeu.bg_height))
        self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
        self.show_menu = False
        self.nbr = 0
@@ -89,6 +91,7 @@ class Inventaire(Etats):
         super().handle_events(event)
 
     def draw(self, screen):
+     screen.blit(self.image_bois, (0, 0))
      super().draw(screen)
      from général.etats import niveaux_jeux
      self.nbr = 0

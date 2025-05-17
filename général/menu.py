@@ -1,6 +1,8 @@
 import pygame
 import os 
 from général.etats import Etats
+from général.etats import niveaux_jeux, save_game
+
 
 global volume
 volume = 0.5
@@ -19,9 +21,11 @@ class Reglages(Etats):
        self.font=self.jeu.font 
        self.boutons = {"réin_SAUVEGARDE" : [pygame.Rect(int(self.jeu.bg_width/2.8), int(self.jeu.bg_height/1.6), int(self.jeu.bg_width/4), int(self.jeu.bg_height/14)), (176,143,101), (143,116,81),"Réinitialiser la sauvegarde"],
                        }
+
        self.boutons_ref = {bouton: [self.boutons[bouton][0].width, self.boutons[bouton][0].height] for bouton in self.boutons}
        self.barre = pygame.Rect(int(self.jeu.bg_width/2.77), int(self.jeu.bg_height/3.4), int(self.jeu.bg_width/6), int(self.jeu.bg_height/15))
        self.curseur = pygame.Rect(self.barre.x + self.barre.w/2-self.barre.w/8 , self.barre.y, self.barre.w/4, self.barre.h)
+       self.curseur.x = volume * (self.barre.w-self.curseur.w) + self.barre.x #pour récuperer les données du volume actuel
        self.c_mouv= False
        self.dico_commande={"menu" : ["w", int(self.jeu.bg_width/3.14),int(self.jeu.bg_height/2.05)],
                            "carte" : ["x",int(self.jeu.bg_width/2.34),int(self.jeu.bg_height/2.05)],
@@ -38,7 +42,10 @@ class Reglages(Etats):
          for bouton, (position, couleur, couleur_texte,nom) in list(self.boutons.items()): #on cree une copie du dictionnaire qui est donc figée
              if position.collidepoint(event.pos) :
                 if bouton=="réin_SAUVEGARDE" :
-                     print("reinitialisation")
+                    for key in niveaux_jeux:
+                      niveaux_jeux[key][4] = False
+                      save_game()
+                    print("reinitialisation")
      elif event.type == pygame.MOUSEMOTION and self.c_mouv : 
          self.curseur.x = event.pos[0]  # Suit la souris
          self.curseur.clamp_ip(self.barre)  # .clamp_ip contraint un Rect pour qu'il reste entièrement à l’intérieur d’un autre Rect
@@ -60,6 +67,9 @@ class Reglages(Etats):
          screen.blit(self.font.render(f"{elem} : {self.dico_commande[elem][0]}", True, (6,3,3)), (self.dico_commande[elem][1], self.dico_commande[elem][2]))
      screen.blit(self.font_grand.render("Sauvegarde : ", True, (6,3,3)), (int(self.jeu.bg_width/3.64), int(self.jeu.bg_height/1.8)))
      screen.blit(self.font_grand.render("Résumé : ", True, (6,3,3)), (int(self.jeu.bg_width/3.64), int(self.jeu.bg_height/1.4)))
+     from général.menu_deb import Menu_debut
+     menu_deb=Menu_debut(self.jeu)
+     menu_deb.aggrandir_bouton(screen, self.boutons,self.boutons_ref )
      self.sauter_ligne(self.resu_histoire, int(self.jeu.bg_width/3.8), int(self.jeu.bg_height/1.3), 50 , self.font_resu,(6,3,3), screen)
      
 

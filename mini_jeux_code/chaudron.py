@@ -61,7 +61,11 @@ class Mini_jeu_final(Mars):
         from général.etats import niveaux_jeux
         self.bg_image = pygame.image.load(os.path.join("assets","fonds", "chaudron.png"))
         self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+        self.bg_height = self.jeu.bg_height
+        self.bg_width = self.jeu.bg_width
         self.mini_jeu = "Chaudron"
+        self.erreur = False
+        self.erreur_time = 0
         
         self.niveau = str(niveaux_jeux["Chaudron"][0])
         self.niveau_max=8
@@ -97,10 +101,23 @@ class Mini_jeu_final(Mars):
                           elif self.dico_questions[self.niveau][1][int(cle)]==self.dico_questions[self.niveau][2] and int(self.niveau)>=self.niveau_max:
                              self.mini_jeu_fini(self.mini_jeu)
                              print("gagné!: Mettre animation fin")
+                             self.reussite_chaudron()
                           else:
                               self.couleur=["#cf473a", self.rects_reponses[cle]] #rouge
                               print("mini-jeu perdu!")
+                              self.erreur = True
+                              self.erreur_time = pygame.time.get_ticks()
+                              
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
                           self.temps = pygame.time.get_ticks()
                       self.reponse_soumise=True
+
+    def draw(self, screen):
+     super().draw(screen)
+
+     if self.erreur:
+      if pygame.time.get_ticks() - self.erreur_time >= 1000:
+        self.erreur = False  # Reset pour ne pas relancer
+        self.perte_chaudron()
+        
     

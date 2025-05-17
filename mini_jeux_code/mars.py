@@ -43,6 +43,7 @@ class Mars(Etats):
         self.mini_jeu = "Mars"
         self.reponse_soumise=False
         self.temps_affichage_couleur=300
+        self.screen = self.jeu.screen
         
         
     def handle_events(self, event):

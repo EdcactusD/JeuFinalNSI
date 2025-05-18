@@ -4,7 +4,7 @@ import json
 
 #dico qui stocke les niveaux de jeu (0), les règles(1), les aides(2) , les images(3), la reussite du mini-jeu(4) , le nom de l'item(5)
 global niveaux_jeux
-niveaux_jeux = {"Donkey_kong_mario" :[0, " ", " ",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False,"œuf de phénix"],
+niveaux_jeux = {"Donkey_kong_mario" :[0, "Arrivez\nau niveau du drapeau\npour récupérer\nl'ingrédient                                     ", "utilisez les flèches\net la barre d'espace\npour bouger.\nEvitez les obstacles",pygame.image.load(os.path.join("assets","items", "oeuf de phoenix.png")),False,"œuf de phénix"],
                 "Enigme" : [0, "Entrez un mot\n(sans son déterminant)\npour répondre à l'énigme,\nsi vous répondez faux\n3 fois d'affilé,\nattendez le délais", "Il faut juste\nréfléchir un peu...",pygame.image.load(os.path.join("assets","items", "sève sagesse.png")),False,"Sève de Sagesse"],
                 "Memoire_combi" : [0, "Restituez la\ncombinaison de\nsymboles qui\napparaissent en\nappuyant sur ceux\nde la liste", "Evidemment, vous ne\npouvez entrer\nvotre réponse que\nlorsque la\ncombinaison a \ndisparue",pygame.image.load(os.path.join("assets","items", "grain d'ambre.png")),False,"grains d’ambre"],
                 "Pendu" : [0, "Proposez des lettres\npour restituer le\nmot                                                            ", "Non, probablement que\nZ n'est pas\nla meilleure\nlettre à tester",pygame.image.load(os.path.join("assets","items", "cheveux de Rossier.png")),False,"cheveux de Rossier"],
@@ -82,11 +82,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
          if event != None :
              if event.type == pygame.MOUSEMOTION and self.rect_regles_ic.collidepoint(event.pos):
                  self.show_regles=True
-             else:
+             elif event.type == pygame.MOUSEMOTION and not(self.rect_regles_ic.collidepoint(event.pos)):
                  self.show_regles=False
              if event.type == pygame.MOUSEMOTION and self.rect_aide_ic.collidepoint(event.pos):
                  self.show_aide=True
-             else:
+             elif event.type == pygame.MOUSEMOTION and not(self.rect_aide_ic.collidepoint(event.pos)):
                  self.show_aide=False
  
              screen.blit(self.regles_ic, (self.rect_regles_ic.x, self.rect_regles_ic.y))

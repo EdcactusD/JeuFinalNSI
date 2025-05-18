@@ -81,13 +81,14 @@ class Donkey_kong_mario(Etats):
 
         self._build_ladders()
 
-        win_y = int(self.jeu.bg_height * 0.08)
-        win_w = int(self.jeu.bg_width * 0.12)
-        win_h = 18
+        win_y = int(self.jeu.bg_height * 0.03)
+        win_w = self.jeu.bg_width//19.2
+        win_h = self.jeu.bg_height//8.5
         self.win_zone = pygame.Rect(int(self.jeu.bg_width * 0.05), win_y, win_w, win_h)
 
         throw_x = int(self.jeu.bg_width * 0.78) + 40
         self.thrower = pygame.Rect(throw_x, self.win_zone.bottom, self.W_P, self.H_P)
+        self.thrower = pygame.Rect(throw_x, self.thrower.y-self.thrower.h, self.W_P, self.H_P)
 
     def _build_ladders(self):
         self.ladders = []
@@ -196,7 +197,7 @@ class Donkey_kong_mario(Etats):
             self.mini_jeu_fini(self.mini_jeu)
 
     def draw(self, screen):
-        screen.blit(self.bg_image, (0, 0))
+        screen.blit(self.bg_image, (0, 0)) #on ne peut pas importer le draw d'etats car sinon les plateformes se blitent sur le menu
         for y_ratio, w_ratio, trou in self.PLATS:
             y = int(self.jeu.bg_height * y_ratio)
             plat_w = int(self.jeu.bg_width * w_ratio)
@@ -227,3 +228,11 @@ class Donkey_kong_mario(Etats):
         for b in self.barils:
             img = pygame.transform.scale(self.img_barrel, (b["rect"].w, b["rect"].h))
             screen.blit(img, b["rect"])
+        
+        if self.show_menu: #suite du draw de etats
+            screen.blit(self.menu, (self.menu_x, self.menu_y))
+        if not self.show_menu : 
+            screen.blit(self.menu_rond_ic, (self.rect_menu_rond.x, self.rect_menu_rond.y))
+        self.montrer_regles_aide(screen,self.last_event,"Donkey_kong_mario")
+        
+        

@@ -159,6 +159,15 @@ class Map(Etats):
         self.deb_affichage_pop_up=0
         
     def handle_events(self, event):
+        #pour tester la fin de jeu sans refaire tous les jeux
+        """from général.etats import niveaux_jeux
+        for key in niveaux_jeux:
+            if key=="Chaudron":
+                pass
+            else:
+              niveaux_jeux[key][4] = True 
+        save_game()"""
+        
         super().handle_events(event)  # Garde le comportement général des événements
         from général.etats import niveaux_jeux
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

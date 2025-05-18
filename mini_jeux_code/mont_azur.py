@@ -1,6 +1,7 @@
 import pygame
 import os 
 from général.etats import Etats
+import random
 
 """contient la classe Mont-azur et un des mini-jeu qu'elle permet d'acceder (le plateformer) car Trad est avec Enigme pour leur ressemblance au nievau du code (héritage)"""
 

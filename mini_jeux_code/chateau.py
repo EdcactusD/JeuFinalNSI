@@ -14,13 +14,31 @@ class Chateau(Etats):
         self.zones_chateau = {"zone_Pendu" : [pygame.Rect(int(self.jeu.bg_width/2.844),int(self.jeu.bg_height/1.4896),int(self.jeu.bg_width/4.8),int(self.jeu.bg_height/3.6)), Pendu],
                               "zone_Pendule" : [pygame.Rect(int(self.jeu.bg_width/1.92),int(self.jeu.bg_height/2.7),int(self.jeu.bg_width/3.84),int(self.jeu.bg_height/3.32)), Pendule]
                               }
-
+        self.afficher_pop_up_bool = False
+        self.pop_up_text = ""
+        
     def handle_events(self, event):
         super().handle_events(event)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-           for zone in self.zones_chateau:
-               if self.zones_chateau[zone][0].collidepoint(event.pos): 
-                   self.jeu.changer_etat(self.zones_chateau[zone][1](self.jeu))
+            if self.afficher_pop_up_bool:
+                self.afficher_pop_up_bool = False
+            else:
+                from général.etats import niveaux_jeux
+                for zone in self.zones_chateau:
+                    if self.zones_chateau[zone][0].collidepoint(event.pos):
+                        mini_game_key = zone.replace("zone_", "")
+                        if mini_game_key in niveaux_jeux and niveaux_jeux[mini_game_key][4]:
+                            self.pop_up_text = f"Vous avez déjà reçu l'objet de ce mini-jeu : {niveaux_jeux[mini_game_key][5]}\nVeuillez lancer une nouvelle partie pour recommencer"
+                            self.afficher_pop_up_bool = True
+                        else:
+                            self.jeu.changer_etat(self.zones_chateau[zone][1](self.jeu))
+        
+    def draw(self, screen):
+        super().draw(screen)
+        if self.afficher_pop_up_bool:
+            self.afficher_pop_up(screen, self.pop_up_text)
+
+
                    
 class Pendu(Etats):
     def __init__(self, jeu):

@@ -177,7 +177,7 @@ class Map(Etats):
                     if mini_game_key in niveaux_jeux and niveaux_jeux[mini_game_key][4]:
                         self.afficher_pop_up_bool = True
                         self.afficher_pop_up_bool_chaudron=False
-                        self.pop_up_text = f"Vous avez déjà terminé ce mini-jeu : {niveaux_jeux[mini_game_key][5]}\nVeuillez lancer une nouvelle partie pour recommencer"
+                        self.pop_up_text = f"Vous avez déjà reçu l'objet de ce mini-jeu : {niveaux_jeux[mini_game_key][5]}\nVeuillez lancer une nouvelle partie pour recommencer"
                         self.deb_affichage_pop_up = pygame.time.get_ticks()
                     else:
                         self.jeu.changer_etat(self.zones_carte[zone][1](self.jeu))

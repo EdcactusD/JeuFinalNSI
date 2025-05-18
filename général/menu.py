@@ -187,11 +187,7 @@ class Map(Etats):
                     self.afficher_pop_up_bool_chaudron=False
                     from général.menu import Map
                     self.jeu.changer_etat(Map(self.jeu))
-                    
-                    
                 
-                    
-    
     def draw(self, screen) :
         super().draw(screen)
         if self.afficher_pop_up_bool:

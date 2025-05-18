@@ -316,8 +316,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
      
     def reussite_chaudron(self):
      prop = 0.25
-     self.objet = pygame.image.load(os.path.join("assets", "items", "objet.png"))
-     self.objet = pygame.transform.scale(self.objet, (self.bg_width, self.bg_height))
+     self.bg_image = pygame.image.load(os.path.join("assets","fonds", "chaudron.png"))
+     self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
      fee_width = int(self.bg_width * prop)
      fee_height = int(self.bg_width * prop)
      self.fee = pygame.image.load(os.path.join("assets", "fee.png"))
@@ -343,7 +343,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
                     pygame.image.load(os.path.join("assets","tresor", "R8.jpg")),
                     pygame.image.load(os.path.join("assets","tresor", "R9.jpg"))]}
      pygame.draw.rect(self.screen, "#4d3020", self.zone_reponse, border_radius=int(self.bg_height / 54))
-     self.screen.blit(self.objet, (0, 0))
+     self.screen.blit(self.bg_image, (0, 0))
      self.screen.blit(self.fee, (0, 0))
      pygame.display.flip()
      self.temps = pygame.time.get_ticks()  
@@ -361,7 +361,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
         if elapsed_time >= self.durée:
             self.temps = current_time  
-            self.screen.blit(self.objet, (0, 0))
+            self.screen.blit(self.bg_image, (0, 0))
             self.screen.blit(self.fee, (0, 0))
             pygame.draw.rect(self.screen, "#4d3020", self.skip_button, border_radius=8)
             self.screen.blit(self.skip_text, (self.skip_button.x + 10, self.skip_button.y + 5))
@@ -371,8 +371,8 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
             i += 1  
 
      for image in self.tresor["images"]:
-       self.objet = pygame.transform.scale(image, (self.bg_width, self.bg_height))
-       self.screen.blit(self.objet, (0, 0))
+       self.bg_image = pygame.transform.scale(image, (self.bg_width, self.bg_height))
+       self.screen.blit(self.bg_image, (0, 0))
        pygame.display.flip()
        pygame.time.wait(3000)
     
@@ -382,13 +382,13 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
     def perte_chaudron(self):
      prop = 0.25
-     self.objet = pygame.image.load(os.path.join("assets", "items", "objet.png"))
-     self.objet = pygame.transform.scale(self.objet, (self.bg_width, self.bg_height))
+     self.bg_image = pygame.image.load(os.path.join("assets","fonds", "chaudron.png"))
+     self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
      fee_width = int(self.bg_width * prop)
      fee_height = int(self.bg_width * prop)
      self.fee = pygame.image.load(os.path.join("assets", "fee.png"))
      self.fee = pygame.transform.scale(self.fee, (fee_width, fee_height))
-     self.zone_reponse = pygame.Rect(int(self.bg_width / 8), int(self.bg_height / 1.4), int(self.bg_width / 2),
+     self.zone_reponse = pygame.Rect(int(self.bg_width / 15), int(self.bg_height / 1.4), int(self.bg_width / 2),
                                     int(self.bg_height / 12))
      self.skip_font = pygame.font.SysFont(None, int(self.bg_height * 0.035))
      self.skip_text = self.skip_font.render("Skip", True, "#FFFFFF")
@@ -396,11 +396,11 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
      self.skip_height = self.skip_text.get_height() + 10
      self.skip_button = pygame.Rect(self.bg_width - self.skip_width - 20, self.bg_height - self.skip_height - 20,
                                    self.skip_width, self.skip_height)
-     self.mots = ["Vous avez failli lors de l'épreuve , Aventurier, ceci va vous paraitre hardu",
-                 "Vous avez perdu l'ensemble de vos ingrédients , vous devez les retrouver",
-                 "ainsi vous devez recommencer chaque mini-jeu que Ethéris vous permet de faire, bonne chance"]
+     self.mots = ["Vous avez failli lors de l'épreuve aventurier,la sentence est irrévocable, je m'enpars de l'élixir des mondes",
+                 "Vous avez perdu l'ensemble de vos ingrédients , vous devez les retrouver,moi je pars de ce monde",
+                 "ainsi vous devez recommencer chaque mini-jeu que Ethéris vous permet de faire, bonne chance, vous m'aurez bien servi"]
      pygame.draw.rect(self.screen, "#4d3020", self.zone_reponse, border_radius=int(self.bg_height / 54))
-     self.screen.blit(self.objet, (0, 0))
+     self.screen.blit(self.bg_image, (0, 0))
      self.screen.blit(self.fee, (0, 0))
      pygame.display.flip()
      self.temps = pygame.time.get_ticks()  
@@ -418,7 +418,7 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
 
         if elapsed_time >= self.durée:
             self.temps = current_time  
-            self.screen.blit(self.objet, (0, 0))
+            self.screen.blit(self.bg_image, (0, 0))
             self.screen.blit(self.fee, (0, 0))
             pygame.draw.rect(self.screen, "#4d3020", self.skip_button, border_radius=8)
             self.screen.blit(self.skip_text, (self.skip_button.x + 10, self.skip_button.y + 5))
@@ -433,6 +433,59 @@ class Etats(): #SUPERCLASSE : la classe qui gère tous les etats du jeu
      pygame.time.wait(1000)
      from général.menu import Map
      self.jeu.changer_etat(Map(self.jeu))
+
+    def explication_mj_final(self):
+     print("initialisation cinématique début")
+     self.screen = self.jeu.screen
+     self.font = self.jeu.font
+     self.bg_width = self.jeu.bg_width
+     self.bg_height = self.jeu.bg_height
+     prop = 0.25
+     self.bg_image = pygame.image.load(os.path.join("assets","fonds", "chaudron.png"))
+     self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
+     fee_width = int(self.bg_width * prop)
+     fee_height = int(self.bg_width * prop)
+     self.fee = pygame.image.load(os.path.join("assets", "fee.png"))
+     self.fee = pygame.transform.scale(self.fee, (fee_width, fee_height))
+     self.zone_reponse = pygame.Rect(int(self.bg_width / 100), int(self.bg_height / 1.4), int(self.bg_width / 2),
+                                    int(self.bg_height / 12))
+     self.skip_font = pygame.font.SysFont(None, int(self.bg_height * 0.035))
+     self.skip_text = self.skip_font.render("Skip", True, "#FFFFFF")
+     self.skip_width = self.skip_text.get_width() + 20
+     self.skip_height = self.skip_text.get_height() + 10
+     self.skip_button = pygame.Rect(self.bg_width - self.skip_width - 20, self.bg_height - self.skip_height - 20,
+                                   self.skip_width, self.skip_height)
+     self.mots = ["Voici mon heure,vous m'aurez bien servi jeune aventurier,je peux enfin m'échapper de ce monde et de l'emprise du sorcier Rauzier",
+                 "Mais je ne régle pas mes conflits par la violence,si vous repondez tout juste à ce questionnaire vous gagnerez l'elixir des mondes ",
+                 "sinon vous serez bloqués ici ,avec une nouvelle fée afin de retrouver les ingrédients nécessaires,alors que je me serai evadé "]
+     pygame.draw.rect(self.screen, "#4d3020", self.zone_reponse, border_radius=int(self.bg_height / 54))
+     self.screen.blit(self.bg_image, (0, 0))
+     self.screen.blit(self.fee, (0, 0))
+     pygame.display.flip()
+     self.temps = pygame.time.get_ticks()  
+     self.durée = 3000  
+
+     i = 0
+     while i < len(self.mots):
+        current_time = pygame.time.get_ticks()  
+        elapsed_time = current_time - self.temps  
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.skip_button.collidepoint(event.pos):  
+                    i = len(self.mots)  
+
+        if elapsed_time >= self.durée:
+            self.temps = current_time  
+            self.screen.blit(self.bg_image, (0, 0))
+            self.screen.blit(self.fee, (0, 0))
+            pygame.draw.rect(self.screen, "#4d3020", self.skip_button, border_radius=8)
+            self.screen.blit(self.skip_text, (self.skip_button.x + 10, self.skip_button.y + 5))
+            texte = self.font.render(self.mots[i], True, "#FFFFFF")
+            self.screen.blit(texte, (self.zone_reponse.x * 1.02, self.zone_reponse.y * 1.02))
+            pygame.display.flip()
+            i += 1  
+ 
 
 class recommencement(Etats):
     def __init__(self, mini_jeu_cls, jeu):

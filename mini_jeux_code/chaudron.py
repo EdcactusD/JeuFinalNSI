@@ -44,6 +44,7 @@ class Chaudron(Etats):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect_creer_potion.collidepoint(event.pos):
             print("lancement cinématiques : mélange puis et fée// passage au dernier mini-jeu")
             self.afficher_cinematique("animation_potion")
+            self.explication_mj_final()
             #ici pour animation fée
             self.jeu.changer_etat(Mini_jeu_final(self.jeu))
     
@@ -107,7 +108,7 @@ class Mini_jeu_final(Mars):
                               print("mini-jeu perdu!")
                               self.erreur = True
                               self.erreur_time = pygame.time.get_ticks()
-                              
+                              self.perte_chaudron()
                           self.chrono_debut= pygame.time.get_ticks() #on réinitialise le chrono après chaque réponse donnée
                           self.temps = pygame.time.get_ticks()
                       self.reponse_soumise=True

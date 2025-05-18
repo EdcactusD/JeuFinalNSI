@@ -87,6 +87,7 @@ class Krabi(Etats):
             })
 
     def handle_events(self, event):
+        super().handle_events(event)
         if pygame.time.get_ticks() - self.debut_attente > self.attente:
             self.attendre = False
         else:

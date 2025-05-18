@@ -179,14 +179,21 @@ class Map(Etats):
                             nbr_reussi+=1
                     if nbr_reussi == len(niveaux_jeux)-1: #on ne compte pas l'élixir des mondes
                        self.jeu.changer_etat(self.zones_carte["zone_Chaudron"][1](self.jeu))
+                    elif nbr_reussi == len(niveaux_jeux) : #si le jeu a été fini
+                       from mini_jeux_code.chaudron import Tout_gagne
+                       self.jeu.changer_etat(Tout_gagne(self.jeu))
+                       
                     else :
                         self.afficher_pop_up_bool_chaudron=True
                         self.afficher_pop_up_bool = False
+
+
                 elif self.afficher_pop_up_bool and self.pop_up_text and self.zones_carte[zone][0].collidepoint(event.pos):
                     self.afficher_pop_up_bool = False
                     self.afficher_pop_up_bool_chaudron=False
                     from général.menu import Map
                     self.jeu.changer_etat(Map(self.jeu))
+     
                 
     def draw(self, screen) :
         super().draw(screen)

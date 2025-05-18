@@ -120,5 +120,9 @@ class Mini_jeu_final(Mars):
       if pygame.time.get_ticks() - self.erreur_time >= 1000:
         self.erreur = False  # Reset pour ne pas relancer
         self.perte_chaudron()
-        
-    
+
+class Tout_gagne(Etats):
+  def __init__(self, jeu):
+       super().__init__(jeu)
+       self.bg_image = pygame.image.load(os.path.join("assets", "tresor_fin.png"))
+       self.bg_image = pygame.transform.scale(self.bg_image, (self.jeu.bg_width, self.jeu.bg_height))
